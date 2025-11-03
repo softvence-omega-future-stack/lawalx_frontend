@@ -1,3 +1,4 @@
+
 import AdminNavbar from "@/components/layout/AdminNavbar";
 import Wrapper from "@/components/layout/Wrapper";
 
@@ -13,3 +14,4 @@ export default function AdminLayout({
     </div>
   );
 }
+
