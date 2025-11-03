@@ -1,10 +1,15 @@
+import AdminNavbar from "@/components/layout/AdminNavbar";
+import Wrapper from "@/components/layout/Wrapper";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div>
-      {children}
+    <div className="min-h-screen bg-gray-100 text-gray-900">
+      <AdminNavbar />
+      <Wrapper>{children}</Wrapper>
     </div>
-  )
+  );
 }
-
-export default layout;
