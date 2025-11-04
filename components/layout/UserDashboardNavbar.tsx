@@ -41,11 +41,11 @@ export default function UserDashboardNavbar() {
   const [newOpen, setNewOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const closeAllDropdowns = () => {
-    setHelpOpen(false);
-    setProfileOpen(false);
-    setNewOpen(false);
-  };
+  // const closeAllDropdowns = () => {
+  //   setHelpOpen(false);
+  //   setProfileOpen(false);
+  //   setNewOpen(false);
+  // };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 max-w-[1920px] mx-auto">
