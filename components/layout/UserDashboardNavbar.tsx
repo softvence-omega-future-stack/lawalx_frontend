@@ -174,11 +174,11 @@ export default function UserDashboardNavbar() {
   const [newOpen, setNewOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const closeAllDropdowns = () => {
-    setHelpOpen(false);
-    setProfileOpen(false);
-    setNewOpen(false);
-  };
+  // const closeAllDropdowns = () => {
+  //   setHelpOpen(false);
+  //   setProfileOpen(false);
+  //   setNewOpen(false);
+  // };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -186,7 +186,7 @@ export default function UserDashboardNavbar() {
         {/* Left section - Logo & Desktop Navigation */}
         <div className="flex items-center gap-4 lg:gap-8 flex-1">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center flex-shrink-0">
+          <Link href="/dashboard" className="flex items-center shrink-0">
             <div className="text-xl sm:text-2xl font-bold text-blue-500">tape</div>
           </Link>
 

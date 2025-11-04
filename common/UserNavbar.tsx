@@ -1,66 +1,93 @@
-// components/Navbar.tsx
 'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, Bell, Sun, Moon, HelpCircle, User } from 'lucide-react';
+import { Menu, X, Bell, Sun, Moon, HelpCircle, User, ChevronDown } from 'lucide-react';
 
 export default function UserNavbar() {
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const navItems = ['Dashboard', 'Screens', 'Content', 'Schedules', 'Devices'];
+  // Define your navigation links
+  const navItems = [
+    { name: 'Dashboard', href: '/user/dashboard' },
+    { name: 'Screens', href: '/screens' },
+    { name: 'Content', href: '/content' },
+    { name: 'Schedules', href: '/schedules' },
+    { name: 'Devices', href: '/devices' },
+  ];
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav
+      className={`sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm ${
+        isDarkMode ? 'dark' : ''
+      }`}
+    >
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <div className="text-2xl font-bold text-cyan-500">tape</div>
+          <div className="text-2xl font-bold text-cyan-500 select-none tracking-tight">
+            tape
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item, index) => (
-              <a
-                key={item}
-                href="#"
-                className={`text-sm font-medium transition-colors ${
-                  index === 0
-                    ? 'text-cyan-500 border-b-2 border-cyan-500 pb-5'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {item}
-              </a>
-            ))}
+          <div className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group relative px-2 py-2 text-sm font-medium transition-colors duration-200 pr-8 ${
+                    isActive
+                      ? 'text-cyan-600'
+                      : 'text-gray-700 hover:text-gray-900'
+                  }`}
+                >
+                  {item.name}
+                  {/* Smooth underline animation */}
+                  <span
+                    className={`absolute left-0 bottom-[-4px] h-[2px] bg-cyan-500 transition-all duration-300 ease-out ${
+                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  ></span>
+                </Link>
+              );
+            })}
           </div>
 
-          {/* Right Side Icons - Desktop */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-gray-900">
+          {/* Right Icons */}
+          <div className="hidden md:flex items-center space-x-2">
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-all">
               <HelpCircle size={20} />
             </button>
-            <button className="bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-cyan-600 transition-colors">
-              New
+
+            <button className="flex items-center gap-1.5 bg-cyan-500 text-white px-3.5 py-2 rounded-md text-sm font-medium hover:bg-cyan-600 transition-all shadow-sm hover:shadow">
+              <span>New</span>
+              <ChevronDown size={16} />
             </button>
-            <button className="text-gray-600 hover:text-gray-900">
+
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-all relative">
               <Bell size={20} />
             </button>
+
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="text-gray-600 hover:text-gray-900"
+              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-all"
             >
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <button className="text-gray-600 hover:text-gray-900">
+
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-all">
               <User size={20} />
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-gray-600 hover:text-gray-900"
+            className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -69,38 +96,44 @@ export default function UserNavbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <div className="px-4 py-3 space-y-3">
-            {navItems.map((item, index) => (
-              <a
-                key={item}
-                href="#"
-                className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  index === 0
-                    ? 'bg-cyan-50 text-cyan-500'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                {item}
-              </a>
-            ))}
+        <div className="md:hidden bg-white border-t border-gray-200 animate-fadeIn">
+          <div className="px-4 py-3 space-y-1">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block w-full text-left px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-cyan-50 text-cyan-600'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+
             <div className="border-t border-gray-200 pt-3 mt-3 flex items-center justify-around">
-              <button className="text-gray-600 hover:text-gray-900">
+              <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
                 <HelpCircle size={20} />
               </button>
-              <button className="bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                New
+              <button className="flex items-center gap-1 bg-cyan-500 text-white px-3.5 py-2 rounded-md text-sm font-medium hover:bg-cyan-600 transition-colors">
+                <span>New</span>
+                <ChevronDown size={16} />
               </button>
-              <button className="text-gray-600 hover:text-gray-900">
+              <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
                 <Bell size={20} />
               </button>
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className="text-gray-600 hover:text-gray-900"
+                className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
               >
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
-              <button className="text-gray-600 hover:text-gray-900">
+              <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
                 <User size={20} />
               </button>
             </div>
