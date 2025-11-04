@@ -3,7 +3,6 @@
 import AddButton from "@/common/AddButton";
 import BaseSelect from "@/common/BaseSelect";
 import DashboardHeading from "@/common/DashboardHeading";
-import { Input } from "@/components/ui/input";
 import { Monitor, ScreenShare, Search } from "lucide-react";
 import { useState } from "react";
 import ScreenCard from "./components/screenComponent/ScreenCard";
@@ -137,12 +136,12 @@ const MyScreensPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
+              <input
                 type="text"
                 placeholder="Search screen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-[#F3F4F6] border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               />
             </div>
 
