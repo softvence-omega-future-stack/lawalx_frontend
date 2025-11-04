@@ -15,30 +15,33 @@ export default function DevicesPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-semibold">My Devices</h2>
-          <p className="text-gray-500 text-sm">Manage all your connected devices</p>
-        </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-          Add Device
-        </button>
-      </div>
+    // <div className="space-y-6">
+    //   {/* Header */}
+    //   <div className="flex justify-between items-center">
+    //     <div>
+    //       <h2 className="text-2xl font-semibold">My Devices</h2>
+    //       <p className="text-gray-500 text-sm">Manage all your connected devices</p>
+    //     </div>
+    //     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+    //       Add Device
+    //     </button>
+    //   </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <DeviceCard title="Total Devices" value={devices.length} />
-        <DeviceCard title="Active Devices" value={devices.filter(d => d.status === "Active").length} />
-        <DeviceCard title="Inactive Devices" value={devices.filter(d => d.status === "Inactive").length} />
-      </div>
+    //   {/* Summary Cards */}
+    //   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    //     <DeviceCard title="Total Devices" value={devices.length} />
+    //     <DeviceCard title="Active Devices" value={devices.filter(d => d.status === "Active").length} />
+    //     <DeviceCard title="Inactive Devices" value={devices.filter(d => d.status === "Inactive").length} />
+    //   </div>
 
-      {/* Device Table */}
-      <DeviceTable devices={devices} onRowClick={setSelectedDevice} />
+    //   {/* Device Table */}
+    //   <DeviceTable devices={devices} onRowClick={setSelectedDevice} />
 
-      {/* Device Details Popup */}
-      {selectedDevice && <DeviceDetailsPopup device={selectedDevice} onClose={() => setSelectedDevice(null)} />}
+    //   {/* Device Details Popup */}
+    //   {selectedDevice && <DeviceDetailsPopup device={selectedDevice} onClose={() => setSelectedDevice(null)} />}
+    // </div>
+    <div className="flex items-center justify-center">
+      Devices page
     </div>
   );
 }

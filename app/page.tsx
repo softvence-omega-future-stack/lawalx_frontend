@@ -16,13 +16,16 @@ import LandingNavbar from "@/components/layout/LandingNavbar";
 export default function HomePage() {
   return (
     <>
-      <LandingNavbar />
+      {/* <LandingNavbar />
       <main className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-3xl font-bold">Welcome to the Platform</h1>
         <p className="mt-2 text-gray-600">
           This is the landing page. Sign in to continue.
         </p>
-      </main>
+      </main> */}
+      <div className="min-h-screen flex items-center justify-center">
+        Home page
+      </div>
     </>
   );
 }
