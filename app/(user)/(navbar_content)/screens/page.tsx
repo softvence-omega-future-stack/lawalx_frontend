@@ -117,8 +117,7 @@ const MyScreensPage: React.FC = () => {
   });
 
   return (
-    <DashboardWrapper>
-      <div className="flex flex-col items-center justify-start w-full px-4 md:px-8 py-10">
+      <div className="flex flex-col items-center justify-start w-full">
         <div className="w-full mx-auto">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between mb-6 gap-3">
@@ -177,7 +176,6 @@ const MyScreensPage: React.FC = () => {
           )}
         </div>
       </div>
-    </DashboardWrapper>
   );
 };
 

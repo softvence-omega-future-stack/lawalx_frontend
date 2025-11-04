@@ -22,6 +22,7 @@ import {
   LogOutIcon,
   HelpCircleIcon,
   SettingsIcon,
+  Monitor,
 } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
@@ -34,18 +35,44 @@ const navItems = [
   { href: "/devices", label: "Devices" },
 ];
 
+const notifications = [
+  {
+    id: 1,
+    icon: Monitor,
+    title: "New Device Added",
+    description: 'Your "Office 1" device has been added to the server.',
+    time: "1 hour ago",
+  },
+  {
+    id: 2,
+    icon: Bell,
+    title: "Account Approved",
+    description: "Your account has been approved. You can now access all features.",
+    time: "1 hour ago",
+  },
+  {
+    id: 3,
+    icon: Bell,
+    title: "Account Approved",
+    description: "Your account has been approved. You can now access all features.",
+    time: "1 hour ago",
+  },
+  {
+    id: 4,
+    icon: Bell,
+    title: "Account Approved",
+    description: "Your account has been approved. You can now access all features.",
+    time: "1 hour ago",
+  },
+];
+
 export default function UserDashboardNavbar() {
   const pathname = usePathname();
   const [helpOpen, setHelpOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // const closeAllDropdowns = () => {
-  //   setHelpOpen(false);
-  //   setProfileOpen(false);
-  //   setNewOpen(false);
-  // };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 max-w-[1920px] mx-auto">
@@ -90,12 +117,12 @@ export default function UserDashboardNavbar() {
                 setHelpOpen(!helpOpen);
                 setProfileOpen(false);
                 setNewOpen(false);
+                setNotificationOpen(false);
               }}
               className="p-2 hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-center gap-1"
             >
               <HelpCircle className="w-5 h-5 text-gray-600" />
               <span className="text-sm text-gray-600 hidden lg:inline">
-                {" "}
                 Help
               </span>
             </button>
@@ -137,6 +164,7 @@ export default function UserDashboardNavbar() {
                 setNewOpen(!newOpen);
                 setHelpOpen(false);
                 setProfileOpen(false);
+                setNotificationOpen(false);
               }}
               className="px-3 lg:px-4 py-2 bg-[#0FA6FF] text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1.5 text-sm font-medium"
             >
@@ -172,9 +200,79 @@ export default function UserDashboardNavbar() {
           </div>
 
           {/* Notifications */}
-          <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors relative">
-            <Bell className="w-5 h-5 text-gray-600" />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => {
+                setNotificationOpen(!notificationOpen);
+                setHelpOpen(false);
+                setProfileOpen(false);
+                setNewOpen(false);
+              }}
+              className="p-2 hover:bg-gray-50 rounded-lg transition-colors relative"
+            >
+              <Bell className="w-5 h-5 text-gray-600" />
+              {notifications.length > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              )}
+            </button>
+
+            {notificationOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setNotificationOpen(false)}
+                />
+                <div className="absolute right-0 mt-2 w-96 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-40">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Notifications
+                    </h3>
+                    <button className="text-sm text-[#0FA6FF] hover:text-blue-500 font-medium">
+                      Mark All Read
+                    </button>
+                  </div>
+
+                  {/* Notifications List */}
+                  <div className="overflow-y-auto">
+                    {notifications.map((notification) => {
+                      const IconComponent = notification.icon;
+                      return (
+                        <div
+                          key={notification.id}
+                          className="px-6 py-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-colors"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="mt-1">
+                              <IconComponent className="w-10 h-10 text-gray-400 bg-gray-100 rounded-full p-2" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                                {notification.title}
+                              </h4>
+                              <p className="text-sm text-gray-600 mb-2">
+                                {notification.description}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {notification.time}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-6 py-3 text-center border-t border-gray-200">
+                    <button className="text-sm text-[#0FA6FF] hover:text-blue-500 font-medium">
+                      View All
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
 
           {/* Dark Mode */}
           <button className="p-2 hover:bg-gray-50 rounded-lg transition-colors">
@@ -188,6 +286,7 @@ export default function UserDashboardNavbar() {
                 setProfileOpen(!profileOpen);
                 setHelpOpen(false);
                 setNewOpen(false);
+                setNotificationOpen(false);
               }}
               className="p-2 hover:bg-gray-50 rounded-full bg-gray-100 transition-colors"
             >

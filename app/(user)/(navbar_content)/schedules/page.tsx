@@ -13,37 +13,40 @@ export default function SchedulesPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-semibold">Content Scheduling</h2>
-          <p className="text-gray-500 text-sm">Manage all scheduled content</p>
-        </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-          Create Schedule
-        </button>
-      </div>
+    // <div className="space-y-6">
+    //   {/* Header */}
+    //   <div className="flex justify-between items-center">
+    //     <div>
+    //       <h2 className="text-2xl font-semibold">Content Scheduling</h2>
+    //       <p className="text-gray-500 text-sm">Manage all scheduled content</p>
+    //     </div>
+    //     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+    //       Create Schedule
+    //     </button>
+    //   </div>
 
-      {/* Schedule Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {schedules.map((schedule, idx) => (
-          <ScheduleCard
-            key={idx}
-            title={schedule.title}
-            subtitle={schedule.subtitle}
-            onClick={() => setShowDetails(true)}
-          />
-        ))}
-      </div>
+    //   {/* Schedule Cards */}
+    //   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    //     {schedules.map((schedule, idx) => (
+    //       <ScheduleCard
+    //         key={idx}
+    //         title={schedule.title}
+    //         subtitle={schedule.subtitle}
+    //         onClick={() => setShowDetails(true)}
+    //       />
+    //     ))}
+    //   </div>
 
-      {showDetails && (
-        <ScheduleDetailsPopup
-          title="Schedule Details"
-          subtitle="Details for selected schedule"
-          onClose={() => setShowDetails(false)}
-        />
-      )}
+    //   {showDetails && (
+    //     <ScheduleDetailsPopup
+    //       title="Schedule Details"
+    //       subtitle="Details for selected schedule"
+    //       onClose={() => setShowDetails(false)}
+    //     />
+    //   )}
+    // </div>
+    <div className="flex items-center justify-center">
+      Schedules page
     </div>
   );
 }

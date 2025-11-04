@@ -56,6 +56,18 @@ export default function Dashboard() {
       location: "Floor 2",
       screen: "Screen 2",
     },
+    {
+      name: "Reception Display",
+      online: true,
+      location: "USA Branch",
+      screen: "Screen 5",
+    },
+    {
+      name: "Meeting Room",
+      online: false,
+      location: "California Branch",
+      screen: "Screen 1",
+    },
   ]);
   const [activities, setActivities] = useState<Activity[]>([
     // Example activity data
@@ -64,6 +76,18 @@ export default function Dashboard() {
       title: "Lobby Screen added",
       description: "New device added to network",
       time: "2 hours ago",
+    },
+    {
+      type: "notification",
+      title: "Content uploaded",
+      description: "New video content uploaded",
+      time: "1 day ago",
+    },
+    {
+      type: "device",
+      title: "Reception Display added",
+      description: "New device added to network",
+      time: "5 hours ago",
     },
     {
       type: "notification",
@@ -82,23 +106,23 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Upgrade Banner */}
       {showUpgradeBanner && (
         <div
-          className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between"
+          className="rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between"
           style={{
             background:
               "linear-gradient(270deg, rgba(34, 197, 94, 0) 0%, rgba(34, 197, 94, 0.1) 98.77%), var(--Card-Background, #FFF)",
           }}
         >
           <div className="flex items-center gap-3">
-            <Crown className="w-5 h-5 text-gray-700" />
+            <Crown className="w-5 h-5 text-gray-700 hidden md:block" />
             <div>
               <h3 className="font-semibold text-gray-900">
                 Trial ends in 12 days!
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 hidden md:block">
                 Upgrade to Premium for more features.
               </p>
             </div>
@@ -106,7 +130,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             <button
               onClick={handleUpgradeClick}
-              className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 hover:scale-[1.02] transition-transform flex items-center gap-2"
+              className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 hover:scale-[1.02] transition-transform flex items-center gap-2 cursor-pointer"
             >
               Upgrade
             </button>
@@ -157,14 +181,14 @@ export default function Dashboard() {
             <HardDrive className="w-11 h-11 text-[#404040] border rounded-full border-[#D4D4D4] p-2" />
           </div>
           <div className="text-3xl font-bold text-gray-900 mb-1">
-            0.0/10 <span className="text-sm text-gray-500">GB</span>
+            5.0/10 <span className="text-sm text-gray-500">GB</span>
           </div>
           <div className="mt-3 w-full flex items-center gap-3">
             {/* Progress Bar */}
             <div className="flex-1 bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-500 h-2 rounded-full"
-                style={{ width: "0.5%" }}
+                style={{ width: "50%" }}
               ></div>
             </div>
 
@@ -198,7 +222,7 @@ export default function Dashboard() {
             onClick={() => {}}
             active={true}
           />
-          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-md hover:border-gray-300">
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-md hover:border-gray-300 cursor-pointer">
             <TvMinimalIcon className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Add Device</div>
@@ -207,7 +231,7 @@ export default function Dashboard() {
               </div>
             </div>
           </button>
-          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300">
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer">
             <VideoIcon className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Upload Content</div>
@@ -216,7 +240,7 @@ export default function Dashboard() {
               </div>
             </div>
           </button>
-          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300">
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer">
             <Calendar className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Schedule</div>
@@ -236,7 +260,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Devices
             </h2>
-            <button className="text-sm text-blue-500 hover:text-blue-600">
+            <button className="text-sm text-[#0FA6FF] hover:text-blue-600 cursor-pointer">
               View All
             </button>
           </div>
@@ -310,7 +334,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activities
             </h2>
-            <button className="text-sm text-blue-500 hover:text-blue-600">
+            <button className="text-sm text-[#0FA6FF] hover:text-blue-600 cursor-pointer">
               View All
             </button>
           </div>
