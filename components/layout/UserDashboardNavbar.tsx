@@ -97,8 +97,8 @@ export default function UserDashboardNavbar() {
                 href={item.href}
                 className={`px-3 xl:px-4 py-2 text-sm transition-colors whitespace-nowrap ${
                   pathname === item.href
-                    ? "bg-blue-50 text-[#0FA6FF] font-medium border-b-2 border-[#0FA6FF]"
-                    : "relative text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all ease-in-out duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-[#0FA6FF] after:w-0 hover:after:w-full after:transition-[width] after:ease-in-out after:duration-500"
+                    ? "bg-blue-50 text-[#0FA6FF] font-medium border-b-2 rounded-t-sm border-[#0FA6FF]"
+                    : "relative text-gray-600 hover:text-gray-900 hover:rounded-t-sm hover:bg-gray-50 transition-all ease-in-out duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-[#0FA6FF] after:w-0 hover:after:w-full after:transition-[width] after:ease-in-out after:duration-500"
                 }`}
               >
                 {item.label}
