@@ -10,8 +10,6 @@ export default ScreenCardDetails;
 
 
 
-
-
 // import screen from "@/public/images/screen.png";
 // import { useParams } from "next/navigation";
 
