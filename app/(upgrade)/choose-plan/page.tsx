@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Crown } from "lucide-react";
+import { Crown } from "lucide-react";
 
 const plans = [
   {

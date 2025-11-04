@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import VerifyPopup from "./VerifyPopup";
 import { Lock, Mail, User } from "lucide-react";
@@ -54,9 +55,11 @@ export default function SignUpPage() {
         </h2>
 
         <button className="w-full border border-gray-300 rounded-lg py-2 flex items-center justify-center gap-2 mb-4 hover:bg-gray-50">
-          <img
+          <Image
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="Google"
+            width={20}
+            height={20}
             className="w-5 h-5"
           />
           Continue with Google

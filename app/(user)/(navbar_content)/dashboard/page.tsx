@@ -42,7 +42,7 @@ export default function Dashboard() {
     time?: string;
   };
 
-  const [devices, setDevices] = useState<Device[]>([
+  const devices: Device[] = [
     // Example device data
     {
       name: "Lobby Screen",
@@ -68,8 +68,9 @@ export default function Dashboard() {
       location: "California Branch",
       screen: "Screen 1",
     },
-  ]);
-  const [activities, setActivities] = useState<Activity[]>([
+  ];
+
+  const activities: Activity[] = [
     // Example activity data
     {
       type: "device",
@@ -95,7 +96,7 @@ export default function Dashboard() {
       description: "New video content uploaded",
       time: "1 day ago",
     },
-  ]);
+  ];
 
   const totalDevices = devices.length;
   const onlineDevices = devices.filter((d) => d.online).length;

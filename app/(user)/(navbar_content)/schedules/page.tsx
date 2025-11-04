@@ -1,16 +1,16 @@
-"use client";
+// "use client";
 
-import { useState } from "react";
-import ScheduleCard from "./components/ScheduleCard";
-import ScheduleDetailsPopup from "./components/ScheduleDetailsPopup";
+// import { useState } from "react";
+// import ScheduleCard from "./components/ScheduleCard";
+// import ScheduleDetailsPopup from "./components/ScheduleDetailsPopup";
 
 export default function SchedulesPage() {
-  const [showDetails, setShowDetails] = useState(false);
+  // const [showDetails, setShowDetails] = useState(false);
 
-  const schedules = [
-    { title: "Morning Schedule", subtitle: "Lobby screen 8am-12pm" },
-    { title: "Afternoon Schedule", subtitle: "Conference room 1pm-5pm" },
-  ];
+  // const schedules = [
+  //   { title: "Morning Schedule", subtitle: "Lobby screen 8am-12pm" },
+  //   { title: "Afternoon Schedule", subtitle: "Conference room 1pm-5pm" },
+  // ];
 
   return (
     // <div className="space-y-6">
