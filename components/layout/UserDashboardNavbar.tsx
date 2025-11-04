@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   Bell,
   HelpCircle,
-  Plus,
   Moon,
   User,
   Menu,
