@@ -1,220 +1,359 @@
-"use client"
+"use client";
 
-import ActionCardButton from "@/common/ActionCardButton"
-import Button  from "../../../../common/AddButton"
-import { Monitor, Wifi, HardDrive, Box, Upload, Clock, Bell } from "lucide-react"
-import React from "react"
+import React, { useState } from "react";
+import {
+  X,
+  Monitor,
+  Wifi,
+  HardDrive,
+  Calendar,
+  Plus,
+  TrendingUp,
+  Bell,
+  Crown,
+  Radio,
+  TvMinimalIcon,
+  ActivityIcon,
+  VideoIcon,
+  ScreenShareIcon,
+  WifiOffIcon,
+  ArrowUpRight,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import ActionCardButton from "@/common/ActionCardButton";
+import AddButton from "@/common/AddButton";
 
-export default function DashboardPage() {
+export default function Dashboard() {
+  const router = useRouter();
+  const [showUpgradeBanner, setShowUpgradeBanner] = useState(true);
 
+  // Define types for devices and activities so useState can infer correct types
+  type Device = {
+    name: string;
+    online: boolean;
+    location?: string;
+    screen?: string;
+  };
 
-  const [active, setActive] = React.useState("create");
+  type Activity = {
+    type: "device" | "notification";
+    title: string;
+    description?: string;
+    time?: string;
+  };
 
-  // Demo devices data
-  const devices = [
-    { id: 1, name: "Office 1", location: "LA USA", screen: "Paying Screen 2", status: "offline" },
-    { id: 2, name: "Office 1", location: "LA USA", screen: "Paying Screen 5", status: "online" },
-    { id: 3, name: "Office 1", location: "LA USA", screen: "0 video assigned", status: "offline" },
-  ]
-
-  // Demo activities data
-  const activities = [
+  const [devices, setDevices] = useState<Device[]>([
+    // Example device data
     {
-      id: 1,
-      title: "New Device Added",
-      description: "Your 'Office 1' device has been added to the server.",
+      name: "Lobby Screen",
+      online: true,
+      location: "Head Office",
+      screen: "Screen 1",
+    },
+    {
+      name: "Conference Room",
+      online: false,
+      location: "Floor 2",
+      screen: "Screen 2",
+    },
+  ]);
+  const [activities, setActivities] = useState<Activity[]>([
+    // Example activity data
+    {
+      type: "device",
+      title: "Lobby Screen added",
+      description: "New device added to network",
       time: "2 hours ago",
-      icon: Monitor,
     },
     {
-      id: 2,
-      title: "Account Approved",
-      description: "Your account has been approved. You can now access all features.",
-      time: "1 hour ago",
-      icon: Bell,
+      type: "notification",
+      title: "Content uploaded",
+      description: "New video content uploaded",
+      time: "1 day ago",
     },
-  ]
+  ]);
+
+  const totalDevices = devices.length;
+  const onlineDevices = devices.filter((d) => d.online).length;
+  const offlineDevices = devices.filter((d) => !d.online).length;
+
+  const handleUpgradeClick = () => {
+    router.push("/choose-plan"); // navigate to choose plan page
+  };
 
   return (
-    <main className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="">
-        {/* Stats Cards - Made responsive grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
-          {/* Total Devices Card */}
-          <div className="p-4 md:p-6 bg-white border border-gray-200 rounded-lg md:rounded-xl">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <p className="text-xs md:text-sm text-gray-600 font-medium">Total Devices</p>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mt-2">12</h3>
-                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                  <span className="text-green-600">↑</span> 1 New This Week
-                </p>
-              </div>
-              <div className="w-8 md:w-10 h-8 md:h-10 bg-gray-100 rounded border border-gray-300 flex items-center justify-center flex-shrink-0">
-                <Monitor className="w-4 md:w-5 h-4 md:h-5 text-gray-600" />
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Upgrade Banner */}
+      {showUpgradeBanner && (
+        <div
+          className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between"
+          style={{
+            background:
+              "linear-gradient(270deg, rgba(34, 197, 94, 0) 0%, rgba(34, 197, 94, 0.1) 98.77%), var(--Card-Background, #FFF)",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <Crown className="w-5 h-5 text-gray-700" />
+            <div>
+              <h3 className="font-semibold text-gray-900">
+                Trial ends in 12 days!
+              </h3>
+              <p className="text-sm text-gray-600">
+                Upgrade to Premium for more features.
+              </p>
             </div>
           </div>
-
-          {/* Online Status div 1 */}
-          <div className="p-4 md:p-6 bg-white border border-gray-200 rounded-lg md:rounded-xl">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <p className="text-xs md:text-sm text-gray-600 font-medium">Online Status</p>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mt-2">8</h3>
-                <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                  <span className="text-red-500">⚠</span> 4 Offline
-                </p>
-              </div>
-              <div className="w-8 md:w-10 h-8 md:h-10 bg-green-50 rounded border border-green-300 flex items-center justify-center flex-shrink-0">
-                <Wifi className="w-4 md:w-5 h-4 md:h-5 text-green-500" />
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleUpgradeClick}
+              className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 hover:scale-[1.02] transition-transform flex items-center gap-2"
+            >
+              Upgrade
+            </button>
+            <button
+              onClick={() => setShowUpgradeBanner(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
+        </div>
+      )}
 
-          {/* Storage div */}
-          <div className="p-4 md:p-6 bg-white border border-gray-200 rounded-lg md:rounded-xl">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <p className="text-xs md:text-sm text-gray-600 font-medium">Storage</p>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mt-2">0.5/10 GB</h3>
-                <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: "5%" }}></div>
-                </div>
-                <p className="text-xs text-blue-600 mt-2 font-medium">
-                  Upgrade <span className="text-blue-600">↗</span>
-                </p>
-              </div>
-              <div className="w-8 md:w-10 h-8 md:h-10 bg-gray-100 rounded border border-gray-300 flex items-center justify-center flex-shrink-0">
-                <HardDrive className="w-4 md:w-5 h-4 md:h-5 text-gray-600" />
-              </div>
-            </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Total Devices</span>
+            <TvMinimalIcon className="w-11 h-11 text-[#404040] border rounded-full border-[#D4D4D4] p-2" />
           </div>
-
-          {/* Active Apps div */}
-          <div className="p-4 md:p-6 bg-white border border-gray-200 rounded-lg md:rounded-xl">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <p className="text-xs md:text-sm text-gray-600 font-medium">Active Apps</p>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mt-2">0</h3>
-                <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                  <span className="text-red-500">⚠</span> 0 Offline
-                </p>
-              </div>
-              <div className="w-8 md:w-10 h-8 md:h-10 bg-green-50 rounded border border-green-300 flex items-center justify-center flex-shrink-0">
-                <Wifi className="w-4 md:w-5 h-4 md:h-5 text-green-500" />
-              </div>
-            </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">
+            {totalDevices}
+          </div>
+          <div className="text-sm text-green-500 flex items-center gap-1 mb-2">
+            <TrendingUp className="w-4 h-4" />
+            {totalDevices > 0
+              ? `${totalDevices} New This Week`
+              : "0 New This Week"}
           </div>
         </div>
 
-        {/* Add New Section - Made responsive grid */}
-        <div className="p-4 md:p-8 bg-white border border-gray-200 rounded-lg md:rounded-xl mb-6 md:mb-8">
-          <h2 className="text-base md:text-lg font-semibold text-gray-900 mb-4 md:mb-6">Add New</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-            {/* Create Screen */}
-            <ActionCardButton
-        title="Create Screen"
-        subtitle="Create a new screen to play on your devices"
-        icon={<Monitor className="w-6 h-6 text-current" />}
-        backgroundImage="/common/btnBg.png"
-        active={active === "create"}
-        onClick={() => setActive("create")}
-      />
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Online Status</span>
+            <Radio className="w-11 h-11 text-green-500 border rounded-full border-[#D4D4D4] p-2" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-1">
+            {onlineDevices}
+          </div>
+          <div className="text-sm text-red-500 flex items-center gap-1">
+            {offlineDevices} Offline ⚠
+          </div>
+        </div>
 
-      <ActionCardButton
-        title="Add Device"
-        subtitle="Connect a new display to your account"
-        icon={<Monitor className="w-6 h-6 text-current" />}
-        backgroundImage="/common/btnBg.png"
-        active={active === "device"}
-        onClick={() => setActive("device")}
-      />
-            <ActionCardButton
-        title="Create Screen"
-        subtitle="Create a new screen to play on your devices"
-        icon={<Monitor className="w-6 h-6 text-current" />}
-        backgroundImage="/common/btnBg.png"
-        active={active === "creat"}
-        onClick={() => setActive("create")}
-      />
-
-      <ActionCardButton
-        title="Add Device"
-        subtitle="Connect a new display to your account"
-        icon={<Monitor className="w-6 h-6 text-current" />}
-        backgroundImage="/common/btnBg.png"
-        active={active === "devic"}
-        onClick={() => setActive("device")}
-      />
-            
-            <div className="flex justify-between items-center mb-4 md:mb-6">
-              <h2 className="text-base md:text-lg font-semibold text-gray-900">Recent Devices</h2>
-              <a href="#" className="text-xs md:text-sm font-medium text-blue-600 hover:text-blue-700">
-                View All
-              </a>
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Storage</span>
+            <HardDrive className="w-11 h-11 text-[#404040] border rounded-full border-[#D4D4D4] p-2" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-1">
+            0.0/10 <span className="text-sm text-gray-500">GB</span>
+          </div>
+          <div className="mt-3 w-full flex items-center gap-3">
+            {/* Progress Bar */}
+            <div className="flex-1 bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-500 h-2 rounded-full"
+                style={{ width: "0.5%" }}
+              ></div>
             </div>
 
-            <div className="space-y-3">
-              {devices.map((device) => (
+            {/* Upgrade Button */}
+            <button className="text-sm text-[#0FA6FF] hover:text-blue-500">
+              Upgrade <ArrowUpRight className="w-4 h-4 inline-block" />
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Active Apps</span>
+            <Radio className="w-11 h-11 text-green-500 border rounded-full border-[#D4D4D4] p-2" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-1">0</div>
+          <div className="text-sm text-red-500 flex items-center gap-1">
+            0 Offline ⚠
+          </div>
+        </div>
+      </div>
+
+      {/* Add New Section */}
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Add New</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <ActionCardButton
+            title="Create Screen"
+            subtitle="Create a new screen to play on your devices"
+            icon={<ScreenShareIcon className="w-6 h-6" />}
+            onClick={() => {}}
+            active={true}
+          />
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-md hover:border-gray-300">
+            <TvMinimalIcon className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
+            <div className="text-left">
+              <div className="font-medium text-gray-900">Add Device</div>
+              <div className="text-[.6rem] md:text-sm text-gray-600">
+                Add New Device
+              </div>
+            </div>
+          </button>
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300">
+            <VideoIcon className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
+            <div className="text-left">
+              <div className="font-medium text-gray-900">Upload Content</div>
+              <div className="text-[.6rem] md:text-sm text-gray-600">
+                Add new content
+              </div>
+            </div>
+          </button>
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300">
+            <Calendar className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
+            <div className="text-left">
+              <div className="font-medium text-gray-900">Schedule</div>
+              <div className="text-[.6rem] md:text-sm text-gray-600">
+                Schedule new content
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Recent Devices & Activities */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Recent Devices */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="flex items-center justify-between p-6 border-b border-[#D4D4D4]">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Devices
+            </h2>
+            <button className="text-sm text-blue-500 hover:text-blue-600">
+              View All
+            </button>
+          </div>
+
+          {devices.length === 0 ? (
+            <div className="text-center py-12 p-6">
+              <TvMinimalIcon className="w-16 h-16 text-[#525252] mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No Devices Yet
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Add your first device to get started
+              </p>
+
+              {/* Centered AddButton */}
+              <div className="flex justify-center">
+                <AddButton
+                  onClick={() => {}}
+                  text="Add New Device"
+                  icon={<Plus className="w-4 h-4" />}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3 p-6">
+              {devices.map((device, index) => (
                 <div
-                  key={device.id}
-                  className="p-3 md:p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition"
+                  key={index}
+                  className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Monitor className="w-4 h-4 text-gray-600 flex-shrink-0" />
-                        <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">{device.name}</h3>
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
-                            device.status === "online" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {device.status === "online" ? "● Online" : "● Offline"}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500">{device.location}</p>
-                      <p className="text-xs text-gray-600">{device.screen}</p>
+                  <Monitor className="w-8 h-8 text-gray-400 mt-0.5 p-2 rounded-md border-2 border-gray-200" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900">
+                        {device.name}
+                      </span>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-2xl flex items-center gap-1  ${
+                          device.online
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {device.online ? (
+                          <>
+                            <Wifi className="w-3 h-3" />
+                            Online
+                          </>
+                        ) : (
+                          <>
+                            <WifiOffIcon className="w-3 h-3" />
+                            Offline
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {device.location}
+                    </div>
+                    <div className="text-xs text-gray-500">{device.screen}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent Activities */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="flex items-center justify-between border-b p-6 border-[#D4D4D4]">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Activities
+            </h2>
+            <button className="text-sm text-blue-500 hover:text-blue-600">
+              View All
+            </button>
+          </div>
+
+          {activities.length === 0 ? (
+            <div className="text-center py-12 p-6">
+              <ActivityIcon className="w-16 h-16 text-[#525252] mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No Recent Activity
+              </h3>
+              <p className="text-sm text-gray-600">
+                You don&#39;t have any recent activity yet.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3 p-6">
+              {activities.map((activity, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
+                >
+                  {activity.type === "device" ? (
+                    <Monitor className="w-8 h-8 text-gray-400 mt-0.5 p-2 bg-gray-100 rounded-full" />
+                  ) : (
+                    <Bell className="w-8 h-8 text-gray-400 mt-0.5 p-2 bg-gray-100 rounded-full" />
+                  )}
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900">
+                      {activity.title}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {activity.description}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {activity.time}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Recent Activities */}
-          <div className="p-4 md:p-6 bg-white border border-gray-200 rounded-lg md:rounded-xl">
-            <div className="flex justify-between items-center mb-4 md:mb-6">
-              <h2 className="text-base md:text-lg font-semibold text-gray-900">Recent Activities</h2>
-              <a href="#" className="text-xs md:text-sm font-medium text-blue-600 hover:text-blue-700">
-                View All
-              </a>
-            </div>
-
-            <div className="space-y-3">
-              {activities.map((activity) => {
-                const IconComponent = activity.icon
-                return (
-                  <div
-                    key={activity.id}
-                    className="p-3 md:p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition"
-                  >
-                    <div className="flex gap-3">
-                      <IconComponent className="w-4 md:w-5 h-4 md:h-5 text-gray-600 flex-shrink-0 mt-1" />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm md:text-base font-semibold text-gray-900">{activity.title}</h3>
-                        <p className="text-xs text-gray-600 mt-1">{activity.description}</p>
-                        <p className="text-xs text-gray-500 mt-2">{activity.time}</p>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+          )}
         </div>
       </div>
-    </main>
-  )
+    </div>
+  );
 }

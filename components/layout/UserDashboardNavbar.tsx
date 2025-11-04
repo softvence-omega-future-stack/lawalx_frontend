@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -12,10 +11,20 @@ import {
   Menu,
   X,
   ChevronDown,
+  ScreenShareIcon,
+  FilePlus,
+  CalendarPlus,
+  FolderPlus,
+  VideoIcon,
+  Mail,
+  AlertCircle,
+  UserRoundCogIcon,
+  LogOutIcon,
+  HelpCircleIcon,
+  SettingsIcon,
 } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
-import { after } from "next/dist/server/after/after";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -56,15 +65,19 @@ export default function UserDashboardNavbar() {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`px-3 xl:px-4 py-2 text-sm transition-colors whitespace-nowrap ${pathname === item.href ? "bg-blue-50 text-[#0FA6FF] font-medium border-b-2 border-[#0FA6FF]" : "relative text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all ease-in-out duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-[#0FA6FF] after:w-0 hover:after:w-full after:transition-[width] after:ease-in-out after:duration-500"}`}
-            >
-              {item.label}
-            </Link>
-          ))}
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`px-3 xl:px-4 py-2 text-sm transition-colors whitespace-nowrap ${
+                  pathname === item.href
+                    ? "bg-blue-50 text-[#0FA6FF] font-medium border-b-2 border-[#0FA6FF]"
+                    : "relative text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all ease-in-out duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-[#0FA6FF] after:w-0 hover:after:w-full after:transition-[width] after:ease-in-out after:duration-500"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
         </div>
 
@@ -92,18 +105,25 @@ export default function UserDashboardNavbar() {
                   className="fixed inset-0 z-30"
                   onClick={() => setHelpOpen(false)}
                 />
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-40">
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    FAQs
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-40 p-2">
+                  <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded border-b border-gray-200">
+                    <HelpCircle className="w-4 h-4" />
+                    <span className="ml-2">FAQs</span>
                   </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    Video Tutorials
+
+                  <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded border-b border-gray-200">
+                    <VideoIcon className="w-4 h-4" />
+                    <span className="ml-2">Video Tutorials</span>
                   </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    Contact
+
+                  <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded border-b border-gray-200">
+                    <Mail className="w-4 h-4" />
+                    <span className="ml-2">Contact</span>
                   </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    Report a Problem
+
+                  <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded border-b border-gray-200">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="ml-2">Report a Problem</span>
                   </button>
                 </div>
               </>
@@ -120,8 +140,8 @@ export default function UserDashboardNavbar() {
               }}
               className="px-3 lg:px-4 py-2 bg-[#0FA6FF] text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1.5 text-sm font-medium"
             >
-              <span className="hidden lg:inline">New</span>
-              <ChevronDown className="sm:pl-1 sm:border-l border-l-0 border-gray-300 w-4 h-4" />
+              <span>New</span>
+              <ChevronDown className="sm:pl-1 sm:border-l border-l-0 border-gray-300 w-4 h-4 hidden lg:inline" />
             </button>
             {newOpen && (
               <>
@@ -129,17 +149,21 @@ export default function UserDashboardNavbar() {
                   className="fixed inset-0 z-30"
                   onClick={() => setNewOpen(false)}
                 />
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-40">
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-40 p-2">
+                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 border-b border-gray-200">
+                    <ScreenShareIcon className="w-4 h-4 inline-block mr-2" />
                     Add Device
                   </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
+                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 border-b border-gray-200">
+                    <FilePlus className="w-4 h-4 inline-block mr-2" />
                     Upload Content
                   </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
+                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 border-b border-gray-200">
+                    <CalendarPlus className="w-4 h-4 inline-block mr-2" />
                     Schedule
                   </button>
                   <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
+                    <FolderPlus className="w-4 h-4 inline-block mr-2" />
                     New Folder
                   </button>
                 </div>
@@ -175,28 +199,77 @@ export default function UserDashboardNavbar() {
                   className="fixed inset-0 z-30"
                   onClick={() => setProfileOpen(false)}
                 />
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-40">
-                  <div className="px-4 py-3 border-b border-gray-200">
-                    <p className="text-sm font-medium text-gray-900">
-                      John Doe
-                    </p>
-                    <p className="text-xs text-gray-500">john@example.com</p>
+
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden z-40">
+                  {/* Profile Info */}
+                  <div className="px-6 py-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm font-medium">
+                        JD
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          James David
+                        </p>
+                        <p className="text-xs text-gray-500">James@gmail.com</p>
+                      </div>
+                    </div>
                   </div>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    My Plan
-                  </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    Edit Profile
-                  </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    Settings
-                  </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
-                    Support
-                  </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-red-50 text-sm text-red-600">
-                    Sign Out
-                  </button>
+
+                  {/* My Plans Section */}
+                  <div className="px-6 py-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-700">
+                        My Plans
+                      </p>
+                      <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                        Pro
+                      </span>
+                    </div>
+                    <button className="mt-1 text-xs text-blue-600 hover:underline">
+                      Manage Plans
+                    </button>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="px-4">
+                    <div className="border-t border-gray-200" />
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="py-1 space-y-1">
+                    <div className="px-4">
+                      <button className="flex items-center w-full text-left py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-50 px-2">
+                        <UserRoundCogIcon className="w-4 h-4 mr-2" />
+                        Edit Profile
+                      </button>
+                    </div>
+                    <div className="px-4">
+                      <button className="flex items-center w-full text-left py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-50 px-2">
+                        <SettingsIcon className="w-4 h-4 mr-2" />
+                        Settings
+                      </button>
+                    </div>
+                    <div className="px-4">
+                      <button className="flex items-center w-full text-left py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-50 px-2">
+                        <HelpCircleIcon className="w-4 h-4 mr-2" />
+                        Support
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="px-4">
+                    <div className="border-t border-gray-200" />
+                  </div>
+
+                  {/* Sign Out */}
+                  <div className="px-4 py-1">
+                    <button className="flex items-center w-full text-left py-2 text-sm text-red-600 rounded-lg hover:bg-red-50 px-2">
+                      <LogOutIcon className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
               </>
             )}
@@ -239,13 +312,40 @@ export default function UserDashboardNavbar() {
 
           {/* Mobile Actions */}
           <div className="px-4 py-3 border-t border-gray-200 space-y-2">
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-              <HelpCircle className="w-5 h-5 text-gray-600" />
-              Help
+            <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded">
+              <HelpCircle className="w-4 h-4" />
+              <span className="ml-2">FAQs</span>
             </button>
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors font-medium">
-              <Plus className="w-5 h-5" />
-              New
+
+            <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded">
+              <VideoIcon className="w-4 h-4" />
+              <span className="ml-2">Video Tutorials</span>
+            </button>
+
+            <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded">
+              <Mail className="w-4 h-4" />
+              <span className="ml-2">Contact</span>
+            </button>
+
+            <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 rounded">
+              <AlertCircle className="w-4 h-4" />
+              <span className="ml-2">Report a Problem</span>
+            </button>
+            <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-70">
+              <ScreenShareIcon className="w-4 h-4 inline-block mr-2" />
+              Add Device
+            </button>
+            <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
+              <FilePlus className="w-4 h-4 inline-block mr-2" />
+              Upload Content
+            </button>
+            <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
+              <CalendarPlus className="w-4 h-4 inline-block mr-2" />
+              Schedule
+            </button>
+            <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700">
+              <FolderPlus className="w-4 h-4 inline-block mr-2" />
+              New Folder
             </button>
             <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
               <Bell className="w-5 h-5 text-gray-600" />
