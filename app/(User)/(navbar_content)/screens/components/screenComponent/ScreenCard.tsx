@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Clock, Settings2, PowerOff, Power, FilePlay, TvMinimal } from "lucide-react";
 import React from "react";
 import { ScreenData } from "../../page";
+import Link from "next/link";
 
 interface ScreenCardProps {
     screen: ScreenData;
@@ -11,26 +11,38 @@ interface ScreenCardProps {
 
 const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
     return (
+
         <div className="group bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
             {/* Content */}
             <div className="p-4 sm:p-6">
                 {/* Image */}
-                <div className="relative overflow-hidden rounded-lg">
+                {/* <div className="relative overflow-hidden rounded-lg">
                     <img
                         src={screen.image}
                         alt={screen.title}
                         className="w-full h-[120px] sm:h-[180px] object-cover transition-transform duration-300 group-hover:scale-105"
                     />
+                </div> */}
+                <div className="relative overflow-hidden rounded-lg">
+                    <video
+                        src={screen.video}
+                        className="w-full h-[120px] sm:h-[180px] object-cover transition-transform duration-300 group-hover:scale-105"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                    />
                 </div>
 
+
                 {/* Title & Power Button */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 sm:mt-6 gap-2 sm:gap-0">
+                <div className="flex flex-row items-start sm:items-center justify-between mt-4 sm:mt-6 gap-2 sm:gap-0">
                     <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900">{screen.title}</h3>
 
                     <button
                         className={`p-2 rounded-lg transition-all flex items-center justify-center cursor-pointer ${screen.status === "active"
-                                ? "bg-[#0FA6FF] hover:bg-blue-500"
-                                : "bg-[#EF4444] hover:bg-red-600"
+                            ? "bg-[#0FA6FF] hover:bg-blue-500"
+                            : "bg-[#EF4444] hover:bg-red-600"
                             } text-white`}
                         title={screen.status === "active" ? "Turn Off" : "Turn On"}
                     >
@@ -63,12 +75,15 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
                 </div>
 
                 {/* Manage Button */}
-                <button className="w-full bg-[#0FA6FF] hover:bg-blue-500 text-white font-medium py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
-                    <Settings2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Manage
-                </button>
+                <Link href={`/screens/${screen.id}`}>
+                    <button className="w-full bg-[#0FA6FF] hover:bg-blue-500 text-white font-medium py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
+                        <Settings2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                        Manage
+                    </button>
+                </Link>
             </div>
         </div>
+
     );
 };
 
