@@ -150,7 +150,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Total Devices</span>
-            <TvMinimalIcon className="w-11 h-11 text-[#404040] border rounded-full border-[#D4D4D4] p-2" />
+            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200"><Monitor className="w-7 h-7 text-gray-400 " /></span>
           </div>
           <div className="text-3xl font-bold text-gray-900 mb-2">
             {totalDevices}
@@ -166,7 +166,8 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Online Status</span>
-            <Radio className="w-11 h-11 text-green-500 border rounded-full border-[#D4D4D4] p-2" />
+            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200"><Radio className="w-7 h-7 text-green-500" /></span>
+            
           </div>
           <div className="text-3xl font-bold text-gray-900 mb-1">
             {onlineDevices}
@@ -179,7 +180,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Storage</span>
-            <HardDrive className="w-11 h-11 text-[#404040] border rounded-full border-[#D4D4D4] p-2" />
+            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200"><HardDrive className="w-7 h-7 text-green-500" /></span>
           </div>
           <div className="text-3xl font-bold text-gray-900 mb-1">
             5.0/10 <span className="text-sm text-gray-500">GB</span>
@@ -203,7 +204,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Active Apps</span>
-            <Radio className="w-11 h-11 text-green-500 border rounded-full border-[#D4D4D4] p-2" />
+            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200"><Radio className="w-7 h-7 text-green-500" /></span>
           </div>
           <div className="text-3xl font-bold text-gray-900 mb-1">0</div>
           <div className="text-sm text-red-500 flex items-center gap-1">
@@ -261,7 +262,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Devices
             </h2>
-            <button className="text-sm text-[#0FA6FF] hover:text-blue-600 cursor-pointer">
+            <button className="text-sm text-[#0FA6FF] hover:text-blue-500 cursor-pointer">
               View All
             </button>
           </div>
@@ -292,7 +293,7 @@ export default function Dashboard() {
                   key={index}
                   className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
                 >
-                  <Monitor className="w-8 h-8 text-gray-400 mt-0.5 p-2 rounded-md border-2 border-gray-200" />
+                  <span className="mt-0.5 p-2.5 border rounded-sm border-gray-200"><Monitor className="w-4 h-4 text-gray-400 " /></span>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-gray-900">
@@ -335,7 +336,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activities
             </h2>
-            <button className="text-sm text-[#0FA6FF] hover:text-blue-600 cursor-pointer">
+            <button className="text-sm text-[#0FA6FF] hover:text-blue-500 cursor-pointer">
               View All
             </button>
           </div>
@@ -358,9 +359,9 @@ export default function Dashboard() {
                   className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
                 >
                   {activity.type === "device" ? (
-                    <Monitor className="w-8 h-8 text-gray-400 mt-0.5 p-2 bg-gray-100 rounded-full" />
+                     <span className="mt-0.5 p-2.5 border rounded-full border-gray-200 bg-gray-50"><Monitor className="w-4 h-4 text-gray-400 " /></span>
                   ) : (
-                    <Bell className="w-8 h-8 text-gray-400 mt-0.5 p-2 bg-gray-100 rounded-full" />
+                     <span className="mt-0.5 p-2.5 border rounded-full border-gray-200 bg-gray-50"><Bell className="w-4 h-4 text-gray-400 " /></span>
                   )}
                   <div className="flex-1">
                     <div className="font-medium text-gray-900">

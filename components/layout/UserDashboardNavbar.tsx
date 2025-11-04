@@ -165,7 +165,7 @@ export default function UserDashboardNavbar() {
                 setProfileOpen(false);
                 setNotificationOpen(false);
               }}
-              className="px-3 lg:px-4 py-2 bg-[#0FA6FF] text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1.5 text-sm font-medium"
+              className="px-3 lg:px-4 py-2 bg-[#0FA6FF] text-white rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-1.5 text-sm font-medium"
             >
               <span>New</span>
               <ChevronDown className="sm:pl-1 sm:border-l border-l-0 border-gray-300 w-4 h-4 hidden lg:inline" />
