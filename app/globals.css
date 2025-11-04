@@ -15,6 +15,9 @@
   --font-geist: "Geist", sans-serif;
 }
 
+.project-font {
+  font-family: var(--font-comfortaa);
+}
 
 body {
   font-family: var(--font-geist);

@@ -1,170 +1,359 @@
-import { Button } from "@/components/ui/button"
-import { Monitor, Wifi, HardDrive, Plus, Box, Upload, Clock, Activity } from "lucide-react"
+"use client";
 
-export default function DashboardPage() {
+import React, { useState } from "react";
+import {
+  X,
+  Monitor,
+  Wifi,
+  HardDrive,
+  Calendar,
+  Plus,
+  TrendingUp,
+  Bell,
+  Crown,
+  Radio,
+  TvMinimalIcon,
+  ActivityIcon,
+  VideoIcon,
+  ScreenShareIcon,
+  WifiOffIcon,
+  ArrowUpRight,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import ActionCardButton from "@/common/ActionCardButton";
+import AddButton from "@/common/AddButton";
+
+export default function Dashboard() {
+  const router = useRouter();
+  const [showUpgradeBanner, setShowUpgradeBanner] = useState(true);
+
+  // Define types for devices and activities so useState can infer correct types
+  type Device = {
+    name: string;
+    online: boolean;
+    location?: string;
+    screen?: string;
+  };
+
+  type Activity = {
+    type: "device" | "notification";
+    title: string;
+    description?: string;
+    time?: string;
+  };
+
+  const [devices, setDevices] = useState<Device[]>([
+    // Example device data
+    {
+      name: "Lobby Screen",
+      online: true,
+      location: "Head Office",
+      screen: "Screen 1",
+    },
+    {
+      name: "Conference Room",
+      online: false,
+      location: "Floor 2",
+      screen: "Screen 2",
+    },
+  ]);
+  const [activities, setActivities] = useState<Activity[]>([
+    // Example activity data
+    {
+      type: "device",
+      title: "Lobby Screen added",
+      description: "New device added to network",
+      time: "2 hours ago",
+    },
+    {
+      type: "notification",
+      title: "Content uploaded",
+      description: "New video content uploaded",
+      time: "1 day ago",
+    },
+  ]);
+
+  const totalDevices = devices.length;
+  const onlineDevices = devices.filter((d) => d.online).length;
+  const offlineDevices = devices.filter((d) => !d.online).length;
+
+  const handleUpgradeClick = () => {
+    router.push("/choose-plan"); // navigate to choose plan page
+  };
+
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          {/* Total Devices Card */}
-          <div className="p-6 bg-white border border-gray-200">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Total Devices</p>
-                <h3 className="text-3xl font-bold text-gray-900 mt-2">0</h3>
-                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                  <span className="text-green-600">↑</span> 0 New This Week
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gray-100 rounded border border-gray-300 flex items-center justify-center">
-                <Monitor className="w-5 h-5 text-gray-600" />
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Upgrade Banner */}
+      {showUpgradeBanner && (
+        <div
+          className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between"
+          style={{
+            background:
+              "linear-gradient(270deg, rgba(34, 197, 94, 0) 0%, rgba(34, 197, 94, 0.1) 98.77%), var(--Card-Background, #FFF)",
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <Crown className="w-5 h-5 text-gray-700" />
+            <div>
+              <h3 className="font-semibold text-gray-900">
+                Trial ends in 12 days!
+              </h3>
+              <p className="text-sm text-gray-600">
+                Upgrade to Premium for more features.
+              </p>
             </div>
           </div>
-
-          {/* Online Status div 1 */}
-          <div className="p-6 bg-white border border-gray-200">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Online Status</p>
-                <h3 className="text-3xl font-bold text-gray-900 mt-2">0</h3>
-                <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                  <span className="text-red-500">⚠</span> 0 Offline
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-green-50 rounded border border-green-300 flex items-center justify-center">
-                <Wifi className="w-5 h-5 text-green-500" />
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleUpgradeClick}
+              className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 hover:scale-[1.02] transition-transform flex items-center gap-2"
+            >
+              Upgrade
+            </button>
+            <button
+              onClick={() => setShowUpgradeBanner(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
+        </div>
+      )}
 
-          {/* Storage div */}
-          <div className="p-6 bg-white border border-gray-200">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex-1">
-                <p className="text-sm text-gray-600 font-medium">Storage</p>
-                <h3 className="text-3xl font-bold text-gray-900 mt-2">0.0/10 GB</h3>
-                <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-gray-300 h-2 rounded-full" style={{ width: "0%" }}></div>
-                </div>
-                <p className="text-xs text-blue-600 mt-2 font-medium">
-                  Upgrade <span className="text-blue-600">↗</span>
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-gray-100 rounded border border-gray-300 flex items-center justify-center">
-                <HardDrive className="w-5 h-5 text-gray-600" />
-              </div>
-            </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Total Devices</span>
+            <TvMinimalIcon className="w-11 h-11 text-[#404040] border rounded-full border-[#D4D4D4] p-2" />
           </div>
-
-          {/* Online Status div 2 */}
-          <div className="p-6 bg-white border border-gray-200">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Online Status</p>
-                <h3 className="text-3xl font-bold text-gray-900 mt-2">0</h3>
-                <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                  <span className="text-red-500">⚠</span> 0 Offline
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-green-50 rounded border border-green-300 flex items-center justify-center">
-                <Wifi className="w-5 h-5 text-green-500" />
-              </div>
-            </div>
+          <div className="text-3xl font-bold text-gray-900 mb-2">
+            {totalDevices}
+          </div>
+          <div className="text-sm text-green-500 flex items-center gap-1 mb-2">
+            <TrendingUp className="w-4 h-4" />
+            {totalDevices > 0
+              ? `${totalDevices} New This Week`
+              : "0 New This Week"}
           </div>
         </div>
 
-        {/* Add New Section */}
-        <div className="p-8 bg-white border border-gray-200 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Add New</h2>
-          <div className="grid grid-cols-4 gap-4">
-            {/* Create Screen */}
-            <Button className="h-auto py-4 px-4 bg-slate-900 hover:bg-slate-800 text-white flex flex-col items-start gap-2 justify-start rounded-lg">
-              <div className="flex items-center gap-2">
-                <Monitor className="w-5 h-5" />
-                <span className="font-semibold">Create Screen</span>
-              </div>
-              <span className="text-xs font-normal opacity-90">Create a new screen to play on your devices</span>
-            </Button>
-
-            {/* Add Device */}
-            <Button
-              variant="outline"
-              className="h-auto py-4 px-4 border-blue-200 bg-blue-50 hover:bg-blue-100 text-slate-900 flex flex-col items-start gap-2 justify-start rounded-lg"
-            >
-              <div className="flex items-center gap-2">
-                <Box className="w-5 h-5 text-blue-600" />
-                <span className="font-semibold text-slate-900">Add Device</span>
-              </div>
-              <span className="text-xs font-normal text-slate-700">Add New Device</span>
-            </Button>
-
-            {/* Upload Content */}
-            <Button
-              variant="outline"
-              className="h-auto py-4 px-4 border-gray-200 bg-white hover:bg-gray-50 text-slate-900 flex flex-col items-start gap-2 justify-start rounded-lg"
-            >
-              <div className="flex items-center gap-2">
-                <Upload className="w-5 h-5 text-slate-600" />
-                <span className="font-semibold text-slate-900">Upload Content</span>
-              </div>
-              <span className="text-xs font-normal text-slate-700">Add new content</span>
-            </Button>
-
-            {/* Schedule */}
-            <Button
-              variant="outline"
-              className="h-auto py-4 px-4 border-gray-200 bg-white hover:bg-gray-50 text-slate-900 flex flex-col items-start gap-2 justify-start rounded-lg"
-            >
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-slate-600" />
-                <span className="font-semibold text-slate-900">Schedule</span>
-              </div>
-              <span className="text-xs font-normal text-slate-700">Schedule a new content</span>
-            </Button>
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Online Status</span>
+            <Radio className="w-11 h-11 text-green-500 border rounded-full border-[#D4D4D4] p-2" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-1">
+            {onlineDevices}
+          </div>
+          <div className="text-sm text-red-500 flex items-center gap-1">
+            {offlineDevices} Offline ⚠
           </div>
         </div>
 
-        {/* Recent Devices and Activities */}
-        <div className="grid grid-cols-2 gap-6">
-          {/* Recent Devices */}
-          <div className="p-6 bg-white border border-gray-200">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Devices</h2>
-              <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-700">
-                View All
-              </a>
-            </div>
-
-            <div className="flex flex-col items-center justify-center py-12">
-              <Monitor className="w-12 h-12 text-gray-400 mb-4" strokeWidth={1.5} />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Devices Yet</h3>
-              <p className="text-sm text-gray-600 text-center mb-6">Add your first device to get started</p>
-              <Button className="bg-slate-900 hover:bg-slate-800 text-white gap-2">
-                <Plus className="w-4 h-4" />
-                Add New Device
-              </Button>
-            </div>
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Storage</span>
+            <HardDrive className="w-11 h-11 text-[#404040] border rounded-full border-[#D4D4D4] p-2" />
           </div>
-
-          {/* Recent Activities */}
-          <div className="p-6 bg-white border border-gray-200">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Activities</h2>
-              <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-700">
-                View All
-              </a>
+          <div className="text-3xl font-bold text-gray-900 mb-1">
+            0.0/10 <span className="text-sm text-gray-500">GB</span>
+          </div>
+          <div className="mt-3 w-full flex items-center gap-3">
+            {/* Progress Bar */}
+            <div className="flex-1 bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-500 h-2 rounded-full"
+                style={{ width: "0.5%" }}
+              ></div>
             </div>
 
-            <div className="flex flex-col items-center justify-center py-12">
-              <Activity className="w-12 h-12 text-gray-400 mb-4" strokeWidth={1.5} />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">There is no activity</h3>
-              <p className="text-sm text-gray-600 text-center">You don&apos;t have any recent activity yet.</p>
-            </div>
+            {/* Upgrade Button */}
+            <button className="text-sm text-[#0FA6FF] hover:text-blue-500">
+              Upgrade <ArrowUpRight className="w-4 h-4 inline-block" />
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-600">Active Apps</span>
+            <Radio className="w-11 h-11 text-green-500 border rounded-full border-[#D4D4D4] p-2" />
+          </div>
+          <div className="text-3xl font-bold text-gray-900 mb-1">0</div>
+          <div className="text-sm text-red-500 flex items-center gap-1">
+            0 Offline ⚠
           </div>
         </div>
       </div>
-    </main>
-  )
+
+      {/* Add New Section */}
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Add New</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <ActionCardButton
+            title="Create Screen"
+            subtitle="Create a new screen to play on your devices"
+            icon={<ScreenShareIcon className="w-6 h-6" />}
+            onClick={() => {}}
+            active={true}
+          />
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-md hover:border-gray-300">
+            <TvMinimalIcon className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
+            <div className="text-left">
+              <div className="font-medium text-gray-900">Add Device</div>
+              <div className="text-[.6rem] md:text-sm text-gray-600">
+                Add New Device
+              </div>
+            </div>
+          </button>
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300">
+            <VideoIcon className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
+            <div className="text-left">
+              <div className="font-medium text-gray-900">Upload Content</div>
+              <div className="text-[.6rem] md:text-sm text-gray-600">
+                Add new content
+              </div>
+            </div>
+          </button>
+          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300">
+            <Calendar className="w-11 h-11 text-[#155DFC] p-2  bg-blue-50 rounded-lg" />
+            <div className="text-left">
+              <div className="font-medium text-gray-900">Schedule</div>
+              <div className="text-[.6rem] md:text-sm text-gray-600">
+                Schedule new content
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Recent Devices & Activities */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Recent Devices */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="flex items-center justify-between p-6 border-b border-[#D4D4D4]">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Devices
+            </h2>
+            <button className="text-sm text-blue-500 hover:text-blue-600">
+              View All
+            </button>
+          </div>
+
+          {devices.length === 0 ? (
+            <div className="text-center py-12 p-6">
+              <TvMinimalIcon className="w-16 h-16 text-[#525252] mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No Devices Yet
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Add your first device to get started
+              </p>
+
+              {/* Centered AddButton */}
+              <div className="flex justify-center">
+                <AddButton
+                  onClick={() => {}}
+                  text="Add New Device"
+                  icon={<Plus className="w-4 h-4" />}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3 p-6">
+              {devices.map((device, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
+                >
+                  <Monitor className="w-8 h-8 text-gray-400 mt-0.5 p-2 rounded-md border-2 border-gray-200" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900">
+                        {device.name}
+                      </span>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-2xl flex items-center gap-1  ${
+                          device.online
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {device.online ? (
+                          <>
+                            <Wifi className="w-3 h-3" />
+                            Online
+                          </>
+                        ) : (
+                          <>
+                            <WifiOffIcon className="w-3 h-3" />
+                            Offline
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {device.location}
+                    </div>
+                    <div className="text-xs text-gray-500">{device.screen}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent Activities */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="flex items-center justify-between border-b p-6 border-[#D4D4D4]">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Activities
+            </h2>
+            <button className="text-sm text-blue-500 hover:text-blue-600">
+              View All
+            </button>
+          </div>
+
+          {activities.length === 0 ? (
+            <div className="text-center py-12 p-6">
+              <ActivityIcon className="w-16 h-16 text-[#525252] mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No Recent Activity
+              </h3>
+              <p className="text-sm text-gray-600">
+                You don&#39;t have any recent activity yet.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3 p-6">
+              {activities.map((activity, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
+                >
+                  {activity.type === "device" ? (
+                    <Monitor className="w-8 h-8 text-gray-400 mt-0.5 p-2 bg-gray-100 rounded-full" />
+                  ) : (
+                    <Bell className="w-8 h-8 text-gray-400 mt-0.5 p-2 bg-gray-100 rounded-full" />
+                  )}
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900">
+                      {activity.title}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {activity.description}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {activity.time}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
