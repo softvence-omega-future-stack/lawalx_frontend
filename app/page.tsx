@@ -11,7 +11,7 @@
 // }
 
 
-import LandingNavbar from "@/components/layout/LandingNavbar";
+// import LandingNavbar from "@/components/layout/LandingNavbar";
 
 export default function HomePage() {
   return (

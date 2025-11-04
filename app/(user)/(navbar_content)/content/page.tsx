@@ -7,21 +7,21 @@
 // import ContentDetailsModal from "./components/ContentDetailsModel";
 
 // export default function ContentPage() {
-//   const [selectedSidebar, setSelectedSidebar] = useState<"uploaded" | "create">("uploaded");
-//   const [showCreatePopup, setShowCreatePopup] = useState(false);
-//   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  // const [selectedSidebar, setSelectedSidebar] = useState<"uploaded" | "create">("uploaded");
+  // const [showCreatePopup, setShowCreatePopup] = useState(false);
+  // const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-//   const uploadedFiles = [
-//     { title: "Video 1", subtitle: "Promo video" },
-//     { title: "Image 1", subtitle: "Banner image" },
-//   ];
+  // const uploadedFiles = [
+  //   { title: "Video 1", subtitle: "Promo video" },
+  //   { title: "Image 1", subtitle: "Banner image" },
+  // ];
 
-//   const createContentList = [
-//     { title: "New Folder", subtitle: "Organize content" },
-//     { title: "New Playlist", subtitle: "Group multiple contents" },
-//   ];
+  // const createContentList = [
+  //   { title: "New Folder", subtitle: "Organize content" },
+  //   { title: "New Playlist", subtitle: "Group multiple contents" },
+  // ];
 
-//   const contentToShow = selectedSidebar === "uploaded" ? uploadedFiles : createContentList;
+  // const contentToShow = selectedSidebar === "uploaded" ? uploadedFiles : createContentList;
 
 //   return (
 //     // <div className="flex gap-6">
