@@ -1,18 +1,18 @@
-"use client";
+// "use client";
 
-import { useState } from "react";
-import DeviceCard from "./components/DeviceCard";
-import DeviceTable from "./components/DeviceTable";
-import DeviceDetailsPopup from "./components/DeviceDetailsPopup";
+// import { useState } from "react";
+// import DeviceCard from "./components/DeviceCard";
+// import DeviceTable from "./components/DeviceTable";
+// import DeviceDetailsPopup from "./components/DeviceDetailsPopup";
 
 export default function DevicesPage() {
-  const [selectedDevice, setSelectedDevice] = useState<null | { id: string; name: string; location: string; status: string }>(null);
+  // const [selectedDevice, setSelectedDevice] = useState<null | { id: string; name: string; location: string; status: string }>(null);
 
-  const devices = [
-    { id: "1", name: "Lobby Display", location: "Building A", status: "Active" },
-    { id: "2", name: "Conference Room", location: "Building B", status: "Inactive" },
-    { id: "3", name: "Reception", location: "Building A", status: "Active" },
-  ];
+  // const devices = [
+  //   { id: "1", name: "Lobby Display", location: "Building A", status: "Active" },
+  //   { id: "2", name: "Conference Room", location: "Building B", status: "Inactive" },
+  //   { id: "3", name: "Reception", location: "Building A", status: "Active" },
+  // ];
 
   return (
     // <div className="space-y-6">

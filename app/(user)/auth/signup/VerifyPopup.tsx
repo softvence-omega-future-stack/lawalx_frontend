@@ -1,7 +1,5 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
-
 interface Props {
   email: string;
   onClose: () => void;
