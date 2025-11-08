@@ -11,7 +11,6 @@ interface ScreenCardProps {
 
 const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
     return (
-
         <div className="group bg-white border border-gray-200 rounded-xl overflow-hidden  hover:shadow-md transition-all">
             {/* Content */}
             <div className="p-4 sm:p-6">
@@ -41,7 +40,7 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
 
                     <button
                         className={`p-2 rounded-lg transition-all flex items-center justify-center cursor-pointer ${screen.status === "active"
-                            ? "bg-[#0FA6FF] hover:bg-blue-500"
+                            ? "bg-bgBlue hover:bg-blue-500"
                             : "bg-[#EF4444] hover:bg-red-600"
                             } text-white`}
                         title={screen.status === "active" ? "Turn Off" : "Turn On"}
@@ -76,14 +75,13 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
 
                 {/* Manage Button */}
                 <Link href={`/screens/${screen.id}`}>
-                    <button className="w-full bg-[#0FA6FF] hover:bg-blue-500 text-white font-medium py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
+                    <button className="w-full bg-bgBlue hover:bg-blue-500 text-white font-medium py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
                         <Settings2 className="w-4 h-4 sm:w-5 sm:h-5" />
                         Manage
                     </button>
                 </Link>
             </div>
         </div>
-
     );
 };
 

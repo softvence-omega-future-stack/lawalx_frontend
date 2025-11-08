@@ -4,6 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --color-textGray: #525252;
+  --color-bgBlue: #0FA6FF;
   --color-primary: #0A0A0A;
   --color-gray: #717182;
   --color-dark: #F3F3F5;
@@ -12,11 +14,13 @@
   --color-orange: #E7000B;
   --color-background: #ECECF0;
   --color-border: rgba(0, 0, 0, 0.10);
-  --font-geist: "Geist", sans-serif;
+  /* --font-geist: "Geist", sans-serif; */
+  --font-inter: "Inter", sans-serif;
 }
 
 body {
-  font-family: var(--font-geist);
+  /* font-family: var(--font-geist); */
+  font-family: var(--font-inter);
 }
 
 .gradient-text {
