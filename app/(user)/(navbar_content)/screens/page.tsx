@@ -123,10 +123,10 @@ const MyScreensPage: React.FC = () => {
   });
 
   return (
-    <div className="flex flex-col items-center justify-start w-full">
+    <div className="flex flex-col items-center justify-start w-full mt-4 md:mt-0">
       <div className="w-full mx-auto">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between mb-6 gap-3">
+        <div className="flex flex-wrap items-center justify-between md:flex-nowrap mb-6 gap-3">
           <DashboardHeading title="My Screens" />
           <AddButton icon={<ScreenShare />} text="Create New Screen" />
         </div>
