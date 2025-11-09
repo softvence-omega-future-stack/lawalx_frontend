@@ -5,7 +5,10 @@
 
 @theme {
   --color-textGray: #525252;
+  --color-navGray: #404040;
+  --color-borderGray: #D4D4D4;
   --color-bgBlue: #0FA6FF;
+  --color-bgGray: #F5F5F5;
   --color-primary: #0A0A0A;
   --color-gray: #717182;
   --color-dark: #F3F3F5;

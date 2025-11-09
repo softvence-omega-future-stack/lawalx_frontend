@@ -11,7 +11,7 @@ interface ScreenCardProps {
 
 const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
     return (
-        <div className="group bg-white border border-gray-200 rounded-xl overflow-hidden  hover:shadow-md transition-all">
+        <div className="group bg-white border border-borderGray rounded-xl overflow-hidden  hover:shadow-md transition-all">
             {/* Content */}
             <div className="p-4 sm:p-6">
                 {/* Image */}

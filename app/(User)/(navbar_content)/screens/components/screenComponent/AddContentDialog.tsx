@@ -85,7 +85,7 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
       maxHeight="xl"
     >
       {/* Search and Filter */}
-      <div className="flex flex-col md:flex-row gap-3 mb-4 px-2">
+      <div className="flex flex-col md:flex-row gap-3 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
@@ -115,7 +115,7 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
           return (
             <div
               key={item.id}
-              className="flex items-center gap-3 px-3 py-3 md:py-4 cursor-pointer transition-all duration-150 "
+              className="flex items-center gap-3 px-3 md:py-4 cursor-pointer transition-all duration-150 "
               onClick={() => handleSelectItem(item.id)}
             >
               {/* ✅ FIXED: Prevent parent click when clicking checkbox */}

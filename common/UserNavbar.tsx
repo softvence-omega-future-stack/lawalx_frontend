@@ -27,7 +27,7 @@ export default function UserNavbar() {
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="text-2xl font-bold text-cyan-500 select-none tracking-tight">
+          <div className="text-2xl font-bold text-bgBlue select-none tracking-tight">
             tape
           </div>
 
