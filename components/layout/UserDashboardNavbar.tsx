@@ -72,6 +72,7 @@ export default function UserDashboardNavbar() {
   const [newOpen, setNewOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 max-w-[1920px] mx-auto">
@@ -85,7 +86,7 @@ export default function UserDashboardNavbar() {
               alt="DigitalSignage Logo"
               width={150}
               height={40}
-              className="h-8 w-auto"
+              className="h-12 w-auto"
             />
           </Link>
 
@@ -95,11 +96,10 @@ export default function UserDashboardNavbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 xl:px-4 py-2 text-sm transition-colors whitespace-nowrap ${
-                  pathname === item.href
-                    ? "bg-blue-50 text-[#0FA6FF] font-medium border-b-2 rounded-t-sm border-[#0FA6FF]"
-                    : "relative text-gray-600 hover:text-gray-900 hover:rounded-t-sm hover:bg-gray-50 transition-all ease-in-out duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-[#0FA6FF] after:w-0 hover:after:w-full after:transition-[width] after:ease-in-out after:duration-500"
-                }`}
+                className={`px-3 xl:px-4 py-2 text-sm sm:text-base font-semibold text-navGray transition-colors whitespace-nowrap ${pathname === item.href
+                    ? "bg-blue-50 text-bgBlue font-medium border-b-2 rounded-t-sm border-bgBlue"
+                    : "relative text-bgBlue hover:text-gray-900 hover:rounded-t-sm hover:bg-gray-50 transition-all ease-in-out duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-0.5 border-bgBlue after:w-0 hover:after:w-full after:transition-[width] after:ease-in-out after:duration-500"
+                  }`}
               >
                 {item.label}
               </Link>
@@ -165,7 +165,7 @@ export default function UserDashboardNavbar() {
                 setProfileOpen(false);
                 setNotificationOpen(false);
               }}
-              className="px-3 lg:px-4 py-2 bg-[#0FA6FF] text-white rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-1.5 text-sm font-medium"
+              className="px-3 lg:px-4 py-2 bg-bgBlue text-white rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-1.5 text-sm font-medium"
             >
               <span>New</span>
               <ChevronDown className="sm:pl-1 sm:border-l border-l-0 border-gray-300 w-4 h-4 hidden lg:inline" />
@@ -227,7 +227,7 @@ export default function UserDashboardNavbar() {
                     <h3 className="text-lg font-semibold text-gray-900">
                       Notifications
                     </h3>
-                    <button className="text-sm text-[#0FA6FF] hover:text-blue-500 font-medium">
+                    <button className="text-sm text-bgBlue hover:text-blue-500 font-medium">
                       Mark All Read
                     </button>
                   </div>
@@ -264,7 +264,7 @@ export default function UserDashboardNavbar() {
 
                   {/* Footer */}
                   <div className="px-6 py-3 text-center border-t border-gray-200">
-                    <button className="text-sm text-[#0FA6FF] hover:text-blue-500 font-medium">
+                    <button className="text-sm text-bgBlue hover:text-blue-500 font-medium">
                       View All
                     </button>
                   </div>
@@ -397,11 +397,10 @@ export default function UserDashboardNavbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 text-sm rounded-md transition-colors ${
-                  pathname === item.href
+                className={`block px-4 py-2.5 text-sm rounded-md transition-colors ${pathname === item.href
                     ? "bg-blue-50 text-blue-600 font-medium"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 {item.label}
               </Link>
