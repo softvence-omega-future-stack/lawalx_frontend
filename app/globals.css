@@ -13,6 +13,15 @@
   --color-background: #ECECF0;
   --color-border: rgba(0, 0, 0, 0.10);
   --font-geist: "Geist", sans-serif;
+  --color-textGray: #525252;
+  --color-borderGray: #D4D4D4;
+  --color-bgBlue: #0FA6FF;
+  --color-bgGray: #F5F5F5;
+  --color-primary: #0A0A0A;
+  --color-borderGray: #D4D4D4;
+  --color-Headings: #171717;
+  --color-MutedText: #525252;
+  --color-qrBackground: #E5E5E5;
 }
 
 .project-font {
