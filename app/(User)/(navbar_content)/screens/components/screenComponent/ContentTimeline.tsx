@@ -1,0 +1,154 @@
+"use client";
+
+import { Plus, Video, Image, FileText, GripVertical, MoreVertical, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { useState } from "react";
+import AddContentDialog from "./AddContentDialog";
+
+interface TimelineItem {
+  id: number;
+  type: "video" | "image" | "content";
+  title: string;
+  format?: string;
+  startTime: string;
+  duration: number; // in seconds
+}
+
+interface ContentTimelineProps {
+  timelineData?: TimelineItem[];
+}
+
+const sampleData: TimelineItem[] = [
+  { id: 1, type: "video", title: "Video 1", format: "MP4", startTime: "00:00", duration: 120 },
+  { id: 2, type: "image", title: "Image", format: "JPG", startTime: "02:01", duration: 20 },
+  { id: 3, type: "content", title: "Morning Menu", format: "Content", startTime: "02:01", duration: 135 },
+];
+
+const ContentTimeline = ({ timelineData = sampleData }: ContentTimelineProps) => {
+  const [items, setItems] = useState<TimelineItem[]>(timelineData);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const calculateTotal = () => {
+    const totalSeconds = items.reduce((sum, item) => sum + item.duration, 0);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2, "0")} min ${String(seconds).padStart(2, "0")} sec`;
+  };
+
+  const getIcon = (type: string) => {
+    switch (type) {
+      case "video": return <Video className="w-5 h-5 text-gray-800" />;
+      case "image": return <Image className="w-5 h-5 text-gray-800" />;
+      case "content": return <FileText className="w-5 h-5 text-gray-800" />;
+      default: return <FileText className="w-5 h-5 text-gray-800" />;
+    }
+  };
+
+  const handleRemove = (id: number) => {
+    setItems(items.filter(item => item.id !== id));
+    setOpenMenuId(null);
+  };
+
+  const handleMove = (index: number, direction: "up" | "down") => {
+    const newItems = [...items];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= items.length) return;
+    [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+    setItems(newItems);
+    setOpenMenuId(null);
+  };
+
+  return (
+    <div className="mx-auto min-h-screen">
+      <div className="bg-white rounded-xl border border-borderGray p-4 sm:p-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Content Timeline</h2>
+          <p className="text-sm text-gray-600">Total: {items.length ? calculateTotal() : "00 min 00 sec"}</p>
+        </div>
+
+        {/* Add Content Button */}
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-2 bg-bgBlue hover:bg-blue-500 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-sm md:text-base font-semibold transition-colors mb-4 sm:mb-6 w-full sm:w-auto justify-center"
+        >
+          <Plus className="w-5 h-5 text-white" /> Add Content
+        </button>
+
+        {/* Timeline Items */}
+        <div className="space-y-3">
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              className="relative bg-bgGray rounded-lg border border-gray-200 p-3 sm:p-4 flex flex-row items-start sm:items-center gap-3 sm:gap-3 hover:border-gray-300 transition-colors"
+            >
+              <GripVertical className="w-5 h-5 text-gray-600 cursor-grab shrink-0" />
+              <div className="shrink-0">{getIcon(item.type)}</div>
+
+              <div className="flex-1 min-w-0 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1 flex-wrap">
+                  <h3 className="font-semibold text-sm md:text-lg text-gray-900">{item.title}</h3>
+                  {item.format && (
+                    <span className="text-xs w-fit px-2 py-0.5 border border-borderGray text-gray-600 rounded-lg whitespace-nowrap">
+                      {item.format}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-1 text-sm text-textGray">
+                  <span>Start: {item.startTime}</span>
+                  <span>Duration: {item.duration} Sec</span>
+                </div>
+              </div>
+
+              <div className="shrink-0 text-right mt-2 sm:mt-0 sm:mr-2">
+                <div className="text-lg font-medium text-gray-900 bg-white px-3 py-1 rounded-lg border border-gray-200">
+                  {item.duration}
+                </div>
+              </div>
+
+              <div className="relative shrink-0 mt-2 sm:mt-0">
+                <button
+                  onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                  className="p-1 hover:bg-gray-200 rounded transition-colors"
+                >
+                  <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
+                </button>
+
+                {openMenuId === item.id && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                    <div className="absolute right-0 top-8 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 w-40">
+                      <button
+                        onClick={() => handleRemove(item.id)}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" /> Remove
+                      </button>
+                      <button
+                        onClick={() => handleMove(index, "up")}
+                        disabled={index === 0}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      >
+                        <ArrowUp className="w-4 h-4" /> Move Up
+                      </button>
+                      <button
+                        onClick={() => handleMove(index, "down")}
+                        disabled={index === items.length - 1}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      >
+                        <ArrowDown className="w-4 h-4" /> Move Down
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {open && <AddContentDialog open={open} setOpen={setOpen} />}
+    </div>
+  );
+};
+
+export default ContentTimeline;

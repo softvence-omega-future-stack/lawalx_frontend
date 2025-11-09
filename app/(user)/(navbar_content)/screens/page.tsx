@@ -3,7 +3,6 @@
 import AddButton from "@/common/AddButton";
 import BaseSelect from "@/common/BaseSelect";
 import DashboardHeading from "@/common/DashboardHeading";
-import { Input } from "@/components/ui/input";
 import { Monitor, ScreenShare, Search } from "lucide-react";
 import { useState } from "react";
 import ScreenCard from "./components/screenComponent/ScreenCard";
@@ -124,25 +123,25 @@ const MyScreensPage: React.FC = () => {
   });
 
   return (
-    <div className="flex flex-col items-center justify-start w-full">
+    <div className="flex flex-col items-center justify-start w-full mt-4 md:mt-0">
       <div className="w-full mx-auto">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between mb-6 gap-3">
+        <div className="flex flex-wrap items-center justify-between md:flex-nowrap mb-6 gap-3">
           <DashboardHeading title="My Screens" />
           <AddButton icon={<ScreenShare />} text="Create New Screen" />
         </div>
 
         {/* Search + Filter Bar */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 w-full">
+        <div className="bg-white border border-borderGray rounded-xl p-4 mb-6 w-full">
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
+              <input
                 type="text"
                 placeholder="Search screen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-[#F3F4F6] border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               />
             </div>
 
@@ -160,7 +159,7 @@ const MyScreensPage: React.FC = () => {
 
         {/* Content Area */}
         {filteredScreens.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-xl p-16 flex justify-center">
+          <div className="bg-white border border-borderGray rounded-xl p-16 flex justify-center">
             <div className="flex flex-col items-center justify-center text-center max-w-md w-full">
               <Monitor className="w-20 h-20 text-gray-900 stroke-[1.5] mb-6" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
