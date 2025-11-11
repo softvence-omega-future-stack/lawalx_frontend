@@ -15,7 +15,7 @@
 
 export default function HomePage() {
   return (
-    <>
+    <div>
       {/* <LandingNavbar />
       <main className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-3xl font-bold">Welcome to the Platform</h1>
@@ -26,6 +26,6 @@ export default function HomePage() {
       <div className="min-h-screen flex items-center justify-center">
         Home page
       </div>
-    </>
+    </div>
   );
 }

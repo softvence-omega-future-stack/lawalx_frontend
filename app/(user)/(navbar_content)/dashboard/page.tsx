@@ -303,7 +303,7 @@
 //                     setFormData({ ...formData, name: e.target.value })
 //                   }
 //                   placeholder="Store A - NYC"
-//                   className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent"
+//                   className="w-full px-4 py-3 border border-borderGray rounded-xl focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent"
 //                 />
 //               </div>
 //               <div>
@@ -903,7 +903,7 @@ export default function Dashboard() {
       {/* Upgrade Banner */}
       {showUpgradeBanner && (
         <div
-          className="rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between"
+          className="rounded-xl shadow-sm p-4 mb-6 flex items-center justify-between"
           style={{
             background:
               "linear-gradient(270deg, rgba(34, 197, 94, 0) 0%, rgba(34, 197, 94, 0.1) 98.77%), var(--Card-Background, #FFF)",
@@ -921,7 +921,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 hover:scale-[1.02] transition-transform flex items-center gap-2 cursor-pointer">
+            <button className="bg-gray-900 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-gray-800 hover:scale-[1.02] transition-transform flex items-center gap-2 cursor-pointer">
               Upgrade
             </button>
             <button
@@ -936,7 +936,7 @@ export default function Dashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Total Devices</span>
             <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
@@ -954,7 +954,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Online Status</span>
             <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
@@ -969,7 +969,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Storage</span>
             <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
@@ -992,7 +992,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Active Apps</span>
             <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
@@ -1007,7 +1007,7 @@ export default function Dashboard() {
       </div>
 
       {/* Add New Section */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Add New</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <ActionCardButton
@@ -1018,19 +1018,19 @@ export default function Dashboard() {
             active
           />
           <button
-  onClick={() => setIsAddDeviceModalOpen(true)}
-  className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-md hover:border-gray-300 cursor-pointer transition-colors"
->
-  <Tv className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-lg" />
-  <div className="text-left">
-    <div className="font-medium text-gray-900">Add Device</div>
-    <div className="text-[.6rem] md:text-sm text-gray-600">
-      Add New Device
-    </div>
-  </div>
-</button>
-          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer transition-colors">
-            <Video className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-lg" />
+            onClick={() => setIsAddDeviceModalOpen(true)}
+            className="flex items-center gap-3 px-3 sm:px-4 py-2 border-2 border-gray-200 rounded-xl hover:border-gray-300 cursor-pointer transition-colors"
+          >
+            <Tv className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
+            <div className="text-left">
+              <div className="font-medium text-gray-900">Add Device</div>
+              <div className="text-[.6rem] md:text-sm text-gray-600">
+                Add New Device
+              </div>
+            </div>
+          </button>
+          <button className="flex items-center gap-3 px-3 sm:px-4 py-2 border-2 border-gray-200 rounded-xl hover:border-gray-300 cursor-pointer transition-colors">
+            <Video className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Upload Content</div>
               <div className="text-[.6rem] md:text-sm text-gray-600">
@@ -1038,8 +1038,8 @@ export default function Dashboard() {
               </div>
             </div>
           </button>
-          <button className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300 cursor-pointer transition-colors">
-            <Calendar className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-lg" />
+          <button className="flex items-center gap-3 px-3 sm:px-4 py-2 border-2 border-gray-200 rounded-xl hover:border-gray-300 cursor-pointer transition-colors">
+            <Calendar className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Schedule</div>
               <div className="text-[.6rem] md:text-sm text-gray-600">
@@ -1053,12 +1053,12 @@ export default function Dashboard() {
       {/* Recent Devices & Activities */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Recent Devices */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="flex items-center justify-between p-6 border-b border-[#D4D4D4]">
+        <div className="bg-white rounded-xl shadow-sm">
+          <div className="flex items-center justify-between p-6 border-b border-borderGray">
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Devices
             </h2>
-            <button className="text-sm text-[#0FA6FF] hover:text-blue-500 cursor-pointer">
+            <button className="text-sm text-bgBlue hover:text-blue-500 cursor-pointer">
               View All
             </button>
           </div>
@@ -1067,7 +1067,7 @@ export default function Dashboard() {
             {devices.map((device, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
+                className="flex items-start gap-3 p-3 border border-gray-200 rounded-xl"
               >
                 <span className="mt-0.5 p-2.5 border rounded-sm border-gray-200">
                   <Monitor className="w-4 h-4 text-gray-400" />
@@ -1106,7 +1106,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activities */}
-        <div className="bg-white rounded-lg shadow-sm">
+        <div className="bg-white rounded-xl shadow-sm">
           <div className="flex items-center justify-between border-b p-6 border-borderGray">
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activities
@@ -1120,7 +1120,7 @@ export default function Dashboard() {
             {activities.map((activity, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg"
+                className="flex items-start gap-3 p-3 border border-gray-200 rounded-xl"
               >
                 {activity.type === "device" ? (
                   <span className="mt-0.5 p-2.5 border rounded-full border-gray-200 bg-gray-50">

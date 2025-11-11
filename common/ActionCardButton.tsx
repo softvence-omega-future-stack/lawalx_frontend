@@ -93,7 +93,7 @@ const ActionCardButton: React.FC<ActionCardButtonProps> = ({
     <button
       onClick={onClick}
       className={cn(
-        "relative overflow-hidden rounded-lg flex items-center gap-3 md:gap-5 text-left p-3 md:p-4 w-full transition-all duration-300 shadow-sm cursor-pointer",
+        "relative overflow-hidden rounded-xl flex items-center gap-3 text-left px-3 sm:px-4 py-2 w-full transition-all duration-300 shadow-sm cursor-pointer",
         active
           ? "text-white scale-[1.02] bg-gray-900 shadow-lg"
           : "bg-white text-gray-900 border border-gray-200",
@@ -121,7 +121,7 @@ const ActionCardButton: React.FC<ActionCardButtonProps> = ({
       {icon && (
         <div
           className={cn(
-            "p-3 rounded-xl flex items-center justify-center transition-all duration-300",
+            "p-2 rounded-md flex items-center justify-center transition-all duration-300",
             active
               ? "bg-white/20"
               : "bg-gray-100 hover:bg-white/15"

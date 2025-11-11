@@ -141,7 +141,7 @@ const MyScreensPage: React.FC = () => {
                 placeholder="Search screen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-[#F3F4F6] border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-bgGray border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               />
             </div>
 
