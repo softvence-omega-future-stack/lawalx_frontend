@@ -1054,11 +1054,11 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Recent Devices */}
         <div className="bg-white rounded-xl shadow-sm">
-          <div className="flex items-center justify-between p-6 border-b border-[#D4D4D4]">
+          <div className="flex items-center justify-between p-6 border-b border-borderGray">
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Devices
             </h2>
-            <button className="text-sm text-[#0FA6FF] hover:text-blue-500 cursor-pointer">
+            <button className="text-sm text-bgBlue hover:text-blue-500 cursor-pointer">
               View All
             </button>
           </div>

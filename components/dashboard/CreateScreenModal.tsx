@@ -158,7 +158,7 @@ export default function CreateScreenModal({
       <div className="bg-white rounded-2xl border border-bgGray w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-start sm:items-center justify-between p-6 gap-4 sm:gap-0">
-          <h2 className="text-xl sm:text-3xl font-bold text-[#171717] text-nowrap">
+          <h2 className="text-xl sm:text-3xl font-bold text-Headings text-nowrap">
             Create New Screen
           </h2>
           <button
