@@ -1,4 +1,4 @@
-function ContentDetailsModal() {
+function ContendDetails() {
     return ( 
         <>
             <h1>Content Details</h1>
@@ -6,4 +6,4 @@ function ContentDetailsModal() {
      );
 }
 
-export default ContentDetailsModal;
+export default ContendDetails;

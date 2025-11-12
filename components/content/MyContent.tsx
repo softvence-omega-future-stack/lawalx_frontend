@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { CloudUpload, Grid2X2, List, Plus, Search, FolderPlus, ListMusic } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import {
+    CloudUpload,
+    Grid2X2,
+    List,
+    Plus,
+    Search,
+    FolderPlus,
+    ListMusic,
+    ChevronDown,
+} from "lucide-react";
 import ContentButton from "@/common/ContentButton";
 import DashboardHeading from "@/common/DashboardHeading";
 import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
+import CreateFolderDialog from "./CreateFolderDialog";
 
 // ============================================
 // TYPES
@@ -26,8 +36,12 @@ export interface ContentItem {
     fileCount?: number;
     thumbnail?: string;
     assignedTo?: string[];
+    children?: ContentItem[];
 }
 
+// ============================================
+// OPTIONS & MOCK DATA
+// ============================================
 export const createNew: SelectOption[] = [
     { label: "New Folder", value: "new-folder", icon: <FolderPlus size={22} /> },
     { label: "New Playlist", value: "new-playlist", icon: <ListMusic size={22} /> },
@@ -51,7 +65,27 @@ export const mockContentData: ContentItem[] = [
         title: "Company Update Q3",
         type: "folder",
         size: "45 MB",
-        fileCount: 12,
+        fileCount: 2,
+        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
+        children: [
+            {
+                id: "1-1",
+                title: "Intro Video",
+                type: "video",
+                size: "25 MB",
+                duration: "90 sec",
+                thumbnail:
+                    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+            },
+            {
+                id: "1-2",
+                title: "Report Image",
+                type: "image",
+                size: "15 MB",
+                thumbnail:
+                    "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=400&h=300&fit=crop",
+            },
+        ],
     },
     {
         id: "2",
@@ -59,7 +93,8 @@ export const mockContentData: ContentItem[] = [
         type: "video",
         size: "45 MB",
         duration: "120 sec",
-        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+        thumbnail:
+            "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
     },
     {
         id: "3",
@@ -75,13 +110,33 @@ export const mockContentData: ContentItem[] = [
         type: "folder",
         size: "120 MB",
         fileCount: 24,
+        children: [
+            {
+                id: "1-1",
+                title: "Intro Video",
+                type: "video",
+                size: "25 MB",
+                duration: "90 sec",
+                thumbnail:
+                    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+            },
+            {
+                id: "1-2",
+                title: "Report Image",
+                type: "image",
+                size: "15 MB",
+                thumbnail:
+                    "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=400&h=300&fit=crop",
+            },
+        ],
     },
     {
         id: "5",
         title: "Image",
         type: "image",
         size: "45 MB",
-        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+        thumbnail:
+            "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
         assignedTo: ["Main Lobby Display", "Main Gate Entry"],
     },
     {
@@ -98,7 +153,8 @@ export const mockContentData: ContentItem[] = [
         type: "video",
         size: "45 MB",
         duration: "120 sec",
-        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+        thumbnail:
+            "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
         assignedTo: ["Main Lobby Display", "Main Gate Entry"],
     },
     {
@@ -107,54 +163,63 @@ export const mockContentData: ContentItem[] = [
         type: "video",
         size: "45 MB",
         duration: "120 sec",
-        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+        thumbnail:
+            "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
     },
 ];
 
+
+// ============================================
+// COMPONENT
+// ============================================
 const MyContent = () => {
-    const [searchQuery, setSearchQuery] = useState<string>("");
-    const [createOption, setCreateOption] = useState<string>("");
-    const [sortOption, setSortOption] = useState<string>("");
-    const [contentFilter, setContentFilter] = useState<string>("all-content");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [createOption, setCreateOption] = useState("");
+    const [sortOption, setSortOption] = useState("");
+    const [contentFilter, setContentFilter] = useState("all-content");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+    const [open, setOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
-    // Filter and Sort Logic
-    const filteredContent = mockContentData.filter((item) => {
-        // Search filter
-        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-        // Content type filter
-        let matchesType = true;
-        if (contentFilter === "folders") {
-            matchesType = item.type === "folder";
-        } else if (contentFilter === "playlists") {
-            matchesType = item.type === "playlist";
-        } else if (contentFilter === "files") {
-            matchesType = item.type === "video" || item.type === "image";
-        }
+    // ✅ Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
-        return matchesSearch && matchesType;
-    }).sort((a, b) => {
-        // Sort logic
-        if (sortOption === "a-z") {
-            return a.title.localeCompare(b.title);
-        } else if (sortOption === "z-a") {
-            return b.title.localeCompare(a.title);
-        }
-        return 0;
-    });
+    // Filter & Sort logic
+    const filteredContent = mockContentData
+        .filter((item) => {
+            const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+            let matchesType = true;
+            if (contentFilter === "folders") matchesType = item.type === "folder";
+            else if (contentFilter === "playlists") matchesType = item.type === "playlist";
+            else if (contentFilter === "files")
+                matchesType = item.type === "video" || item.type === "image";
+            return matchesSearch && matchesType;
+        })
+        .sort((a, b) => {
+            if (sortOption === "a-z") return a.title.localeCompare(b.title);
+            if (sortOption === "z-a") return b.title.localeCompare(a.title);
+            return 0;
+        });
 
-    // Event Handlers
-    const handleItemSelect = (id: string) => {
-        console.log("Item selected:", id);
-    };
+    // Handlers
+    const handleItemSelect = (id: string) => console.log("Item selected:", id);
+    const handleItemMenuClick = (id: string) => console.log("Menu clicked for:", id);
+    const handleAssignClick = (id: string) => console.log("Assign clicked for:", id);
 
-    const handleItemMenuClick = (id: string) => {
-        console.log("Menu clicked for:", id);
-    };
-
-    const handleAssignClick = (id: string) => {
-        console.log("Assign clicked for:", id);
+    const handleCreateChange = (value: string) => {
+        setCreateOption(value);
+        setDropdownOpen(false);
+        if (value === "new-folder") setOpen(true);
     };
 
     return (
@@ -162,19 +227,43 @@ const MyContent = () => {
             {/* Header */}
             <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-6">
                 <DashboardHeading title="My Content" />
+
                 <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
                     <div className="w-full sm:w-[200px]">
                         <ContentButton title="Upload Content" icon={CloudUpload} />
                     </div>
-                    <div className="w-full sm:w-[170px]">
-                        <BaseSelect
-                            value={createOption}
-                            onChange={setCreateOption}
-                            options={createNew}
-                            placeholder="Create New"
-                            showLabel={false}
-                            icon={<Plus className="w-4 h-4 text-gray-500" />}
-                        />
+
+                    {/* Custom Dropdown */}
+                    <div className="relative w-full sm:w-[200px]" ref={dropdownRef}>
+                        <button
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                            className="w-full flex items-center justify-between bg-white border border-bgBlue rounded-xl px-6 py-3 text-gray-800 focus:ring-2 focus:ring-bgBlue transition cursor-pointer font-semibold text-sm md:text-base"
+                        >
+                            <span className="flex items-center gap-2">
+                                <Plus className="w-5 h-5 text-black font-semibold" />
+                                {createOption
+                                    ? createNew.find((o) => o.value === createOption)?.label
+                                    : "Create New"}
+                            </span>
+                            <ChevronDown
+                                className={`w-5 h-5 text-black transition-transform duration-200 font-semibold ${dropdownOpen ? "rotate-180" : ""
+                                    }`}
+                            />
+                        </button>
+
+                        {dropdownOpen && (
+                            <div className="absolute z-10 mt-2 w-full bg-white border-2 border-bgBlue rounded-xl shadow-lg overflow-hidden">
+                                {createNew.map((option) => (
+                                    <button
+                                        key={option.value}
+                                        onClick={() => handleCreateChange(option.value)}
+                                        className="w-full text-left px-4 py-2 hover:bg-bgBlue/10 text-gray-800 text-sm md:text-base cursor-pointer"
+                                    >
+                                        {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -221,7 +310,8 @@ const MyContent = () => {
                                     }`}
                             >
                                 <Grid2X2
-                                    className={`w-5 h-5 ${viewMode === "grid" ? "text-bgBlue" : "text-textGray"}`}
+                                    className={`w-5 h-5 ${viewMode === "grid" ? "text-bgBlue" : "text-textGray"
+                                        }`}
                                 />
                             </button>
                             <button
@@ -230,7 +320,8 @@ const MyContent = () => {
                                     }`}
                             >
                                 <List
-                                    className={`w-5 h-5 ${viewMode === "list" ? "text-bgBlue" : "text-textGray"}`}
+                                    className={`w-5 h-5 ${viewMode === "list" ? "text-bgBlue" : "text-textGray"
+                                        }`}
                                 />
                             </button>
                         </div>
@@ -243,12 +334,9 @@ const MyContent = () => {
                 All Content ({filteredContent.length})
             </h2>
 
-            {/* Content Display Area */}
+            {/* Content Display */}
             {filteredContent.length === 0 ? (
-                <EmptyState
-                    contentFilter={contentFilter}
-                    searchQuery={searchQuery}
-                />
+                <EmptyState contentFilter={contentFilter} searchQuery={searchQuery} />
             ) : (
                 <ContentGrid
                     items={filteredContent}
@@ -258,6 +346,8 @@ const MyContent = () => {
                     onAssignClick={handleAssignClick}
                 />
             )}
+
+            {open && <CreateFolderDialog open={open} setOpen={setOpen} />}
         </div>
     );
 };
