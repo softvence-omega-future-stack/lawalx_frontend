@@ -3,112 +3,181 @@ import ContentDetails from "@/components/content/ContentDetails";
 import { ContentItem } from "@/components/content/MyContent";
 
 export const mockContentData: ContentItem[] = [
+    // ---- Folder with nested videos & playlists ----
     {
-        id: "1",
+        id: "f1",
         title: "Company Update Q3",
         type: "folder",
         size: "45 MB",
-        fileCount: 2,
+        fileCount: 3,
         assignedTo: ["Main Lobby Display", "Main Gate Entry"],
+        uploadedDate: "3 days ago",
+        updatedAt: "2 days ago",
         children: [
             {
-                id: "1-1",
-                title: "Intro Video",
+                id: "f1-1",
+                title: "Intro Video - Q3",
                 type: "video",
                 size: "25 MB",
-                duration: "90 sec",
+                duration: "1:30",
                 thumbnail:
                     "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+                video: "./detailsVideo.mp4",
+                updatedAt: "2 days ago",
             },
             {
-                id: "1-2",
-                title: "Report Image",
+                id: "f1-2",
+                title: "Q3 Report Graphics",
                 type: "image",
-                size: "15 MB",
+                size: "8 MB",
                 thumbnail:
                     "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=400&h=300&fit=crop",
+                updatedAt: "1 day ago",
+            },
+            {
+                id: "f1-3",
+                title: "Background Music Pack",
+                type: "playlist",
+                audio: "./audio.mp3",
+                size: "8 Items",
+                duration: "12:00",
+                updatedAt: "5 days ago",
             },
         ],
     },
+
+    // ---- Top-level videos ----
     {
-        id: "2",
-        title: "Video",
+        id: "v1",
+        title: "Tutorial - How to Use Dashboard",
         type: "video",
-        size: "45 MB",
-        duration: "120 sec",
+        size: "50 MB",
+        duration: "4:20",
+        thumbnail:
+            "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=400&h=300&fit=crop",
         video: "./detailsVideo.mp4",
+        assignedTo: ["Training Room Screen"],
+        uploadedDate: "4 days ago",
+        updatedAt: "3 days ago",
     },
     {
-        id: "3",
-        title: "Background Music",
-        type: "playlist",
-        size: "12 Items",
-        duration: "120 sec",
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
-    },
-    {
-        id: "4",
-        title: "Playlist 1",
-        type: "folder",
+        id: "v2",
+        title: "Product Demo",
+        type: "video",
         size: "120 MB",
-        fileCount: 24,
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
-        uploadedDate: "3 days ago",
+        duration: "6:10",
+        thumbnail:
+            "https://images.unsplash.com/photo-1529390079861-591de354faf5?w=400&h=300&fit=crop",
+        video: "./iceVideo.mp4",
+        uploadedDate: "1 week ago",
+        updatedAt: "4 days ago",
+    },
+
+    // ---- Top-level playlists (music) ----
+    {
+        id: "p1",
+        title: "Office Ambient Mix",
+        type: "playlist",
+        size: "20 Items",
+        duration: "1:20:00",
+        audio: "./audio.mp3",
+        assignedTo: ["Main Lobby Display"],
+        uploadedDate: "1 week ago",
+        updatedAt: "5 days ago",
+    },
+    {
+        id: "p2",
+        title: "Marketing Assets - Audio",
+        type: "playlist",
+        size: "10 Items",
+        duration: "35:00",
+        audio: "./audio.mp3",
+        uploadedDate: "5 days ago",
+        assignedTo: ["Main Gate Entry"],
+        updatedAt: "4 days ago",
+    },
+
+    // ---- Another folder with nested playlist + video ----
+    {
+        id: "f2",
+        title: "Campaign Assets",
+        type: "folder",
+        size: "220 MB",
+        fileCount: 4,
+        uploadedDate: "2 days ago",
+        updatedAt: "1 day ago",
+        assignedTo: ["Marketing Screen"],
         children: [
             {
-                id: "4-1",
-                title: "Intro Video",
+                id: "f2-1",
+                title: "Campaign Teaser",
                 type: "video",
-                size: "25 MB",
-                duration: "90 sec",
+                size: "80 MB",
+                duration: "0:45",
                 thumbnail:
-                    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1508873699372-7ae3e3b6b6f6?w=400&h=300&fit=crop",
+                video: "./campaign-teaser.mp4",
+                updatedAt: "1 day ago",
             },
             {
-                id: "4-2",
-                title: "Report Image",
+                id: "f2-2",
+                title: "Ad Jingles",
+                type: "playlist",
+                size: "6 Items",
+                audio: "./audio.mp3",
+                duration: "4:00",
+                updatedAt: "2 days ago",
+            },
+            {
+                id: "f2-3",
+                title: "Campaign Poster",
                 type: "image",
-                size: "15 MB",
+                size: "3 MB",
                 thumbnail:
-                    "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1490685451225-4b4b8f0f2c9f?w=400&h=300&fit=crop",
+                updatedAt: "3 days ago",
             },
         ],
     },
+
+    // ---- Single image item (top-level file) ----
     {
-        id: "5",
-        title: "Image",
+        id: "img1",
+        title: "Office Background Image",
         type: "image",
-        size: "45 MB",
-        video:
-            "./detailsVideo.mp4",
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
+        size: "12 MB",
+        thumbnail:
+            "https://images.unsplash.com/photo-1508780709619-79562169bc64?w=400&h=300&fit=crop",
+        assignedTo: ["Main Lobby Display", "Reception Screen"],
+        uploadedDate: "6 days ago",
+        updatedAt: "5 days ago",
     },
+
+    // ---- Small video file used for details/example ----
     {
-        id: "6",
-        title: "Marketing Assets",
-        type: "playlist",
-        size: "45 MB",
-        duration: "120 sec",
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
-        uploadedDate: "3 days ago",
-    },
-    {
-        id: "7",
-        title: "Tutorial Video",
+        id: "v3",
+        title: "Welcome Loop",
         type: "video",
-        size: "45 MB",
-        duration: "120 sec",
+        size: "30 MB",
+        duration: "0:30",
         thumbnail:
-            "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
+            "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=300&fit=crop",
+        video: "./detailsVideo.mp4",
+        uploadedDate: "5 days ago",
+        updatedAt: "4 days ago",
     },
+
+    // ---- Another playlist top-level ----
     {
-        id: "8",
-        title: "Background Image",
-        type: "image", // Changed from "video" to "image"
-        size: "45 MB",
-        thumbnail:
-            "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+        id: "p3",
+        title: "Event BGM Collection",
+        type: "playlist",
+        size: "15 Items",
+        duration: "45:00",
+        audio: "./audio.mp3",
+        assignedTo: ["Event Hall Screen"],
+        uploadedDate: "3 days ago",
+        updatedAt: "2 days ago",
     },
 ];
 
@@ -134,13 +203,13 @@ const ContentDetailsPage = ({ params }: ContentDetailsPageProps) => {
         );
     }
 
-    return ( 
+    return (
         <>
             <div>
-                <ContentDetails content={content}/>
+                <ContentDetails content={content} />
             </div>
         </>
-     );
+    );
 }
 
 export default ContentDetailsPage;

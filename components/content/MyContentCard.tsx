@@ -19,6 +19,8 @@ import Link from "next/link";
 import folder from "@/public/icons/folder.svg";
 import MenuDropdown from "@/common/MenuDropdown";
 import VideoPlayDialog from "./VideoPlayDialog";
+import AudioPlayerDialog from "./AudioPlayerDialog";
+import FolderOpenDialog from "./FolderOepnDialog";
 
 interface ContentCardProps {
   item: ContentItem;
@@ -37,6 +39,8 @@ const MyContentCard = ({
 }: ContentCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openAudio, setOpenAudio] = useState(false);
+  const [openFolder, setOpenFolder] = useState(false);
 
   const getTypeLabel = () => {
     switch (item.type) {
@@ -70,9 +74,9 @@ const MyContentCard = ({
         <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-100 shrink-0">
           <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
           {item.type === "video" && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-              <Play className="w-5 h-5 text-white fill-white" />
-            </div>
+            <button onClick={() => setOpen(true)} className="absolute inset-0 flex items-center justify-center bg-black/10">
+              <Play  className="w-5 h-5 text-white fill-white cursor-pointer " />
+            </button>
           )}
         </div>
       );
@@ -89,9 +93,9 @@ const MyContentCard = ({
         return (
           <div className="relative flex flex-col items-center gap-3 w-14 h-14 shrink-0">
             <AudioLines className="w-14 h-14 text-bgBlue stroke-[1.5]" />
-            <div className="absolute bg-white/90 rounded-full p-1.5 mt-2 cursor-pointer">
-              <Play className="w-6 h-6 text-gray-400 fill-[rgba(255,255,255,0.7)] drop-shadow-[0_0_8px_rgba(0,0,0,0.25)]" />
-            </div>
+            <button onClick={() => setOpenAudio(true)} className="absolute bg-white/90 rounded-full p-1.5 mt-2 cursor-pointer">
+              <Play className="w-6 h-6 text-gray-400 fill-[rgba(255,255,255,0.7)] drop-shadow-[0_0_8px_rgba(0,0,0,0.25)] cursor-pointer" />
+            </button>
           </div>
         );
       default:
@@ -112,57 +116,59 @@ const MyContentCard = ({
   const dropdownOptions =
     viewMode === "list"
       ? [
-          {
-            label: "Rename",
-            value: "rename",
-            icon: <Pencil className="w-5 h-5" />,
-            onClick: () => onMenuClick?.(item.id, "rename"),
-          },
-          {
-            label: "Move to Folder",
-            value: "move",
-            icon: <FolderOpen className="w-5 h-5" />,
-            onClick: () => onMenuClick?.(item.id, "move"),
-          },
-          {
-            label: "Delete",
-            value: "delete",
-            icon: <Trash2 className="w-5 h-5 text-red-500" />,
-            danger: true,
-            onClick: () => onMenuClick?.(item.id, "delete"),
-          },
-        ]
+        {
+          label: "Rename",
+          value: "rename",
+          icon: <Pencil className="w-5 h-5" />,
+          onClick: () => onMenuClick?.(item.id, "rename"),
+        },
+        {
+          label: "Move to Folder",
+          value: "move",
+          icon: <FolderOpen className="w-5 h-5" />,
+          onClick: () => onMenuClick?.(item.id, "move"),
+        },
+        {
+          label: "Delete",
+          value: "delete",
+          icon: <Trash2 className="w-5 h-5 text-red-500" />,
+          danger: true,
+          onClick: () => onMenuClick?.(item.id, "delete"),
+        },
+      ]
       : [
-          {
-            label: "Assign",
-            value: "assign",
-            icon: <Plus className="w-5 h-5" />,
-            onClick: () => onAssignClick?.(item.id),
-          },
-          {
-            label: "Rename",
-            value: "rename",
-            icon: <Pencil className="w-5 h-5" />,
-            onClick: () => onMenuClick?.(item.id, "rename"),
-          },
-          {
-            label: "Move to Folder",
-            value: "move",
-            icon: <FolderOpen className="w-5 h-5" />,
-            onClick: () => onMenuClick?.(item.id, "move"),
-          },
-          {
-            label: "Delete",
-            value: "delete",
-            icon: <Trash2 className="w-5 h-5 text-red-500" />,
-            danger: true,
-            onClick: () => onMenuClick?.(item.id, "delete"),
-          },
-        ];
+        {
+          label: "Assign",
+          value: "assign",
+          icon: <Plus className="w-5 h-5" />,
+          onClick: () => onAssignClick?.(item.id),
+        },
+        {
+          label: "Rename",
+          value: "rename",
+          icon: <Pencil className="w-5 h-5" />,
+          onClick: () => onMenuClick?.(item.id, "rename"),
+        },
+        {
+          label: "Move to Folder",
+          value: "move",
+          icon: <FolderOpen className="w-5 h-5" />,
+          onClick: () => onMenuClick?.(item.id, "move"),
+        },
+        {
+          label: "Delete",
+          value: "delete",
+          icon: <Trash2 className="w-5 h-5 text-red-500" />,
+          danger: true,
+          onClick: () => onMenuClick?.(item.id, "delete"),
+        },
+      ];
 
   return (
     <>
-      <VideoPlayDialog item={item} open={open} setOpen={setOpen} />
+      {open && <VideoPlayDialog item={item} open={open} setOpen={setOpen} />}
+      {openAudio && <AudioPlayerDialog item={item} open={openAudio} setOpen={setOpenAudio} />}
+      {openFolder && <FolderOpenDialog item={item} openFolder={openFolder} setOpenFolder={setOpenFolder} />}
 
       {viewMode === "list" ? (
         <>
@@ -263,13 +269,13 @@ const MyContentCard = ({
             {item.thumbnail ? (
               <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
             ) : item.type === "folder" ? (
-              <Image src={folder} alt="folder" />
+              <Image className="cursor-pointer" onClick={() => setOpenFolder(true)} src={folder} alt="folder" />
             ) : (
               <div className="relative flex flex-col items-center gap-3">
                 <AudioLines className="w-20 h-20 text-bgBlue stroke-[1.5]" />
-                <div className="absolute bg-white/90 rounded-full p-2.5 mt-4 cursor-pointer">
+                <button className="absolute bg-white/90 rounded-full p-2.5 mt-4 cursor-pointer" onClick={() => setOpenAudio(true)}>
                   <Play className="w-8 h-8 text-gray-400 fill-[rgba(255,255,255,0.7)]" />
-                </div>
+                </button>
               </div>
             )}
 

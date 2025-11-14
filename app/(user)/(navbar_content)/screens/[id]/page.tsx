@@ -15,6 +15,8 @@ import {
   Pause,
   Fullscreen,
   Tv,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import type { ScreenData } from "../page";
@@ -100,6 +102,8 @@ const ScreenCardDetails = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [volume, setVolume] = useState(0.7); // Default volume (0 to 1)
+  const [isMuted, setIsMuted] = useState(false);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -107,6 +111,25 @@ const ScreenCardDetails = () => {
     if (isPlaying) video.pause();
     else video.play();
     setIsPlaying(!isPlaying);
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsMuted(!isMuted);
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    setIsMuted(newVolume === 0);
+    
+    const video = videoRef.current;
+    if (video) {
+      video.volume = newVolume;
+      video.muted = newVolume === 0;
+    }
   };
 
   // Update progress
@@ -130,10 +153,12 @@ const ScreenCardDetails = () => {
     if (video) {
       video.pause();
       video.currentTime = 0;
+      video.volume = volume; // Set initial volume
+      video.muted = isMuted;
       setIsPlaying(false);
       setProgress(0);
     }
-  }, [screen?.video]);
+  }, [screen?.video, volume, isMuted]);
 
   // Fullscreen toggle
   const toggleFullscreen = () => {
@@ -226,18 +251,41 @@ const ScreenCardDetails = () => {
                   ref={videoRef}
                   src={screen.video}
                   className="w-full h-full object-cover"
-                  muted
+                  // Removed muted attribute to enable sound
                   loop
                   playsInline
                 />
                 {/* Controls */}
-                <div className="absolute bottom-3 left-0 w-full px-3 sm:px-4 flex items-center gap-3 sm:gap-4">
+                <div className="absolute bottom-3 left-0 w-full px-3 sm:px-4 flex items-center gap-2 sm:gap-3">
                   <button
                     onClick={togglePlay}
                     className="text-white p-2 sm:p-2.5 rounded-full hover:bg-white/20 transition cursor-pointer"
                   >
                     {isPlaying ? <Pause size={18} /> : <Play size={18} />}
                   </button>
+
+                  {/* Volume Control */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={toggleMute}
+                      className="text-white p-1.5 rounded-full hover:bg-white/20 transition cursor-pointer"
+                    >
+                      {isMuted || volume === 0 ? (
+                        <VolumeX size={16} />
+                      ) : (
+                        <Volume2 size={16} />
+                      )}
+                    </button>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={volume}
+                      onChange={handleVolumeChange}
+                      className="w-16 sm:w-20 h-1.5 bg-white/30 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                    />
+                  </div>
 
                   <div
                     className="flex-1 h-1 sm:h-1.5 bg-white/30 rounded-full relative cursor-pointer"

@@ -2,12 +2,13 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import BaseVideoPlayer from "@/common/BaseVideoPlayer";
+import AudioPlayer from "react-h5-audio-player";
+import "react-h5-audio-player/lib/styles.css";
 import { ContentItem } from "./MyContent";
 import { X } from "lucide-react";
 
-interface VideoPlayDialogProps {
-  item: ContentItem;
+interface AudioPlayerDialogProps {
+  item: ContentItem; // item.audio should hold the audio URL
   open: boolean;
   setOpen: (open: boolean) => void;
 }
@@ -22,13 +23,13 @@ const modalVariants = {
   visible: { opacity: 1, scale: 1 },
 };
 
-const VideoPlayDialog = ({ item, open, setOpen }: VideoPlayDialogProps) => {
-  // Extract video filename from URL
-  const getVideoFileName = (url: string) => {
+const AudioPlayerDialog = ({ item, open, setOpen }: AudioPlayerDialogProps) => {
+  // Extract audio filename from URL
+  const getAudioFileName = (url: string) => {
     try {
       const urlObj = new URL(url);
       const pathname = urlObj.pathname;
-      const fileName = pathname.split('/').pop() || url;
+      const fileName = pathname.split("/").pop() || url;
       return decodeURIComponent(fileName);
     } catch {
       return url;
@@ -40,7 +41,7 @@ const VideoPlayDialog = ({ item, open, setOpen }: VideoPlayDialogProps) => {
       {open && (
         // Backdrop
         <motion.div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center max-[767px]:px-4"
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"
@@ -49,34 +50,37 @@ const VideoPlayDialog = ({ item, open, setOpen }: VideoPlayDialogProps) => {
         >
           {/* Stop click from closing modal when clicking inside */}
           <motion.div
-            className="bg-white rounded-xl overflow-hidden max-w-4xl w-full relative"
+            className="bg-white rounded-xl overflow-hidden max-w-md w-full relative"
             variants={modalVariants}
             initial="hidden"
             animate="visible"
             exit="hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header with video name and close button */}
-            <div className="bg-black px-4 py-4 flex items-center justify-between">
+            {/* Header with audio name and close button */}
+            <div className="bg-gray-900 px-4 py-4 flex items-center justify-between">
               <h3 className="text-white text-sm md:text-base font-medium truncate pr-8">
-                {item.video ? getVideoFileName(item.video) : 'Video'}
+                {item.audio ? getAudioFileName(item.audio) : "Audio"}
               </h3>
               <button
                 className="absolute top-3 right-3 text-white bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer hover:bg-red-500"
                 onClick={() => setOpen(false)}
               >
-                <X/>
+                <X />
               </button>
             </div>
 
             {/* Modal content */}
-            <div className="p-4 sm:p-6 shadow-2xl">
-              <BaseVideoPlayer
-                src={item.video ?? ""}
-                poster={item.thumbnail}
-                autoPlay={open}
-                rounded="rounded-lg"
-              />
+            <div className="p-4 sm:p-6 mt-1 shadow-2xl">
+              {item.audio && (
+                <AudioPlayer
+                  src={item.audio}
+                  autoPlay={open}
+                  showJumpControls={false}
+                  customAdditionalControls={[]}
+                  layout="stacked"
+                />
+              )}
             </div>
           </motion.div>
         </motion.div>
@@ -85,4 +89,4 @@ const VideoPlayDialog = ({ item, open, setOpen }: VideoPlayDialogProps) => {
   );
 };
 
-export default VideoPlayDialog;
+export default AudioPlayerDialog;
