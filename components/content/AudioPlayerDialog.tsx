@@ -75,7 +75,7 @@ const AudioPlayerDialog = ({ item, open, setOpen }: AudioPlayerDialogProps) => {
               {item.audio && (
                 <AudioPlayer
                   src={item.audio}
-                  autoPlay={open}
+                  autoPlay={false}
                   showJumpControls={false}
                   customAdditionalControls={[]}
                   layout="stacked"

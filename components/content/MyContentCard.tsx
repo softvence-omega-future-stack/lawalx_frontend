@@ -305,7 +305,7 @@ const MyContentCard = ({
               <span className="text-textGray px-3 py-1 border border-borderGray bg-bgGray rounded-xl text-xs font-medium">
                 {getTypeLabel()}
               </span>
-              <span>{item.size}</span>
+              { item.size && <span>• {item.size}</span>}
               {item.duration && <span>• {item.duration}</span>}
               {item.fileCount && <span>• {item.fileCount} Files</span>}
             </div>

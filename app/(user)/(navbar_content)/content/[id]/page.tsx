@@ -187,9 +187,28 @@ interface ContentDetailsPageProps {
     };
 }
 
+// Recursive function to find content by ID (searches nested children too)
+const findContentById = (items: ContentItem[], id: string): ContentItem | null => {
+    for (const item of items) {
+        // Check if current item matches
+        if (item.id === id) {
+            return item;
+        }
+        
+        // If item has children, search recursively
+        if (item.children && item.children.length > 0) {
+            const found = findContentById(item.children, id);
+            if (found) {
+                return found;
+            }
+        }
+    }
+    return null;
+};
+
 const ContentDetailsPage = ({ params }: ContentDetailsPageProps) => {
-    // Find the content item by ID from URL params
-    const content = mockContentData.find(item => item.id === params.id);
+    // Find the content item by ID (searches nested items too)
+    const content = findContentById(mockContentData, params.id);
 
     // If content not found, show error
     if (!content) {

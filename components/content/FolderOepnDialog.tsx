@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Search, Folder } from "lucide-react";
 import BaseDialog from "@/common/BaseDialog";
 import ContentButton from "@/common/ContentButton";
-import { Button } from "../ui/button";
 
 interface ContentItem {
   id: string;
@@ -131,12 +130,12 @@ const FolderOpenDialog = ({ item, openFolder, setOpenFolder }: FolderDialogProps
 
       {/* Footer Buttons - PROPERLY FIXED */}
       <div className="flex items-center justify-between gap-4 pt-6">
-        <Button
+        <button
           onClick={handleCancel}
-          className="py-3 border-2 border-bgBlue rounded-xl font-semibold text-Heading bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+          className="py-2.5 px-6 hover:bg-gray-100 border-2 border-bgBlue rounded-xl font-semibold text-Heading bg-white  transition-colors cursor-pointer"
         >
           Cancel
-        </Button>
+        </button>
 
         <div className="">
           <ContentButton
