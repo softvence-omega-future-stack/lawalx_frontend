@@ -24,7 +24,7 @@ const ContentButton = ({ title, icon: Icon, ...rest }: ContentButtonProps) => {
       {Icon && <Icon className="w-5 h-5" />}
 
       {title && (
-        <span className="text-sm md:text-base font-semibold">{title}</span>
+        <span className="text-sm md:text-base font-semibold text-nowrap">{title}</span>
       )}
     </button>
   );

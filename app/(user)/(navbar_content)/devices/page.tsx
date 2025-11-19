@@ -1,51 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-// import DeviceCard from "./components/DeviceCard";
-// import DeviceTable from "./components/DeviceTable";
-// import DeviceDetailsPopup from "./components/DeviceDetailsPopup";
-
-// export default function DevicesPage() {
-// const [selectedDevice, setSelectedDevice] = useState<null | { id: string; name: string; location: string; status: string }>(null);
-
-// const devices = [
-//   { id: "1", name: "Lobby Display", location: "Building A", status: "Active" },
-//   { id: "2", name: "Conference Room", location: "Building B", status: "Inactive" },
-//   { id: "3", name: "Reception", location: "Building A", status: "Active" },
-// ];
-
-// return (
-// <div className="space-y-6">
-//   {/* Header */}
-//   <div className="flex justify-between items-center">
-//     <div>
-//       <h2 className="text-2xl font-semibold">My Devices</h2>
-//       <p className="text-gray-500 text-sm">Manage all your connected devices</p>
-//     </div>
-//     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-//       Add Device
-//     </button>
-//   </div>
-
-//   {/* Summary Cards */}
-//   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-//     <DeviceCard title="Total Devices" value={devices.length} />
-//     <DeviceCard title="Active Devices" value={devices.filter(d => d.status === "Active").length} />
-//     <DeviceCard title="Inactive Devices" value={devices.filter(d => d.status === "Inactive").length} />
-//   </div>
-
-//   {/* Device Table */}
-//   <DeviceTable devices={devices} onRowClick={setSelectedDevice} />
-
-//   {/* Device Details Popup */}
-//   {selectedDevice && <DeviceDetailsPopup device={selectedDevice} onClose={() => setSelectedDevice(null)} />}
-// </div>
-//     <div className="flex items-center justify-center">
-//       Devices page
-//     </div>
-//   );
-// }
-
 "use client";
 
 import React, { useState } from "react";
@@ -53,16 +5,18 @@ import {
   Monitor,
   MapPin,
   MoreVertical,
-  QrCode,
-  ChevronDown,
   X,
-  Wifi,
   Eye,
-  RotateCcw,
   Trash2,
+  Radio,
+  WifiOff,
+  TvMinimal,
+  PenLine,
+  CircleHelp,
 } from "lucide-react";
 
 import AddDeviceModal from "@/components/dashboard/AddDeviceModal";
+import Link from "next/link";
 
 // Remove Device Modal
 function RemoveDeviceModal({
@@ -78,10 +32,10 @@ function RemoveDeviceModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-200">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl p-6">
+        <div className="flex items-center justify-between">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-            Remove
+            Remove Device
           </h2>
           <button
             onClick={onClose}
@@ -91,14 +45,14 @@ function RemoveDeviceModal({
           </button>
         </div>
 
-        <div className="p-5 sm:p-6">
+        <div className="pt-4">
           <p className="text-sm sm:text-base text-gray-600">
             Are you sure you want to remove this device from the account? All
             content will be removed from this device.
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 sm:py-5 border-t border-gray-200">
+        <div className="flex items-center justify-end gap-3 pt-9">
           <button
             onClick={onClose}
             className="px-5 sm:px-6 py-2 sm:py-2.5 border border-gray-300 rounded-lg font-medium text-sm sm:text-base text-gray-700 hover:bg-gray-50 transition-colors"
@@ -274,30 +228,35 @@ export default function Devices() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {/* Total Devices */}
-        <div className="bg-white rounded-xl shadow-sm p-5 border border-borderGray">
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-borderGray">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-borderGray flex items-center justify-center">
-              <Monitor className="w-5 h-5 text-gray-600" />
+            <div className="w-10 h-10 rounded-full border border-borderGray flex items-center justify-center">
+              <TvMinimal className="w-5 h-5 text-navGray" />
             </div>
             <div>
-              <p className="text-xs text-gray-500">Total Devices</p>
+              <p className="text-sm text-gray-500">Total Devices</p>
               <p className="text-2xl font-bold text-gray-900">{totalDevices}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-500">You can add 16 more devices</p>
-          <button className="mt-3 w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-            Upgrade Plan
-          </button>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-500">You can add 16 more devices</p>
+
+            <Link href="/choose-plan">
+              <button className="py-2 px-4 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">
+                Upgrade Plan
+              </button>
+            </Link>
+          </div>
         </div>
 
         {/* Online Status */}
-        <div className="bg-white rounded-xl shadow-sm p-5 border border-borderGray">
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-borderGray">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-              <Wifi className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 rounded-full border border-borderGray flex items-center justify-center">
+              <Radio className="w-5 h-5 text-[#22C55E]" />
             </div>
             <div>
-              <p className="text-xs text-gray-500">Online Status</p>
+              <p className="text-sm text-gray-500">Online Status</p>
               <p className="text-2xl font-bold text-gray-900">
                 {onlineDevices}
               </p>
@@ -306,14 +265,14 @@ export default function Devices() {
         </div>
 
         {/* Offline */}
-        <div className="bg-white rounded-xl shadow-sm p-5 border border-borderGray">
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-borderGray">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center">
-              <Monitor className="w-5 h-5 text-red-600" />
+            <div className="w-10 h-10 rounded-full border border-borderGray flex items-center justify-center">
+              <WifiOff className="w-5 h-5 text-[#EF4444]" />
             </div>
             <div>
-              <p className="text-xs text-gray-500">Offline</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500">Offline</p>
+              <p className="text-2xl font-bold text-[#EF4444]">
                 {offlineDevices}
               </p>
             </div>
@@ -328,7 +287,17 @@ export default function Devices() {
         </h2>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+          className="
+    px-6 py-3 
+    text-white text-sm font-medium
+    border-2 border-borderGray 
+    rounded-xl
+    flex items-center gap-2
+    transition-all
+    bg-gradient-to-b from-bgBlue to-[#159fef]
+    shadow-[0_1px_2px_0_rgba(0,0,0,0.2)]
+    active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.2)] cursor-pointer
+  "
         >
           <span className="text-lg leading-none">+</span> Add Device
         </button>
@@ -440,24 +409,24 @@ export default function Devices() {
                             onClick={() => setOpenMenuId(null)}
                           ></div>
                           <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
-                            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-200">
                               <Eye className="w-4 h-4" />
                               Preview
                             </button>
-                            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                              <RotateCcw className="w-4 h-4" />
-                              Restart
+                            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-200">
+                              <PenLine className="w-4 h-4" />
+                              Rename
                             </button>
-                            <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50 flex items-center gap-2">
-                              <Wifi className="w-4 h-4" />
-                              Remove Device
+                            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-200">
+                              <CircleHelp className="w-4 h-4" />
+                              Report
                             </button>
                             <button
                               onClick={() => handleRemove(device)}
                               className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                             >
                               <Trash2 className="w-4 h-4" />
-                              Remove
+                              Remove Device
                             </button>
                           </div>
                         </>
@@ -543,19 +512,19 @@ export default function Devices() {
                       Preview
                     </button>
                     <button className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white rounded flex items-center gap-2">
-                      <RotateCcw className="w-4 h-4" />
-                      Restart
+                      <PenLine className="w-4 h-4" />
+                      Rename
                     </button>
-                    <button className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-white rounded flex items-center gap-2">
-                      <Wifi className="w-4 h-4" />
-                      Remove Device
+                    <button className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white rounded flex items-center gap-2">
+                      <CircleHelp className="w-4 h-4" />
+                      Report
                     </button>
                     <button
                       onClick={() => handleRemove(device)}
                       className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-white rounded flex items-center gap-2"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Remove
+                      Remove Device
                     </button>
                   </div>
                 </>
