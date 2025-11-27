@@ -21,7 +21,7 @@ export const mockContentData: ContentItem[] = [
                 size: "25 MB",
                 duration: "1:30",
                 thumbnail:
-                    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 video: "./detailsVideo.mp4",
                 updatedAt: "2 days ago",
             },
@@ -31,7 +31,7 @@ export const mockContentData: ContentItem[] = [
                 type: "image",
                 size: "8 MB",
                 thumbnail:
-                    "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1637592156141-d41fb6234e71?q=80&w=1253&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 updatedAt: "1 day ago",
             },
             {
@@ -54,7 +54,7 @@ export const mockContentData: ContentItem[] = [
         size: "50 MB",
         duration: "4:20",
         thumbnail:
-            "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1726409724841-016b6f4f8b1b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         video: "./detailsVideo.mp4",
         assignedTo: ["Training Room Screen"],
         uploadedDate: "4 days ago",
@@ -67,7 +67,7 @@ export const mockContentData: ContentItem[] = [
         size: "120 MB",
         duration: "6:10",
         thumbnail:
-            "https://images.unsplash.com/photo-1529390079861-591de354faf5?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1637592156141-d41fb6234e71?q=80&w=1253&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         video: "./iceVideo.mp4",
         uploadedDate: "1 week ago",
         updatedAt: "4 days ago",
@@ -115,7 +115,7 @@ export const mockContentData: ContentItem[] = [
                 size: "80 MB",
                 duration: "0:45",
                 thumbnail:
-                    "https://images.unsplash.com/photo-1508873699372-7ae3e3b6b6f6?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 video: "./campaign-teaser.mp4",
                 updatedAt: "1 day ago",
             },
@@ -134,7 +134,7 @@ export const mockContentData: ContentItem[] = [
                 type: "image",
                 size: "3 MB",
                 thumbnail:
-                    "https://images.unsplash.com/photo-1490685451225-4b4b8f0f2c9f?w=400&h=300&fit=crop",
+                    "https://images.unsplash.com/photo-1726409724841-016b6f4f8b1b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 updatedAt: "3 days ago",
             },
         ],
@@ -147,7 +147,7 @@ export const mockContentData: ContentItem[] = [
         type: "image",
         size: "12 MB",
         thumbnail:
-            "https://images.unsplash.com/photo-1508780709619-79562169bc64?w=400&h=300&fit=crop",
+            "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         assignedTo: ["Main Lobby Display", "Reception Screen"],
         uploadedDate: "6 days ago",
         updatedAt: "5 days ago",
@@ -194,7 +194,7 @@ const findContentById = (items: ContentItem[], id: string): ContentItem | null =
         if (item.id === id) {
             return item;
         }
-        
+
         // If item has children, search recursively
         if (item.children && item.children.length > 0) {
             const found = findContentById(item.children, id);

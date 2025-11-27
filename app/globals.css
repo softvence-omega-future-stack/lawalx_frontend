@@ -22,7 +22,6 @@
   --color-background: #ECECF0;
   --color-border: rgba(0, 0, 0, 0.10);
   --font-inter: "Inter", sans-serif;
-  --color-textGray: #525252;
   --color-borderGray: #D4D4D4;
   --color-bgBlue: #0FA6FF;
   --color-bgGray: #F5F5F5;
@@ -39,6 +38,29 @@
 body {
   font-family: var(--font-inter); /* Apply Inter globally */
 }
+
+/* ---------------------------------------------- */
+/* BaseVideoPlayer related styles */
+/* Make progress bar clickable */
+.plyr__progress input[type=range] {
+  cursor: pointer !important;
+}
+
+/* Make volume slider clickable */
+.plyr__volume input[type=range] {
+  cursor: pointer !important;
+}
+
+/* Buttons pointer */
+.plyr__controls button {
+  cursor: pointer !important;
+}
+
+/* Entire controls bar pointer friendly */
+.plyr__controls {
+  cursor: default;
+}
+/* ------------------------------------------------ */
 
 
 .gradient-text {
