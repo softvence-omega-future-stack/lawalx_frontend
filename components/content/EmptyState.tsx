@@ -62,6 +62,7 @@ const EmptyState = ({ contentFilter, searchQuery }: EmptyStateProps) => {
         <Icon className="w-20 h-20 text-gray-900 stroke-[1.5] mb-6" />
         <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
         <p className="text-gray-500 text-sm mb-8">{description}</p>
+        
         <ContentButton icon={buttonIcon} title={buttonTitle} />
       </div>
     </div>

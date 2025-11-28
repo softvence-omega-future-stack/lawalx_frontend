@@ -21,6 +21,7 @@ import MenuDropdown from "@/common/MenuDropdown";
 import VideoPlayDialog from "./VideoPlayDialog";
 import AudioPlayerDialog from "./AudioPlayerDialog";
 import FolderOpenDialog from "./FolderOepnDialog";
+import ActionButton from "../ActionButton";
 
 interface ContentCardProps {
   item: ContentItem;
@@ -229,6 +230,9 @@ const MyContentCard = ({
 
               <div className="flex items-center gap-2 w-full md:w-[15%] justify-end">
                 {!isAssigned && (
+                  <ActionButton title="Assign" icon={<TvMinimal className="w-4 h-4" />} onClick={() => onAssignClick?.(item.id)}/>
+                )}
+                {isAssigned && (
                   <button
                     onClick={() => onAssignClick?.(item.id)}
                     className="px-4 py-2 bg-bgBlue hover:bg-blue-500 text-white text-sm font-medium rounded-lg flex items-center gap-2"
