@@ -55,7 +55,7 @@ function RemoveDeviceModal({
         <div className="flex items-center justify-end gap-3 pt-9">
           <button
             onClick={onClose}
-            className="px-5 sm:px-6 py-2 sm:py-2.5 border border-gray-300 rounded-lg font-medium text-sm sm:text-base text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-5 sm:px-6 py-2 sm:py-2.5 border border-gray-300 rounded-xl font-medium text-sm sm:text-base text-gray-700 hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
@@ -64,7 +64,7 @@ function RemoveDeviceModal({
               console.log("Removing device:", deviceName);
               onClose();
             }}
-            className="px-5 sm:px-6 py-2 sm:py-2.5 bg-red-500 text-white rounded-lg font-medium text-sm sm:text-base hover:bg-red-600 transition-colors"
+            className="px-5 sm:px-6 py-2 sm:py-2.5 bg-bgRed border-white/10  text-white rounded-xl font-medium text-sm sm:text-base hover:bg-red-500 transition-colors shadow-customShadow"
           >
             Remove
           </button>
@@ -290,13 +290,12 @@ export default function Devices() {
           className="
     px-6 py-3 
     text-white text-sm font-medium
-    border-2 border-borderGray 
     rounded-xl
     flex items-center gap-2
     transition-all
     bg-gradient-to-b from-bgBlue to-[#159fef]
-    shadow-[0_1px_2px_0_rgba(0,0,0,0.2)]
-    active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.2)] cursor-pointer
+    shadow-customShadow
+    active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.2)] cursor-pointer hover:scale-[1.02]
   "
         >
           <span className="text-lg leading-none">+</span> Add Device
