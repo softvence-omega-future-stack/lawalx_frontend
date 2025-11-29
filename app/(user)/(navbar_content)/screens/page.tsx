@@ -23,6 +23,7 @@ export type ScreenData = {
   assignedContent: string;
   devices: number;
   lastUpdated: string;
+  thumbnail?: string
   video?: string
 }
 

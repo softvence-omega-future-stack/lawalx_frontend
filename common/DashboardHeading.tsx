@@ -5,7 +5,7 @@ interface DashboardHeadingProps {
 const DashboardHeading = ({ title, description }: DashboardHeadingProps) => {
     return (
         <div className="space-y-2">
-            <h1 className="text-xl md:text-3xl font-semibold text-gray-900">
+            <h1 className="text-xl md:text-3xl font-semibold text-Heading">
                 {title}
             </h1>
             <p className="text-sm text-pcolor mt-1">
