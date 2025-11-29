@@ -46,21 +46,24 @@ const notifications = [
     id: 2,
     icon: Bell,
     title: "Account Approved",
-    description: "Your account has been approved. You can now access all features.",
+    description:
+      "Your account has been approved. You can now access all features.",
     time: "1 hour ago",
   },
   {
     id: 3,
     icon: Bell,
     title: "Account Approved",
-    description: "Your account has been approved. You can now access all features.",
+    description:
+      "Your account has been approved. You can now access all features.",
     time: "1 hour ago",
   },
   {
     id: 4,
     icon: Bell,
     title: "Account Approved",
-    description: "Your account has been approved. You can now access all features.",
+    description:
+      "Your account has been approved. You can now access all features.",
     time: "1 hour ago",
   },
 ];
@@ -94,30 +97,30 @@ export default function UserDashboardNavbar() {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1">
-  {navItems.map((item) => (
-    <Link
-      key={item.href}
-      href={item.href}
-      className={`
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
         relative px-3 xl:px-3 ml-2 py-2 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap group
-        ${isActive(item.href)
-          ? "text-bgBlue font-medium bg-blue-50 w-fit rounded"
-          : "text-navGray hover:text-bgBlue"
+        ${
+          isActive(item.href)
+            ? "text-bgBlue font-medium bg-blue-50 w-fit rounded"
+            : "text-navGray hover:text-bgBlue"
         }
       `}
-    >
-      {item.label}
-      {/* Smooth border underline */}
-      <span
-        className={`
+              >
+                {item.label}
+                {/* Smooth border underline */}
+                <span
+                  className={`
           absolute left-0 bottom-0 h-0.5 bg-bgBlue transition-all duration-300 ease-in-out
           ${isActive(item.href) ? "w-full" : "w-0 group-hover:w-full"}
         `}
-      />
-    </Link>
-  ))}
-</nav>
-
+                />
+              </Link>
+            ))}
+          </nav>
         </div>
 
         {/* Right section - Desktop Actions */}
@@ -175,7 +178,7 @@ export default function UserDashboardNavbar() {
                 setProfileOpen(false);
                 setNotificationOpen(false);
               }}
-              className="px-3 lg:px-4 py-2 bg-bgBlue text-white rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-1.5 text-sm font-medium cursor-pointer"
+              className="px-3 lg:px-4 py-2 shadow-customShadow bg-bgBlue text-white rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-1.5 text-sm font-medium cursor-pointer"
             >
               <span>New</span>
               <ChevronDown className="sm:pl-1 sm:border-l border-l-0 border-gray-300 w-4 h-4 hidden lg:inline" />
@@ -423,15 +426,6 @@ export default function UserDashboardNavbar() {
   );
 }
 
-
-
-
-
-
-
-
-
-
 // "use client";
 
 // import Link from "next/link";
@@ -506,7 +500,6 @@ export default function UserDashboardNavbar() {
 //   const [newOpen, setNewOpen] = useState(false);
 //   const [notificationOpen, setNotificationOpen] = useState(false);
 //   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
 
 //   return (
 //     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 max-w-[1920px] mx-auto">
