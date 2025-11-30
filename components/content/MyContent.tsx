@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   CloudUpload,
   Grid2X2,
@@ -9,14 +9,15 @@ import {
   Search,
   FolderPlus,
   ListMusic,
-  ChevronDown,
 } from "lucide-react";
-import ContentButton from "@/common/ContentButton";
+
 import DashboardHeading from "@/common/DashboardHeading";
 import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
+import ActionButton from "../ActionButton";
+import BlueSelect from "@/common/BlueSelect";
 
 // ============================================
 // TYPES
@@ -38,13 +39,17 @@ export interface ContentItem {
   video?: string;
   audio?: string;
   uploadedDate?: string;
+  fileExtension?: string;
   updatedAt?: string;
+  assignedDevices?: string[];
+  assignedPlaylists?: string[];
+  schedules?: string[];
   assignedTo?: string[];
   children?: ContentItem[];
 }
 
 // ============================================
-// OPTIONS & MOCK DATA
+// OPTIONS
 // ============================================
 export const createNew: SelectOption[] = [
   { label: "New Folder", value: "new-folder", icon: <FolderPlus size={22} /> },
@@ -62,6 +67,7 @@ export const allContent: SelectOption[] = [
   { label: "Playlists", value: "playlists" },
   { label: "Files", value: "files" },
 ];
+
 
 export const mockContentData: ContentItem[] = [
   // ---- Folder with nested videos & playlists ----
@@ -201,7 +207,7 @@ export const mockContentData: ContentItem[] = [
     ],
   },
 
-  // ---- Single image item (top-level file) ----
+  // ---- Single image item (top-level) ----
   {
     id: "img1",
     title: "Office Background Image",
@@ -214,7 +220,7 @@ export const mockContentData: ContentItem[] = [
     updatedAt: "5 days ago",
   },
 
-  // ---- Small video file used for details/example ----
+  // ---- Short demo video ----
   {
     id: "v3",
     title: "Welcome Loop",
@@ -228,7 +234,7 @@ export const mockContentData: ContentItem[] = [
     updatedAt: "4 days ago",
   },
 
-  // ---- Another playlist top-level ----
+  // ---- Another playlist ----
   {
     id: "p3",
     title: "Event BGM Collection",
@@ -243,7 +249,6 @@ export const mockContentData: ContentItem[] = [
 ];
 
 
-
 // ============================================
 // COMPONENT
 // ============================================
@@ -254,30 +259,18 @@ const MyContent = () => {
   const [contentFilter, setContentFilter] = useState("all-content");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [open, setOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // ✅ Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Filter & Sort logic
+  // FILTER + SORT
   const filteredContent = mockContentData
     .filter((item) => {
       const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
       let matchesType = true;
+
       if (contentFilter === "folders") matchesType = item.type === "folder";
       else if (contentFilter === "playlists") matchesType = item.type === "playlist";
       else if (contentFilter === "files")
         matchesType = item.type === "video" || item.type === "image";
+
       return matchesSearch && matchesType;
     })
     .sort((a, b) => {
@@ -286,15 +279,17 @@ const MyContent = () => {
       return 0;
     });
 
-  // Handlers
-  const handleItemSelect = (id: string) => console.log("Item selected:", id);
-  const handleItemMenuClick = (id: string) => console.log("Menu clicked for:", id);
-  const handleAssignClick = (id: string) => console.log("Assign clicked for:", id);
+  // HANDLERS
+  const handleItemSelect = (id: string) => console.log("Selected:", id);
+  const handleItemMenuClick = (id: string) => console.log("Menu clicked:", id);
+  const handleAssignClick = (id: string) => console.log("Assign:", id);
 
   const handleCreateChange = (value: string) => {
     setCreateOption(value);
-    setDropdownOpen(false);
-    if (value === "new-folder") setOpen(true);
+
+    if (value === "new-folder") {
+      setOpen(true);
+    }
   };
 
   return (
@@ -304,48 +299,35 @@ const MyContent = () => {
         <DashboardHeading title="My Content" />
 
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
+          {/* UPLOAD BUTTON */}
           <div className="w-full sm:w-[200px]">
-            <ContentButton title="Upload Content" icon={CloudUpload} />
+            <ActionButton
+              title="Upload Content"
+              icon={<CloudUpload className="w-5 h-5" />}
+              bgColor="#0FA6FF"
+              hoverColor="#00A4FF"
+            />
           </div>
 
-          {/* Custom Dropdown */}
-          <div className="relative w-full sm:w-[200px]" ref={dropdownRef}>
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="w-full flex items-center justify-between bg-white border border-bgBlue rounded-xl px-6 py-3 text-gray-800 focus:ring-2 focus:ring-bgBlue transition cursor-pointer font-semibold text-sm md:text-base"
-            >
-              <span className="flex items-center gap-2">
-                <Plus className="w-5 h-5 text-black font-semibold" />
-                {createOption
-                  ? createNew.find((o) => o.value === createOption)?.label
-                  : "Create New"}
-              </span>
-              <ChevronDown
-                className={`w-5 h-5 text-black transition-transform duration-200 font-semibold ${dropdownOpen ? "rotate-180" : ""
-                  }`}
-              />
-            </button>
+          {/* Blue Select — Create New */}
+          <div className="w-full sm:w-[200px]">
+            <BlueSelect
+              value={createOption}
+              onChange={handleCreateChange}
+              options={createNew}
+              placeholder="Create New"
+              placeholderIcon={<Plus className="w-5 h-5 text-black font-bold" />}   // ⬅ ADDED ICON
+              showLabel={false}
+            />
 
-            {dropdownOpen && (
-              <div className="absolute z-10 mt-2 w-full bg-white border-2 border-bgBlue rounded-xl shadow-lg overflow-hidden">
-                {createNew.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handleCreateChange(option.value)}
-                    className="w-full text-left px-4 py-2 hover:bg-bgBlue/10 text-gray-800 text-sm md:text-base cursor-pointer"
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Search + Filter Bar */}
+      {/* Search + Filters */}
       <div className="bg-white border border-borderGray rounded-xl p-4 w-full">
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+          {/* Search */}
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -353,10 +335,11 @@ const MyContent = () => {
               placeholder="Search Device"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 md:py-3 bg-bgGray border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 md:py-3 bg-bgGray border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500"
             />
           </div>
 
+          {/* Sorting & Filters */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
             <div className="w-full sm:w-[155px]">
               <BaseSelect
@@ -374,14 +357,16 @@ const MyContent = () => {
                 onChange={setContentFilter}
                 options={allContent}
                 placeholder="All Content"
+                icon={<Plus size={18} />}
                 showLabel={false}
               />
             </div>
 
+            {/* GRID / LIST */}
             <div className="w-[100px] flex items-center bg-bgGray p-1.5 rounded-lg">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`flex-1 flex items-center justify-center p-2 rounded-md transition cursor-pointer ${viewMode === "grid" ? "bg-white" : ""
+                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "grid" ? "bg-white" : ""
                   }`}
               >
                 <Grid2X2
@@ -389,9 +374,10 @@ const MyContent = () => {
                     }`}
                 />
               </button>
+
               <button
                 onClick={() => setViewMode("list")}
-                className={`flex-1 flex items-center justify-center p-2 rounded-md transition cursor-pointer ${viewMode === "list" ? "bg-white" : ""
+                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "list" ? "bg-white" : ""
                   }`}
               >
                 <List
@@ -404,12 +390,12 @@ const MyContent = () => {
         </div>
       </div>
 
-      {/* All Content Title */}
-      <h2 className="text-lg md:text-2xl font-semibold text-gray-900">
+      {/* Count */}
+      <h2 className="text-lg md:text-2xl font-semibold text-Heading">
         All Content ({filteredContent.length})
       </h2>
 
-      {/* Content Display */}
+      {/* CONTENT GRID */}
       {filteredContent.length === 0 ? (
         <EmptyState contentFilter={contentFilter} searchQuery={searchQuery} />
       ) : (
