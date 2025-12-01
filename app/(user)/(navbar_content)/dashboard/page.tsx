@@ -814,15 +814,12 @@
 
 import React, { useState } from "react";
 import {
-  X,
   Monitor,
   Wifi,
   HardDrive,
   Calendar,
   TrendingUp,
   Bell,
-  Crown,
-  Radio,
   Tv,
   Video,
   ArrowUpRight,
@@ -834,9 +831,11 @@ import {
 import ActionCardButton from "@/common/ActionCardButton";
 import CreateScreenModal from "@/components/dashboard/CreateScreenModal";
 import AddDeviceModal from "@/components/dashboard/AddDeviceModal";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Dashboard() {
-  const [showUpgradeBanner, setShowUpgradeBanner] = useState(true);
+  // const [showUpgradeBanner, setShowUpgradeBanner] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddDeviceModalOpen, setIsAddDeviceModalOpen] = useState(false);
 
@@ -901,7 +900,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen">
       {/* Upgrade Banner */}
-      {showUpgradeBanner && (
+      {/* {showUpgradeBanner && (
         <div
           className="rounded-xl shadow-sm p-4 mb-6 flex items-center justify-between"
           style={{
@@ -932,96 +931,123 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
+
+      <div className="flex items-center justify-center md:justify-between mb-6 dashboard-header-bg p-6 rounded-xl">
+        <div className="ml-0 space-y-1.5 md:ml-0 lg:ml-10">
+          <h1 className="text-2xl font-bold text-white">
+            Go Live on Any Screen Instantly
+          </h1>
+          <p className="text-sm text-gray-200">
+            Create your first screen and start displaying your content in
+            minutes.
+          </p>
+          <button className="bg-bgBlue shadow-customShadow px-4 py-2 rounded-lg text-white mt-4 hover:bg-gray-400 transition-colors text-sm font-medium cursor-pointer">
+            Upload Content
+          </button>
+        </div>
+        <div className="md:mr-2 lg:mr-4 xl:mr-10 md:block hidden">
+          <Image
+            src="/userDashboard/img3.webp"
+            alt="Dashboard Header"
+            height={165}
+            width={165}
+            style={{ transform: "scale(1.05)" }}
+          />
+        </div>
+      </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="bg-[#EFF6FF] rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+          <div className="flex items-center mb-2">
+            <span className="mt-0.5 p-2.5 border rounded-full border-bgBlue mr-2 bg-white">
+              <Monitor className="w-7 h-7 text-bgBlue" />
+            </span>
             <span className="text-sm text-gray-600">Total Devices</span>
-            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
-              <Monitor className="w-7 h-7 text-gray-900" />
-            </span>
           </div>
-          <div className="text-3xl font-bold text-gray-900 mb-2">
-            {totalDevices}
-          </div>
-          <div className="text-sm text-green-500 flex items-center gap-1 mb-2">
-            <TrendingUp className="w-4 h-4" />
-            {totalDevices > 0
-              ? `${totalDevices} New This Week`
-              : "0 New This Week"}
+          <div className="flex items-center justify-between text-gray-900 mb-2">
+            <span className="text-2xl font-semibold">{totalDevices}</span>
+            <div className="text-sm text-green-500 flex items-center gap-1 mb-2">
+              <TrendingUp className="w-4 h-4" />
+              {totalDevices > 0
+                ? `${totalDevices} New This Week`
+                : "0 New This Week"}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
+        <div className="bg-[#F7FEFB] rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+          <div className="flex items-center mb-2">
+            <span className="mt-0.5 p-2.5 border rounded-full border-bgGreen mr-2 bg-white">
+              <Wifi className="w-7 h-7 text-bgGreen" />
+            </span>
             <span className="text-sm text-gray-600">Online Status</span>
-            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
-              <Radio className="w-7 h-7 text-green-500" />
-            </span>
           </div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">
-            {onlineDevices}
-          </div>
-          <div className="text-sm text-red-500 flex items-center gap-1">
-            {offlineDevices} Offline <TriangleAlertIcon className="w-4 h-4" />
+          <div className="flex items-center justify-between text-gray-900 mb-1">
+            <span className="text-2xl font-semibold">{onlineDevices}</span>
+            <div className="text-sm text-red-500 flex items-center gap-1">
+              {offlineDevices} Offline <TriangleAlertIcon className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Storage</span>
-            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
-              <HardDrive className="w-7 h-7 text-green-500" />
+        <div className="bg-[#FEF7F7] rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+          <div className="flex items-center mb-2">
+            <span className="mt-0.5 p-2.5 border rounded-full border-bgRed mr-2 bg-white">
+              <WifiOff className="w-7 h-7 text-bgRed" />
             </span>
+            <span className="text-sm text-gray-600">Offline Status</span>
           </div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">
-            5.0/10 <span className="text-sm text-gray-500">GB</span>
+          <div className="flex items-center justify-between text-gray-900 mb-1">
+            <span className="text-2xl font-semibold">{onlineDevices}</span>
+            <div className="text-sm text-red-500 flex items-center gap-1">
+              {offlineDevices} Offline <TriangleAlertIcon className="w-4 h-4" />
+            </div>
           </div>
-          <div className="mt-3 w-full flex items-center gap-3">
-            <div className="flex-1 bg-gray-200 rounded-full h-2">
+        </div>
+
+        <div className="bg-white border border-bgGray rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+          <div className="flex items-center mb-2">
+            <span className="mt-0.5 p-2.5 border rounded-full border-gray-600 mr-2 bg-white ">
+              <HardDrive className="w-7 h-7 text-gray-600" />
+            </span>
+            <span className="text-sm text-gray-600">Storage</span>
+          </div>
+          <div className="flex items-center justify-between text-gray-900 mb-1">
+            <span className="text-xl font-semibold">5.0/10 GB</span>
+            <Link
+              href="/choose-plan"
+              className="text-sm text-bgBlue hover:text-blue-500"
+            >
+              Upgrade <ArrowUpRight className="w-4 h-4 inline-block" />
+            </Link>
+            {/* <div className="flex-1 bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-500 h-2 rounded-full"
                 style={{ width: "50%" }}
               ></div>
-            </div>
-            <button className="text-sm text-bgBlue hover:text-blue-500">
-              Upgrade <ArrowUpRight className="w-4 h-4 inline-block" />
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Active Apps</span>
-            <span className="mt-0.5 p-2.5 border rounded-full border-gray-200">
-              <Radio className="w-7 h-7 text-green-500" />
-            </span>
-          </div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">0</div>
-          <div className="text-sm text-red-500 flex items-center gap-1">
-            0 Offline <TriangleAlertIcon className="w-4 h-4" />
+            </div> */}
           </div>
         </div>
       </div>
 
       {/* Add New Section */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-6 add-bg-img">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Add New</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <ActionCardButton
             onClick={() => setIsModalOpen(true)}
-            icon={<ScreenShare className="text-white" />}
+            icon={<ScreenShare className="text-white w-4 h-4" />}
             title="Create Screen"
             subtitle="Create a new screen to play on your devices"
             active
           />
           <button
             onClick={() => setIsAddDeviceModalOpen(true)}
-            className="flex items-center gap-3 px-3 sm:px-4 py-2 border-2 border-gray-200 rounded-xl hover:border-gray-300 cursor-pointer transition-colors"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white  cursor-pointer transition-colors"
           >
-            <Tv className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
+            <Tv className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Add Device</div>
               <div className="text-[.6rem] md:text-sm text-gray-600">
@@ -1029,8 +1055,8 @@ export default function Dashboard() {
               </div>
             </div>
           </button>
-          <button className="flex items-center gap-3 px-3 sm:px-4 py-2 border-2 border-gray-200 rounded-xl hover:border-gray-300 cursor-pointer transition-colors">
-            <Video className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
+          <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white  cursor-pointer transition-colors">
+            <Video className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Upload Content</div>
               <div className="text-[.6rem] md:text-sm text-gray-600">
@@ -1038,8 +1064,8 @@ export default function Dashboard() {
               </div>
             </div>
           </button>
-          <button className="flex items-center gap-3 px-3 sm:px-4 py-2 border-2 border-gray-200 rounded-xl hover:border-gray-300 cursor-pointer transition-colors">
-            <Calendar className="w-11 h-11 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
+          <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white  cursor-pointer transition-colors">
+            <Calendar className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900">Schedule</div>
               <div className="text-[.6rem] md:text-sm text-gray-600">

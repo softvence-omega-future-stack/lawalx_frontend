@@ -93,7 +93,7 @@ const ActionCardButton: React.FC<ActionCardButtonProps> = ({
     <button
       onClick={onClick}
       className={cn(
-        "relative overflow-hidden rounded-xl flex items-center gap-3 text-left px-3 sm:px-4 py-2 w-full transition-all duration-300 shadow-sm cursor-pointer",
+        "relative overflow-hidden rounded-xl flex items-center gap-2 text-left px-3 sm:px-4 py-2 w-full transition-all duration-300 shadow-sm cursor-pointer",
         active
           ? "text-white scale-[1.02] bg-gray-900 shadow-lg"
           : "bg-white text-gray-900 border border-gray-200",
@@ -135,7 +135,7 @@ const ActionCardButton: React.FC<ActionCardButtonProps> = ({
       <div className="flex flex-col">
         <span
           className={cn(
-            "font-semibold transition-colors duration-300",
+            "font-semibold text-sm transition-colors duration-300",
             active ? "text-white" : "text-gray-900"
           )}
         >
@@ -144,7 +144,7 @@ const ActionCardButton: React.FC<ActionCardButtonProps> = ({
         {subtitle && (
           <span
             className={cn(
-              "text-[.6rem] md:text-sm mt-0.5 transition-colors duration-300",
+              "text-[.6rem] md:text-xs mt-0.5 transition-colors duration-300",
               active ? "text-white/80" : "text-gray-600"
             )}
           >
