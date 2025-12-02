@@ -24,10 +24,10 @@ export default function DeviceCard({ device, isSelected, onToggle, onPreview, on
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <Monitor className="w-4 h-4 text-gray-400" />
-              <p className="text-sm font-medium text-gray-900">{device.name}</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{device.name}</p>
             </div>
-            <p className="text-xs text-gray-500 mb-2">{device.mac}</p>
-            <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{device.mac}</p>
+            <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-2">
               <MapPin className="w-3 h-3" /> {device.location}
             </div>
             <div className="mb-2">
@@ -56,7 +56,7 @@ export default function DeviceCard({ device, isSelected, onToggle, onPreview, on
       {menuOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)}></div>
-          <div className="mt-3 bg-gray-50 rounded-lg p-3 z-50 relative">
+          <div className="rounded-lg p-3 z-50 relative -top-35 left-0 ">
             <DeviceActionsMenu device={device} onPreview={onPreview} onRename={onRename} onReport={onReport} onRemove={onRemove} onClose={() => setMenuOpen(false)} />
           </div>
         </>

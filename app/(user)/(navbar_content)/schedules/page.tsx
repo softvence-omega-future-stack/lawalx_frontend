@@ -1,4 +1,3 @@
-// app/schedules/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -15,11 +14,19 @@ import {
 import Link from "next/link";
 import ScheduleModal from "@/components/schedules/CreateScheduleModal";
 
+interface ContentItem {
+  id: string;
+  type: "video" | "image" | "html" | "other";
+  src?: string;
+  durationSeconds?: number;
+  metadata?: Record<string, unknown>;
+}
+
 interface Schedule {
   id: string;
   name: string;
   description: string;
-  content: string[];
+  content: ContentItem[];
   devices: string[];
   repeat: "once" | "daily" | "weekly" | "monthly";
   days?: string[];
@@ -32,23 +39,73 @@ interface Schedule {
   active: boolean;
 }
 
+// Delete Confirmation Modal — Dark Mode Ready
+const DeleteConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  scheduleName,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  scheduleName: string;
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/30 dark:bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-sm w-full p-6 border border-gray-200 dark:border-gray-700">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          Delete Schedule
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+          Are you sure you want to delete{" "}
+          <span className="font-semibold">{scheduleName}</span>? This action
+          cannot be undone.
+        </p>
+
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl font-medium transition"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              onConfirm();
+              onClose();
+            }}
+            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition shadow-customShadow"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [scheduleToDelete, setScheduleToDelete] = useState<Schedule | null>(null);
 
-  // Load from localStorage on mount
+  // Load from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("schedules");
-    if (saved) {
-      setSchedules(JSON.parse(saved));
-    }
+    if (saved) setSchedules(JSON.parse(saved));
   }, []);
 
-  // Save to localStorage whenever schedules change
+  // Save to localStorage
   useEffect(() => {
     if (schedules.length > 0) {
       localStorage.setItem("schedules", JSON.stringify(schedules));
+    } else {
+      localStorage.removeItem("schedules");
     }
   }, [schedules]);
 
@@ -95,36 +152,46 @@ export default function SchedulesPage() {
     setIsModalOpen(true);
   };
 
-  // const getOrdinal = (n: number) => {
-  //   const s = ["th", "st", "nd", "rd"];
-  //   const v = n % 100;
-  //   return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  // };
+  const openDeleteConfirm = (schedule: Schedule) => {
+    setScheduleToDelete(schedule);
+    setIsDeleteModalOpen(true);
+  };
 
-  // const formatMonthlyDays = (days?: string[]) => {
-  //   if (!days || days.length === 0) return "";
-  //   const clean = [
-  //     ...new Set(
-  //       days.map((d) => parseInt(d, 10)).filter((n) => !isNaN(n) && n > 0)
-  //     ),
-  //   ];
-  //   return (
-  //     clean
-  //       .sort((a, b) => a - b)
-  //       .map(getOrdinal)
-  //       .join(", ") + " • "
-  //   );
-  // };
+  const confirmDelete = () => {
+    if (scheduleToDelete) {
+      deleteSchedule(scheduleToDelete.id);
+      setScheduleToDelete(null);
+      setIsDeleteModalOpen(false);
+    }
+  };
+
+  // Helper to always provide a clean editing object (fixes TS error)
+  const getEditingScheduleForModal = (): Schedule | undefined => {
+    if (!editingSchedule) return undefined;
+
+    return {
+      ...editingSchedule,
+      days: editingSchedule.days || [],
+      monthlyDays: editingSchedule.monthlyDays || [],
+      content: editingSchedule.content || [],
+      devices: editingSchedule.devices || [],
+      playTime: editingSchedule.playTime || "",
+      startDate: editingSchedule.startDate || "",
+      startTime: editingSchedule.startTime || "",
+      endDate: editingSchedule.endDate || "",
+      endTime: editingSchedule.endTime || "",
+    };
+  };
 
   return (
     <div className="min-h-screen">
       <div className="">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 lg:mb-10 gap-4">
           <div className="w-full sm:w-auto">
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-Heading dark:text-white">
               Content Scheduling
             </h3>
-            <p className="text-Heading mt-1 sm:mt-2 text-sm sm:text-base">
+            <p className="text-Heading dark:text-gray-400 mt-1 sm:mt-2 text-sm">
               Manage when and where your content plays across devices
             </p>
           </div>
@@ -141,7 +208,7 @@ export default function SchedulesPage() {
 
         {schedules.length === 0 ? (
           <div className="flex flex-col gap-4 sm:gap-6 items-center justify-center text-center py-12 sm:py-16 lg:py-20 px-4">
-            <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-2 sm:mb-3">
+            <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
               No schedules yet
             </h3>
             <button
@@ -155,27 +222,23 @@ export default function SchedulesPage() {
           <div className="grid gap-4 sm:gap-5 lg:gap-6">
             {schedules.map((sch) => (
               <Link href={`/schedules/${sch.id}`} key={sch.id}>
-                <div className="bg-white rounded-xl border border-gray-300 p-4 sm:p-6 lg:p-8 hover:shadow-md transition-all cursor-pointer">
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-700 p-4 sm:p-6 lg:p-8 hover:shadow-md dark:hover:shadow-xl transition-all cursor-pointer">
                   <div className="flex items-center justify-between flex-wrap gap-4 sm:gap-6 lg:gap-8">
-                    {/* Left: Main Info */}
                     <div className="flex-1 min-w-0 w-full">
-                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">
                         {sch.name}
                       </h3>
-                      <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2 line-clamp-2">
+                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-2 line-clamp-2">
                         {sch.description || "No description"}
                       </p>
-                      
-                      {/* Schedule Details */}
+
                       <div className="mt-4 sm:mt-5 lg:mt-6 space-y-3 sm:space-y-4">
-                        {/* Time & Days Row */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 lg:gap-8 text-gray-600 text-sm sm:text-base">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 lg:gap-8 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                           <div className="flex items-center gap-2 sm:gap-3 min-w-0 w-full sm:w-auto">
-                            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                             <span className="font-medium truncate">
                               {sch.playTime ? (
                                 <>
-                                  {/* Weekly */}
                                   {sch.repeat === "weekly" &&
                                     sch.days &&
                                     sch.days.length > 0 && (
@@ -183,16 +246,10 @@ export default function SchedulesPage() {
                                         {sch.days.join(", ")} •{" "}
                                       </span>
                                     )}
-                                  {/* Monthly */}
-                                  {/* {sch.repeat === "monthly" &&
-                                    sch.monthlyDays && (
-                                      <span className="mr-1 sm:mr-2">
-                                        {formatMonthlyDays(sch.monthlyDays)}
-                                      </span>
-                                    )} */}
-                                  {/* Daily */}
                                   {sch.repeat === "daily" && (
-                                    <span className="mr-1 sm:mr-2">Every day • </span>
+                                    <span className="mr-1 sm:mr-2">
+                                      Every day •{" "}
+                                    </span>
                                   )}
                                   {sch.playTime}
                                 </>
@@ -203,17 +260,16 @@ export default function SchedulesPage() {
                           </div>
 
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                             <span className="font-medium capitalize text-sm sm:text-base">
                               {sch.repeat}
                             </span>
                           </div>
                         </div>
 
-                        {/* Devices & Content Row */}
-                        <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8 text-gray-600 text-sm sm:text-base">
+                        <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <Monitor className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                            <Monitor className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                             <span className="font-medium">
                               {sch.devices.length} Device
                               {sch.devices.length !== 1 ? "s" : ""}
@@ -222,7 +278,7 @@ export default function SchedulesPage() {
 
                           {sch.content.length > 0 && (
                             <div className="flex items-center gap-2 sm:gap-3">
-                              <Video className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 shrink-0" />
+                              <Video className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400 shrink-0" />
                               <span className="text-sm">
                                 {sch.content.length} item
                                 {sch.content.length > 1 ? "s" : ""}
@@ -233,7 +289,7 @@ export default function SchedulesPage() {
                       </div>
                     </div>
 
-                    {/* Right: Actions */}
+                    {/* Actions */}
                     <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-6 shrink-0">
                       <button
                         onClick={(e) => {
@@ -241,13 +297,13 @@ export default function SchedulesPage() {
                           e.stopPropagation();
                           toggleActive(sch.id);
                         }}
-                        className="p-2 sm:p-2.5 rounded-xl hover:bg-gray-100 transition touch-manipulation"
+                        className="p-2 sm:p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition touch-manipulation cursor-pointer"
                         aria-label={sch.active ? "Pause schedule" : "Play schedule"}
                       >
                         {sch.active ? (
                           <Play className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-green-600" />
                         ) : (
-                          <Pause className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-gray-400" />
+                          <Pause className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-gray-400 dark:text-gray-500" />
                         )}
                       </button>
 
@@ -257,19 +313,19 @@ export default function SchedulesPage() {
                           e.stopPropagation();
                           openEdit(sch);
                         }}
-                        className="p-2 sm:p-2.5 lg:p-3 hover:bg-gray-100 rounded-xl transition touch-manipulation"
+                        className="p-2 sm:p-2.5 lg:p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition touch-manipulation cursor-pointer"
                         aria-label="Edit schedule"
                       >
-                        <Edit2 className="w-5 h-5 text-gray-600" />
+                        <Edit2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                       </button>
 
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          deleteSchedule(sch.id);
+                          openDeleteConfirm(sch);
                         }}
-                        className="p-2 sm:p-2.5 lg:p-3 hover:bg-red-50 rounded-xl transition touch-manipulation"
+                        className="p-2 sm:p-2.5 lg:p-3 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition touch-manipulation cursor-pointer"
                         aria-label="Delete schedule"
                       >
                         <Trash2 className="w-5 h-5 text-red-600" />
@@ -283,6 +339,7 @@ export default function SchedulesPage() {
         )}
       </div>
 
+      {/* Create / Edit Modal – Fixed prop typing */}
       <ScheduleModal
         isOpen={isModalOpen}
         onClose={() => {
@@ -290,22 +347,18 @@ export default function SchedulesPage() {
           setEditingSchedule(null);
         }}
         onSave={handleSave}
-        editingSchedule={
-          editingSchedule
-            ? {
-                ...editingSchedule,
-                days: editingSchedule.days || [],
-                monthlyDays: editingSchedule.monthlyDays || [],
-                content: editingSchedule.content || [],
-                devices: editingSchedule.devices || [],
-                playTime: editingSchedule.playTime || "",
-                startDate: editingSchedule.startDate || "",
-                startTime: editingSchedule.startTime || "",
-                endDate: editingSchedule.endDate || "",
-                endTime: editingSchedule.endTime || "",
-              }
-            : undefined
-        }
+        editingSchedule={getEditingScheduleForModal()}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setScheduleToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        scheduleName={scheduleToDelete?.name || ""}
       />
     </div>
   );

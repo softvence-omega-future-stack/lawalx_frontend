@@ -15,11 +15,21 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { notFound } from "next/navigation";
 
+interface ContentItem {
+  id: string;
+  type: "Video" | "Image" | "Playlist";
+  name: string;
+  thumbnail?: string;
+  size?: string;
+  duration?: string;
+  items?: string[];
+}
+
 interface Schedule {
   id: string;
   name: string;
   description: string;
-  content: string[];
+  content: ContentItem[];
   devices: string[];
   repeat: "once" | "daily" | "weekly" | "monthly";
   days?: string[];
@@ -61,9 +71,8 @@ export default function ScheduleDetailPage() {
     const updated = all.map((s: Schedule) => (s.id === toSave.id ? toSave : s));
     localStorage.setItem("schedules", JSON.stringify(updated));
 
-    // Show toast
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000); // Hide after 3 seconds
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   useEffect(() => {
@@ -78,7 +87,6 @@ export default function ScheduleDetailPage() {
     }
   }, [params.id]);
 
-  // Don't attempt to render the page until the schedule is loaded
   if (!schedule) return null;
 
   const toggleActive = () => {
@@ -106,14 +114,14 @@ export default function ScheduleDetailPage() {
         <div className="flex justify-between items-center mb-8">
           <Link
             href="/schedules"
-            className="flex items-start gap-3 text-gray-600 hover:text-gray-900"
+            className="flex items-start gap-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
           >
             <ArrowLeft className="w-6 h-6 mt-1" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {schedule.name}
               </h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {schedule.description || "No description"}
               </p>
             </div>
@@ -121,7 +129,7 @@ export default function ScheduleDetailPage() {
           <div className="flex gap-4">
             <button
               onClick={toggleActive}
-              className="flex items-center gap-2 px-5 py-2.5 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50"
+              className="flex items-center gap-2 px-5 py-2.5 border border-bgBlue text-bgBlue rounded-lg font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
             >
               {schedule.active ? (
                 <Pause className="w-5 h-5" />
@@ -132,12 +140,12 @@ export default function ScheduleDetailPage() {
             </button>
             <button
               onClick={() => saveToStorage()}
-              className="relative bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 shadow-md transition"
+              className="relative bg-bgBlue text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-500 shadow-customShadow transition"
             >
               Save Changes
             </button>
 
-            {/* Beautiful Toast Popup */}
+            {/* Toast */}
             {showToast && (
               <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 duration-300">
                 <div className="bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
@@ -163,13 +171,13 @@ export default function ScheduleDetailPage() {
           </div>
         </div>
 
-        <div className="space-y-8 bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+        <div className="space-y-8 bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           {/* Basic Info */}
-          <section className="">
-            <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
+          <section>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Basic Information</h2>
             <div className="grid grid-cols-1 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Name *
                 </label>
                 <input
@@ -178,11 +186,11 @@ export default function ScheduleDetailPage() {
                   onChange={(e) =>
                     setSchedule((p) => (p ? { ...p, name: e.target.value } : p))
                   }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
                 </label>
                 <textarea
@@ -193,33 +201,33 @@ export default function ScheduleDetailPage() {
                     )
                   }
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white"
                 />
               </div>
             </div>
           </section>
 
           {/* Content */}
-          <section className="">
+          <section>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Content</h2>
-              <button className="text-blue-600 font-medium hover:underline">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Content</h2>
+              <button className="text-bgBlue font-medium hover:underline">
                 + Add Content
               </button>
             </div>
             {schedule.content.length === 0 ? (
-              <p className="text-center py-12 text-gray-500">
+              <p className="text-center py-12 text-gray-500 dark:text-gray-400">
                 No content added yet
               </p>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {schedule.content.map((item, i) => (
                   <div key={i} className="relative group">
-                    <div className="aspect-video bg-gray-200 border-2 border-dashed rounded-xl flex items-center justify-center">
+                    <div className="aspect-video bg-gray-200 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex items-center justify-center">
                       <div className="text-center text-xs">
-                        <div className="w-12 h-12 bg-gray-300 rounded-lg mx-auto mb-2" />
-                        <p className="font-medium">{item}</p>
-                        <p className="text-gray-500">40 MB</p>
+                        <div className="w-12 h-12 bg-gray-300 dark:bg-gray-700 rounded-lg mx-auto mb-2" />
+                        <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
+                        <p className="text-gray-500 dark:text-gray-400">40 MB</p>
                       </div>
                     </div>
                     <button
@@ -233,9 +241,9 @@ export default function ScheduleDetailPage() {
                             : p
                         )
                       }
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white rounded-full p-1.5 shadow-lg"
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white dark:bg-gray-800 rounded-full p-1.5 shadow-lg border border-gray-200 dark:border-gray-600"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                     </button>
                   </div>
                 ))}
@@ -243,23 +251,25 @@ export default function ScheduleDetailPage() {
             )}
           </section>
 
-          {/* YOUR ORIGINAL SCHEDULE TIME CODE — 100% UNTOUCHED & NOW WORKS */}
-          <section className="">
-            <h2 className="text-xl font-semibold mb-6">Schedule Time</h2>
+          {/* Schedule Time */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Schedule Time</h2>
             <div className="space-y-8">
               {/* Repeat */}
               <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                   Repeat
                 </label>
                 <select
                   value={schedule.repeat}
                   onChange={(e) =>
                     setSchedule((p) =>
-                      p ? { ...p, repeat: e.target.value as Schedule['repeat'] } : p
+                      p
+                        ? { ...p, repeat: e.target.value as Schedule["repeat"] }
+                        : p
                     )
                   }
-                  className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent text-gray-900"
+                  className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent text-gray-900 dark:text-white"
                 >
                   <option value="once">Run Once</option>
                   <option value="daily">Daily</option>
@@ -271,34 +281,32 @@ export default function ScheduleDetailPage() {
               {/* Weekly Days */}
               {schedule.repeat === "weekly" && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-4">
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-4">
                     Select Days
                   </label>
                   <div className="grid grid-cols-7 gap-3">
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                      (day) => (
-                        <button
-                          key={day}
-                          type="button"
-                          onClick={() => {
-                            setSchedule((p) => {
-                              if (!p) return p;
-                              const updated = p.days?.includes(day)
-                                ? p.days.filter((d) => d !== day)
-                                : [...(p.days || []), day];
-                              return { ...p, days: updated };
-                            });
-                          }}
-                          className={`py-3 rounded-lg font-medium text-sm transition-all ${
-                            schedule.days?.includes(day)
-                              ? "bg-bgBlue text-white"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      )
-                    )}
+                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => {
+                          setSchedule((p) => {
+                            if (!p) return p;
+                            const updated = p.days?.includes(day)
+                              ? p.days.filter((d) => d !== day)
+                              : [...(p.days || []), day];
+                            return { ...p, days: updated };
+                          });
+                        }}
+                        className={`py-3 rounded-lg font-medium text-sm transition-all ${
+                          schedule.days?.includes(day)
+                            ? "bg-bgBlue text-white"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -306,7 +314,7 @@ export default function ScheduleDetailPage() {
               {/* Monthly Days */}
               {schedule.repeat === "monthly" && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-4">
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-4">
                     Select Days
                   </label>
                   <div className="grid grid-cols-7 md:grid-cols-16 gap-3">
@@ -328,7 +336,7 @@ export default function ScheduleDetailPage() {
                           className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
                             schedule.monthlyDays?.includes(day)
                               ? "bg-bgBlue text-white"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                           }`}
                         >
                           {num}
@@ -340,10 +348,9 @@ export default function ScheduleDetailPage() {
               )}
 
               {/* Play Time */}
-              {(schedule.repeat === "daily" ||
-                schedule.repeat === "weekly" || schedule.repeat === "monthly") && (
+              {(schedule.repeat === "daily" || schedule.repeat === "weekly" || schedule.repeat === "monthly") && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                     Play Time
                   </label>
                   <div className="relative">
@@ -352,13 +359,12 @@ export default function ScheduleDetailPage() {
                       value={schedule.playTime || ""}
                       onChange={(e) =>
                         setSchedule((p) =>
-                          p ? { ...p, playTime: e.target.value } : p
-                        )
+                          p ? { ...p, playTime: e.target.value } : p)
                       }
                       placeholder="09:00 AM"
-                      className="w-full pl-4 pr-12 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent"
+                      className="w-full pl-4 pr-12 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent text-gray-900 dark:text-white"
                     />
-                    <Clock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                    <Clock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 pointer-events-none" />
                   </div>
                 </div>
               )}
@@ -367,7 +373,7 @@ export default function ScheduleDetailPage() {
               {schedule.repeat === "once" && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-3">
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                       Select Date
                     </label>
                     <div className="relative">
@@ -380,13 +386,13 @@ export default function ScheduleDetailPage() {
                           )
                         }
                         placeholder="MM/YY"
-                        className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue"
+                        className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
                       />
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-3">
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                       Play Time
                     </label>
                     <div className="relative">
@@ -399,9 +405,9 @@ export default function ScheduleDetailPage() {
                           )
                         }
                         placeholder="09:00 AM"
-                        className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue"
+                        className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
                       />
-                      <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </div>
                   </div>
                 </div>
@@ -410,13 +416,13 @@ export default function ScheduleDetailPage() {
               {/* Recurring Range */}
               {schedule.repeat !== "once" && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-4">
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-4">
                     Select Range
                   </label>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <div>
-                        <label className="text-xs text-gray-600">
+                        <label className="text-xs text-gray-600 dark:text-gray-400">
                           Start Date
                         </label>
                         <div className="relative mt-2">
@@ -429,34 +435,15 @@ export default function ScheduleDetailPage() {
                               )
                             }
                             placeholder="MM/YY"
-                            className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue"
+                            className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
                           />
-                          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                         </div>
                       </div>
-                      {/* <div>
-                        <label className="text-xs text-gray-600">
-                          Start Time
-                        </label>
-                        <div className="relative mt-2">
-                          <input
-                            type="text"
-                            value={schedule.startTime || ""}
-                            onChange={(e) =>
-                              setSchedule((p) =>
-                                p ? { ...p, startTime: e.target.value } : p
-                              )
-                            }
-                            placeholder="09:00 AM"
-                            className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue"
-                          />
-                          <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        </div>
-                      </div> */}
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label className="text-xs text-gray-600">
+                        <label className="text-xs text-gray-600 dark:text-gray-400">
                           End Date
                         </label>
                         <div className="relative mt-2">
@@ -469,30 +456,11 @@ export default function ScheduleDetailPage() {
                               )
                             }
                             placeholder="MM/YY"
-                            className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue"
+                            className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
                           />
-                          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                         </div>
                       </div>
-                      {/* <div>
-                        <label className="text-xs text-gray-600">
-                          End Time
-                        </label>
-                        <div className="relative mt-2">
-                          <input
-                            type="text"
-                            value={schedule.endTime || ""}
-                            onChange={(e) =>
-                              setSchedule((p) =>
-                                p ? { ...p, endTime: e.target.value } : p
-                              )
-                            }
-                            placeholder="09:00 AM"
-                            className="w-full px-4 py-3 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue"
-                          />
-                          <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        </div>
-                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -500,15 +468,15 @@ export default function ScheduleDetailPage() {
             </div>
           </section>
 
-          {/* Device Assignment - NOW SAVES */}
-          <section className="">
-            <h2 className="text-xl font-semibold mb-6">Device Assignment</h2>
-            <p className="text-sm text-gray-600 mb-6">Select Devices</p>
+          {/* Device Assignment */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Device Assignment</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Select Devices</p>
             <div className="space-y-4">
               {allDevices.map((device) => (
                 <label
                   key={device}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                  className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition"
                 >
                   <div className="flex items-center gap-4">
                     <input
@@ -529,14 +497,13 @@ export default function ScheduleDetailPage() {
                       }}
                       className="w-5 h-5 text-bgBlue rounded focus:ring-bgBlue"
                     />
-                    <span className="font-medium text-gray-900">{device}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{device}</span>
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      deviceStatus[device as keyof typeof deviceStatus] ===
-                      "online"
-                        ? "bg-green-50 text-green-700 border border-green-200"
-                        : "bg-red-50 text-red-700 border border-red-200"
+                      deviceStatus[device as keyof typeof deviceStatus] === "online"
+                        ? "bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                        : "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
                     }`}
                   >
                     {deviceStatus[device as keyof typeof deviceStatus]}
@@ -547,13 +514,13 @@ export default function ScheduleDetailPage() {
           </section>
 
           {/* Delete */}
-          <div className="bg-red-50 border border-red-100 rounded-xl p-8 flex items-start gap-5">
-            <Trash2 className="w-8 h-8 text-red-600 mt-1" />
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 rounded-xl p-8 flex items-start gap-5">
+            <Trash2 className="w-8 h-8 text-red-600 dark:text-red-400 mt-1" />
             <div>
-              <h3 className="text-lg font-semibold text-red-900 mb-2">
+              <h3 className="text-lg font-semibold text-red-900 dark:text-red-300 mb-2">
                 Delete Schedule
               </h3>
-              <p className="text-sm text-red-700 mb-6">
+              <p className="text-sm text-red-700 dark:text-red-300 mb-6">
                 This action cannot be undone. Please proceed with caution.
               </p>
               <button
