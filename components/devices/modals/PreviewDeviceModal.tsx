@@ -17,8 +17,6 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
-
-  // ADD: Track if video metadata is loaded
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
 
   useEffect(() => {
@@ -33,7 +31,6 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
     }
   }, [brightness]);
 
-  // FIXED: Proper video event handling + duration loading
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -67,7 +64,6 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
 
-    // If video already has metadata (cached), update immediately
     if (video.readyState >= 1) {
       handleLoadedMetadata();
     }
@@ -90,7 +86,6 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
     }
   };
 
-  // FIXED: Seek now works correctly using actual duration
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newProgress = Number(e.target.value);
     setVideoProgress(newProgress);
@@ -153,23 +148,22 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="relative w-full max-w-5xl bg-white rounded-lg shadow-2xl overflow-hidden max-h-[95vh] flex flex-col sm:max-h-[90vh]">
-        <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-5 sm:py-3.5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 p-4">
+      <div className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-lg shadow-2xl overflow-hidden max-h-[95vh] flex flex-col sm:max-h-[90vh] border border-transparent dark:border-gray-700">
+        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-5 sm:py-3.5">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">{device.name}</h2>
-            <p className="text-xs text-gray-400 mt-0.5">3840 × 2160</p>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">{device.name}</h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">3840 × 2160</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col lg:flex-row min-h-0">
-            <div className="flex-1 p-4 sm:p-5 bg-gray-50/50">
+            <div className="flex-1 p-4 sm:p-5 bg-gray-50/50 dark:bg-gray-800/30">
               <div className="relative bg-black rounded-lg overflow-hidden shadow-md aspect-video">
-                {/* FIXED: Added preload + playsInline */}
                 <video
                   ref={videoRef}
                   className="w-full h-full object-cover"
@@ -178,7 +172,7 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                   preload="metadata"
                 />
 
-                <div className="absolute top-2.5 left-2.5 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded text-[11px] font-medium text-gray-700 shadow-sm">
+                <div className="absolute top-2.5 left-2.5 bg-white/95 dark:bg-gray-900/90 backdrop-blur-sm px-2.5 py-1 rounded text-[11px] font-medium text-gray-700 dark:text-gray-300 shadow-sm">
                   Video Lobby Display
                 </div>
 
@@ -210,7 +204,6 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                           background: `linear-gradient(to right, #3b82f6 ${videoProgress}%, rgba(255,255,255,0.3) ${videoProgress}%)`,
                         }}
                       />
-                      {/* FIXED: Show real duration */}
                       <span>{isMetadataLoaded ? formatTime(duration) : "--:--"}</span>
                     </div>
 
@@ -235,15 +228,14 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                 </div>
               </div>
 
-              {/* Rest of your sliders and buttons - 100% unchanged */}
               <div className="mt-4 space-y-4">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 space-y-5">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 space-y-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <div className="flex items-center gap-3">
-                      <svg className="h-5 w-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-5 w-5 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
                       </svg>
-                      <span className="text-sm font-medium text-gray-700 min-w-[60px]">Volume</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[60px]">Volume</span>
                     </div>
                     <div className="flex items-center gap-3 flex-1">
                       <input
@@ -257,16 +249,16 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                           background: `linear-gradient(to right, #000 ${volume}%, #e5e7eb ${volume}%)`,
                         }}
                       />
-                      <span className="text-sm font-semibold text-gray-900 w-12 text-right">{volume}%</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white w-12 text-right">{volume}%</span>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <div className="flex items-center gap-3">
-                      <svg className="h-5 w-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-5 w-5 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0-7v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z" />
                       </svg>
-                      <span className="text-sm font-medium text-gray-700 min-w-[60px]">Brightness</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[60px]">Brightness</span>
                     </div>
                     <div className="flex items-center gap-3 flex-1">
                       <input
@@ -280,17 +272,17 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                           background: `linear-gradient(to right, #000 ${brightness}%, #e5e7eb ${brightness}%)`,
                         }}
                       />
-                      <span className="text-sm font-semibold text-gray-900 w-12 text-right">{brightness}%</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white w-12 text-right">{brightness}%</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <button className="flex items-center justify-center cursor-pointer gap-1.5 px-4 py-3 rounded-xl bg-white shadow-customShadow hover:bg-gray-50 transition-colors text-xs font-medium text-gray-700">
+                  <button className="flex items-center justify-center cursor-pointer gap-1.5 px-4 py-3 rounded-xl bg-white dark:bg-gray-800 shadow-customShadow hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs font-medium text-gray-700 dark:text-gray-300">
                     <RotateCcw className="h-4 w-4" />
                     Reboot
                   </button>
-                  <button className="flex items-center justify-center cursor-pointer gap-1.5 px-4 py-3 rounded-xl bg-white shadow-customShadow hover:bg-gray-50 transition-colors text-xs font-medium text-gray-700">
+                  <button className="flex items-center justify-center cursor-pointer gap-1.5 px-4 py-3 rounded-xl bg-white dark:bg-gray-800 shadow-customShadow hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs font-medium text-gray-700 dark:text-gray-300">
                     <Power className="h-4 w-4" />
                     Turn Off
                   </button>
@@ -298,23 +290,21 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
               </div>
             </div>
 
-            {/* Right Side - Device Details (EXACTLY like your image) */}
-            <div className="w-full lg:w-80 xl:w-72 bg-white border border-gray-200 my-5 mr-5 p-3 lg:p-4 rounded-lg shadow-sm shrink-0">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            <div className="w-full lg:w-80 xl:w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 my-5 mr-5 p-3 lg:p-4 rounded-lg shadow-sm shrink-0">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
                 Device Details
               </h3>
 
               <div className="space-y-4">
-                {/* Status */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Status</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Status</span>
                   <div
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
                       device.status === "Online"
-                        ? "bg-green-100 border-green-500 text-green-500"
+                        ? "bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-800 text-green-500 dark:text-green-400"
                         : device.status === "Offline"
-                        ? "bg-red-100 border-red-400 text-red-400"
-                        : "bg-gray-100 border-gray-300"
+                        ? "bg-red-100 dark:bg-red-900/30 border-red-400 dark:border-red-800 text-red-400 dark:text-red-500"
+                        : "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-400"
                     }`}
                   >
                     <div
@@ -326,51 +316,45 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                           : "bg-gray-400"
                       }`}
                     ></div>
-
                     <span className="text-sm font-medium">
                       {device.status}
                     </span>
                   </div>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-700" />
 
-                {/* Last Sync */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Last Sync</span>
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Last Sync</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
                     5 minutes ago
                   </span>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-700" />
 
-                {/* Storage */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Storage</span>
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Storage</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {formatted}
                     </span>
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-black rounded-full transition-all duration-500"
+                      className="h-full bg-black dark:bg-gray-400 rounded-full transition-all duration-500"
                       style={{ width: `${storagePercent}%` }}
                     />
                   </div>
 
-                  {/* Free Space Percentage */}
                   <div className="flex justify-end">
-                    <span className="text-xs font-medium text-gray-600">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                       {(total - used).toFixed(1)} GB Free (
                       {(100 - storagePercent).toFixed(0)}%)
                     </span>
                   </div>
                 </div>
 
-                {/* Clear Space Button */}
-                <button className="w-full flex items-center justify-center shadow-customShadow cursor-pointer gap-2 py-3 px-4 bg-white rounded-xl hover:bg-gray-50 transition-all text-sm font-medium text-gray-700">
+                <button className="w-full flex items-center justify-center shadow-customShadow cursor-pointer gap-2 py-3 px-4 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-sm font-medium text-gray-700 dark:text-gray-300">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -387,44 +371,40 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                   Clear Space
                 </button>
 
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-700" />
 
-                {/* Device ID */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Device ID</span>
-                  <span className="text-sm font-medium text-gray-900 font-mono">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Device ID</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white font-mono">
                     DEV-{device.id}829
                   </span>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-700" />
 
-                {/* IP Address */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">IP Address</span>
-                  <span className="text-sm font-medium text-gray-900 font-mono">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">IP Address</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white font-mono">
                     192.168.1.{40 + device.id}
                   </span>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-700" />
 
-                {/* Screen Playing */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Screen Playing</span>
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Screen Playing</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
                     Main Lobby Display
                   </span>
                 </div>
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-gray-700" />
 
-                {/* App Version + Update */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-sm text-gray-500">App Version</span>
-                    <p className="text-sm font-medium text-gray-900 mt-1">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">App Version</span>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mt-1">
                       v2.4.1
                     </p>
                   </div>
-                  <button className="flex items-center gap-1.5 cursor-pointer shadow-customShadow px-4 py-2.5 bg-white rounded-xl hover:bg-gray-50 transition-all text-xs font-medium text-gray-700">
+                  <button className="flex items-center gap-1.5 cursor-pointer shadow-customShadow px-4 py-2.5 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs font-medium text-gray-700 dark:text-gray-300">
                     <RotateCcw className="w-3.5 h-3.5" />
                     Update App
                   </button>
