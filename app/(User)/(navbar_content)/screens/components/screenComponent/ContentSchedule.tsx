@@ -45,7 +45,7 @@ const ContentSchedule: React.FC<ContentScheduleProps> = ({ schedules = defaultSc
     return (
         <div className="mx-auto">
             <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
-                {/* Header */}
+                {/* Header section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
                     <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Content Schedule</h2>
 
