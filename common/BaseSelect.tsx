@@ -56,7 +56,7 @@ const BaseSelect = ({
     <div className={cn("flex flex-col gap-2 w-full", className)}>
       {/* Label */}
       {showLabel && label && (
-        <Label className="text-sm font-medium text-gray-800">
+        <Label className="text-sm font-medium text-gray-800 dark:text-white">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </Label>
@@ -66,7 +66,7 @@ const BaseSelect = ({
       <Select onValueChange={onChange} value={value} disabled={disabled}>
         <SelectTrigger
           className={cn(
-            "w-full bg-bgGray border border-borderGray rounded-lg px-4 py-2 flex items-center gap-2 focus:ring-2 focus:ring-offset-1 focus:ring-gray-200",
+            "w-full bg-bgGray border border-borderGray rounded-lg px-4 py-2 flex items-center gap-2 focus:ring-2 focus:ring-offset-1 focus:ring-gray-200 dark:bg-gray-900 dark:border-gray-700 dark:text-white",
             hasError && "border-red-500 focus:ring-red-400",
             disabled && "cursor-not-allowed opacity-60"
           )}
@@ -79,7 +79,7 @@ const BaseSelect = ({
         <SelectContent>
           {options.map((opt, idx) => (
             <SelectItem key={idx} value={opt.value}>
-              <div className="flex items-center gap-2 text-textGray">
+              <div className="flex items-center gap-2 text-textGray dark:text-white">
                 {opt.icon && opt.icon}
                 <span>{opt.label}</span>
               </div>

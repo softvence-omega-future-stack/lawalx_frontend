@@ -11,7 +11,7 @@ interface ScreenCardProps {
 
 const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
     return (
-        <div className="group bg-white border border-borderGray rounded-xl overflow-hidden  hover:shadow-md transition-all">
+        <div className="group bg-white border border-borderGray dark:bg-cardBg dark:border-borderColor rounded-xl overflow-hidden  hover:shadow-md transition-all">
             {/* Content */}
             <div className="p-4 sm:p-6">
                 {/* Image */}
@@ -36,7 +36,7 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
 
                 {/* Title & Power Button */}
                 <div className="flex flex-row items-start sm:items-center justify-between mt-4 sm:mt-6 gap-2 sm:gap-0">
-                    <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900">{screen.title}</h3>
+                    <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 dark:text-white">{screen.title}</h3>
 
                     <button
                         className={`p-2 rounded-lg transition-all flex items-center justify-center cursor-pointer ${screen.status === "active"
@@ -53,22 +53,22 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
                     </button>
                 </div>
 
-                <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">{screen.description}</p>
+                <p className="text-sm sm:text-base text-gray-500  mb-4 sm:mb-6 dark:text-white">{screen.description}</p>
 
                 {/* Info */}
-                <div className="space-y-1 sm:space-y-3 mb-4 sm:mb-5 text-sm sm:text-base text-gray-700">
+                <div className="space-y-1 sm:space-y-3 mb-4 sm:mb-5 text-sm sm:text-base text-gray-700 dark:text-white">
                     <div className="flex items-center gap-2 sm:gap-3">
-                        <FilePlay className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                        <FilePlay className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-white" />
                         <span className="text-sm md:text-base">Assigned: {screen.assignedContent}</span>
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-3">
-                        <TvMinimal className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                        <TvMinimal className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-white" />
                         <span className="text-sm md:text-base">{screen.devices} Device{screen.devices !== 1 ? "s" : ""}</span>
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-3">
-                        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-white" />
                         <span className="text-sm md:text-base">Last Updated: {screen.lastUpdated}</span>
                     </div>
                 </div>

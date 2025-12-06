@@ -133,16 +133,16 @@ const MyScreensPage: React.FC = () => {
         </div>
 
         {/* Search + Filter Bar */}
-        <div className="bg-white border border-borderGray rounded-xl p-4 mb-6 w-full">
+        <div className="bg-white border border-borderGray rounded-xl p-4 mb-6 w-full dark:bg-gray-900 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 dark:text-white " />
               <input
                 type="text"
                 placeholder="Search screen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-bgGray border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-bgGray border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent dark:border-gray-700 dark:placeholder-white dark:bg-inputBg"
               />
             </div>
 
