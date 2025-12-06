@@ -20,7 +20,7 @@ const AddButton: React.FC<AddButtonProps> = ({
     <button
       onClick={onClick}
       className="relative px-4 py-2 md:py-3 rounded-lg overflow-hidden flex items-center justify-center gap-3 shadow-md bg-gray-800 cursor-pointer 
-      transition-all duration-500 ease-out hover:scale-[1.03] hover:shadow-xl hover:brightness-110"
+      transition-all duration-500 ease-out hover:scale-[1.03] hover:shadow-xl hover:brightness-110 border border-border"
     >
       {/* ✅ Background image */}
       <Image

@@ -21,10 +21,10 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-lg border border-gray-200 dark:border-gray-700">
+      <div className="bg-navbarBg rounded-2xl shadow-xl w-full max-w-lg border border-border">
 
         {/* Header */}
-        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-border">
           <h2 className="text-xl sm:text-2xl font-semibold text-Headings dark:text-white">
             Add New Device
           </h2>
@@ -147,7 +147,7 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
         <div className="flex items-center justify-between gap-3 mx-5 py-4 sm:py-5 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={onClose}
-            className="px-5 sm:px-6 py-2 sm:py-2.5 border border-bgBlue dark:border-blue-600 rounded-lg font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+            className="px-5 sm:px-6 py-2 sm:py-2.5 border border-bgRed dark:border-bgRed rounded-lg font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
           >
             Cancel
           </button>

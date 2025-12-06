@@ -528,7 +528,7 @@ export default function UserDashboardNavbar() {
   const isActive = (href: string) => pathname?.startsWith(href);
 
   return (
-    <header className="bg-white dark:bg-darkBg border-b border-gray-200 dark:border-borderColor sticky top-0 z-50 max-w-[1920px] mx-auto transition-colors">
+    <header className="bg-navbarBg border-b border-border sticky top-0 z-50 max-w-[1920px] mx-auto transition-colors">
       <div className="px-5 sm:px-8 py-4 sm:py-6 flex items-center justify-between">
         {/* Left section - Logo & Desktop Navigation */}
         <div className="flex items-center gap-4 lg:gap-8 flex-1">

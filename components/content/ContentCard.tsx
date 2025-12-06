@@ -31,19 +31,21 @@ const ContentCard = () => {
         return (
           <div
             key={index}
-            className="flex items-center p-6 gap-3 border rounded-xl bg-white"
+            className="flex items-center p-6 gap-3 border rounded-xl bg-navbarBg border-border shadow-sm"
           >
-            <span className="p-3 rounded-full border border-borderGray">
-              {/* Conditional color logic */}
+            <span className="p-3 rounded-full border border-border bg-white dark:bg-gray-800">
+              {/* Conditional color logic — preserved exactly */}
               {typeof item.color === "string" && item.color.startsWith("text-") ? (
                 <Icon className={`w-6 h-6 ${item.color}`} />
               ) : (
-                <Icon className="w-6 h-6" style={{ color: item.color }} />
+                <Icon className="w-6 h-6" style={{ color: item.color } as React.CSSProperties} />
               )}
             </span>
             <div>
-              <h3 className="text-sm md:text-base text-textGray">{item.title}</h3>
-              <p className="text-2xl md:text-[32px] font-semibold text-gray-900 mt-1">
+              <h3 className="text-sm md:text-base text-textGray dark:text-gray-400">
+                {item.title}
+              </h3>
+              <p className="text-2xl md:text-[32px] font-semibold text-gray-900 dark:text-white mt-1">
                 {item.value}
               </p>
             </div>

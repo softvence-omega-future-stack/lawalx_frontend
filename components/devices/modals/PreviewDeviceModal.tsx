@@ -149,8 +149,8 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 p-4">
-      <div className="relative w-full max-w-5xl bg-white dark:bg-gray-900 rounded-lg shadow-2xl overflow-hidden max-h-[95vh] flex flex-col sm:max-h-[90vh] border border-transparent dark:border-gray-700">
-        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-5 sm:py-3.5">
+      <div className="relative w-full max-w-5xl bg-navbarBg rounded-xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col sm:max-h-[90vh] border border-transparent dark:border-gray-700">
+        <div className="flex items-center justify-between border-b border-border bg-navbarBg px-4 py-3 sm:px-5 sm:py-3.5">
           <div>
             <h2 className="text-base font-semibold text-gray-900 dark:text-white">{device.name}</h2>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">3840 × 2160</p>
@@ -162,7 +162,7 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
 
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col lg:flex-row min-h-0">
-            <div className="flex-1 p-4 sm:p-5 bg-gray-50/50 dark:bg-gray-800/30">
+            <div className="flex-1 p-4 sm:p-5">
               <div className="relative bg-black rounded-lg overflow-hidden shadow-md aspect-video">
                 <video
                   ref={videoRef}
@@ -229,7 +229,7 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
               </div>
 
               <div className="mt-4 space-y-4">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 space-y-5">
+                <div className="bg-navbarBg rounded-2xl shadow-sm border border-border p-4 sm:p-6 space-y-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <div className="flex items-center gap-3">
                       <svg className="h-5 w-5 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
@@ -290,7 +290,7 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
               </div>
             </div>
 
-            <div className="w-full lg:w-80 xl:w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 my-5 mr-5 p-3 lg:p-4 rounded-lg shadow-sm shrink-0">
+            <div className="w-full lg:w-80 xl:w-72 bg-navbarBg border border-border my-5 mr-5 p-3 lg:p-4 rounded-lg shadow-sm shrink-0">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
                 Device Details
               </h3>
