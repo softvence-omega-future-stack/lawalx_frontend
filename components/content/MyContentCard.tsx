@@ -45,38 +45,30 @@ const MyContentCard = ({
 
   const getTypeLabel = () => {
     switch (item.type) {
-      case "folder":
-        return "Folder";
-      case "playlist":
-        return "Playlist";
-      case "video":
-        return "Video";
-      case "image":
-        return "PNG";
-      default:
-        return "File";
+      case "folder": return "Folder";
+      case "playlist": return "Playlist";
+      case "video": return "Video";
+      case "image": return "PNG";
+      default: return "File";
     }
   };
 
   const getFileExtension = () => {
     switch (item.type) {
-      case "video":
-        return ".MP4";
-      case "image":
-        return ".PNG";
-      default:
-        return "";
+      case "video": return ".MP4";
+      case "image": return ".PNG";
+      default: return "";
     }
   };
 
   const getThumbnailIcon = () => {
     if (item.thumbnail) {
       return (
-        <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+        <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-navbarBg shrink-0">
           <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
           {item.type === "video" && (
-            <button onClick={() => setOpen(true)} className="absolute inset-0 flex items-center justify-center bg-black/10">
-              <Play  className="w-5 h-5 text-white fill-white cursor-pointer " />
+            <button onClick={() => setOpen(true)} className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
+              <Play className="w-5 h-5 text-white fill-white" />
             </button>
           )}
         </div>
@@ -86,7 +78,7 @@ const MyContentCard = ({
     switch (item.type) {
       case "folder":
         return (
-          <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 rounded-xl bg-navbarBg flex items-center justify-center shrink-0">
             <Image src={folder} alt="folder" />
           </div>
         );
@@ -94,18 +86,18 @@ const MyContentCard = ({
         return (
           <div className="relative flex flex-col items-center gap-3 w-14 h-14 shrink-0">
             <AudioLines className="w-14 h-14 text-bgBlue stroke-[1.5]" />
-            <button onClick={() => setOpenAudio(true)} className="absolute bg-white/90 rounded-full p-1.5 mt-2 cursor-pointer">
-              <Play className="w-6 h-6 text-gray-400 fill-[rgba(255,255,255,0.7)] drop-shadow-[0_0_8px_rgba(0,0,0,0.25)] cursor-pointer" />
+            <button onClick={() => setOpenAudio(true)} className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-1.5 mt-2 hover:bg-white dark:hover:bg-gray-900 transition-colors">
+              <Play className="w-6 h-6 text-gray-400 dark:text-gray-300 fill-[rgba(255,255,255,0.7)] drop-shadow-[0_0_8px_rgba(0,0,0,0.25)]" />
             </button>
           </div>
         );
       default:
         return (
-          <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 rounded-xl bg-navbarBg flex items-center justify-center shrink-0">
             <div className="flex flex-col gap-1">
-              <div className="w-1 h-4 bg-gray-300 rounded-full"></div>
-              <div className="w-1 h-4 bg-gray-300 rounded-full"></div>
-              <div className="w-1 h-4 bg-gray-300 rounded-full"></div>
+              <div className="w-1 h-4 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+              <div className="w-1 h-4 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+              <div className="w-1 h-4 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
             </div>
           </div>
         );
@@ -117,53 +109,16 @@ const MyContentCard = ({
   const dropdownOptions =
     viewMode === "list"
       ? [
-        {
-          label: "Rename",
-          value: "rename",
-          icon: <Pencil className="w-5 h-5" />,
-          onClick: () => onMenuClick?.(item.id, "rename"),
-        },
-        {
-          label: "Move to Folder",
-          value: "move",
-          icon: <FolderOpen className="w-5 h-5" />,
-          onClick: () => onMenuClick?.(item.id, "move"),
-        },
-        {
-          label: "Delete",
-          value: "delete",
-          icon: <Trash2 className="w-5 h-5 text-red-500" />,
-          danger: true,
-          onClick: () => onMenuClick?.(item.id, "delete"),
-        },
-      ]
+          { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
+          { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
+          { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+        ]
       : [
-        {
-          label: "Assign",
-          value: "assign",
-          icon: <Plus className="w-5 h-5" />,
-          onClick: () => onAssignClick?.(item.id),
-        },
-        {
-          label: "Rename",
-          value: "rename",
-          icon: <Pencil className="w-5 h-5" />,
-          onClick: () => onMenuClick?.(item.id, "rename"),
-        },
-        {
-          label: "Move to Folder",
-          value: "move",
-          icon: <FolderOpen className="w-5 h-5" />,
-          onClick: () => onMenuClick?.(item.id, "move"),
-        },
-        {
-          label: "Delete",
-          value: "delete",
-          icon: <Trash2 className="w-5 h-5 text-red-500" />,
-          danger: true,
-          onClick: () => onMenuClick?.(item.id, "delete"),
-        },
-      ];
+          { label: "Assign", value: "assign", icon: <Plus className="w-5 h-5" />, onClick: () => onAssignClick?.(item.id) },
+          { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
+          { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
+          { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+        ];
 
   return (
     <>
@@ -173,7 +128,7 @@ const MyContentCard = ({
 
       {viewMode === "list" ? (
         <>
-          <div className="bg-white w-full border-b border-borderGray hover:bg-gray-50 transition-colors">
+          <div className="bg-navbarBg w-full border-b border-border hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
             <div className="flex flex-col md:flex-row justify-between w-full gap-6 md:gap-12 p-4 items-center">
               <div className="flex items-center gap-4 w-full md:w-[35%]">
                 <div className="flex items-center gap-2 shrink-0">
@@ -183,7 +138,7 @@ const MyContentCard = ({
                   />
                   {item.type === "folder" && (
                     <ChevronRight
-                      className={`w-5 h-5 text-textGray cursor-pointer transition-transform ${expanded ? "rotate-90" : ""}`}
+                      className={`w-5 h-5 text-textGray dark:text-gray-400 cursor-pointer transition-transform ${expanded ? "rotate-90" : ""}`}
                       onClick={() => setExpanded(!expanded)}
                     />
                   )}
@@ -193,13 +148,13 @@ const MyContentCard = ({
                   {getThumbnailIcon()}
                   <div className="flex-1 min-w-0">
                     <Link href={`/content/${item.id}`}>
-                      <h3 className="font-medium text-Heading text-sm md:text-lg truncate hover:text-bgBlue hover:underline">
+                      <h3 className="font-medium text-Heading dark:text-white text-sm md:text-lg truncate hover:text-bgBlue hover:underline">
                         {item.title}
                         {getFileExtension()}
                       </h3>
                     </Link>
-                    <div className="flex flex-wrap items-center text-sm text-gray-600 gap-2 mt-1">
-                      <span className="text-textGray px-3 py-1 border border-borderGray bg-bgGray rounded-xl text-xs font-medium">
+                    <div className="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400 gap-2 mt-1">
+                      <span className="text-textGray dark:text-gray-300 px-3 py-1 border border-borderGray dark:border-gray-600 bg-bgGray dark:bg-gray-800 rounded-xl text-xs font-medium">
                         {getTypeLabel()}
                       </span>
                       <span>{item.size}</span>
@@ -213,8 +168,8 @@ const MyContentCard = ({
               <div className="flex justify-start w-full md:w-[25%]">
                 {isAssigned && (
                   <div>
-                    <p className="text-sm font-medium text-Heading mb-1">Assigned To</p>
-                    <p className="text-sm text-textGray">{item.assignedTo?.join(", ")}</p>
+                    <p className="text-sm font-medium text-Heading dark:text-white mb-1">Assigned To</p>
+                    <p className="text-sm text-textGray dark:text-gray-400">{item.assignedTo?.join(", ")}</p>
                   </div>
                 )}
               </div>
@@ -222,8 +177,8 @@ const MyContentCard = ({
               <div className="flex justify-start w-full md:w-[25%]">
                 {item.uploadedDate && (
                   <div>
-                    <p className="text-sm font-medium text-Heading mb-1">Uploaded</p>
-                    <p className="text-sm text-textGray">{item.uploadedDate}</p>
+                    <p className="text-sm font-medium text-Heading dark:text-white mb-1">Uploaded</p>
+                    <p className="text-sm text-textGray dark:text-gray-400">{item.uploadedDate}</p>
                   </div>
                 )}
               </div>
@@ -240,13 +195,13 @@ const MyContentCard = ({
                     <TvMinimal className="w-4 h-4" /> Assign
                   </button>
                 )}
-                <MenuDropdown triggerIcon={<MoreVertical className="w-4 h-4" />} options={dropdownOptions} />
+                <MenuDropdown triggerIcon={<MoreVertical className="w-4 h-4 text-gray-500 dark:text-gray-400" />} options={dropdownOptions} />
               </div>
             </div>
           </div>
 
           {expanded && item.children?.length ? (
-            <div className="border-l ml-6 md:ml-12 border-borderGray">
+            <div className="border-l ml-6 md:ml-12 border-border">
               {item.children.map((child) => (
                 <MyContentCard
                   key={child.id}
@@ -261,8 +216,8 @@ const MyContentCard = ({
           ) : null}
         </>
       ) : (
-        <div className="bg-white border border-borderGray rounded-xl overflow-hidden hover:shadow-md transition-shadow">
-          <div className="relative bg-[#F0FAFF] h-48 flex items-center justify-center">
+        <div className="bg-navbarBg border border-border rounded-xl overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-shadow">
+          <div className="relative bg-[#F0FAFF] dark:bg-gray-800 h-48 flex items-center justify-center">
             <div className="absolute top-3 left-3">
               <Checkbox
                 onCheckedChange={() => onSelect?.(item.id)}
@@ -277,8 +232,8 @@ const MyContentCard = ({
             ) : (
               <div className="relative flex flex-col items-center gap-3">
                 <AudioLines className="w-20 h-20 text-bgBlue stroke-[1.5]" />
-                <button className="absolute bg-white/90 rounded-full p-2.5 mt-4 cursor-pointer" onClick={() => setOpenAudio(true)}>
-                  <Play className="w-8 h-8 text-gray-400 fill-[rgba(255,255,255,0.7)]" />
+                <button className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 mt-4 hover:bg-white dark:hover:bg-gray-900 transition-colors" onClick={() => setOpenAudio(true)}>
+                  <Play className="w-8 h-8 text-gray-400 dark:text-gray-300 fill-[rgba(255,255,255,0.7)]" />
                 </button>
               </div>
             )}
@@ -287,7 +242,7 @@ const MyContentCard = ({
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
                   onClick={() => setOpen(true)}
-                  className="bg-white/90 rounded-full p-2.5 cursor-pointer"
+                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors"
                 >
                   <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
                 </button>
@@ -298,26 +253,26 @@ const MyContentCard = ({
           <div className="p-4">
             <div className="flex items-start justify-between mb-2 gap-2">
               <Link href={`/content/${item.id}`} className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg text-gray-900 hover:text-bgBlue hover:underline truncate">
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white hover:text-bgBlue hover:underline truncate">
                   {item.title}
                 </h3>
               </Link>
-              <MenuDropdown triggerIcon={<MoreVertical className="w-6 h-6" />} options={dropdownOptions} />
+              <MenuDropdown triggerIcon={<MoreVertical className="w-6 h-6 text-gray-500 dark:text-gray-400" />} options={dropdownOptions} />
             </div>
 
-            <div className="flex flex-wrap items-center text-sm text-gray-600 mb-3 gap-2">
-              <span className="text-textGray px-3 py-1 border border-borderGray bg-bgGray rounded-xl text-xs font-medium">
+            <div className="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400 mb-3 gap-2">
+              <span className="text-textGray dark:text-gray-300 px-3 py-1 border border-borderGray dark:border-gray-600 bg-bgGray dark:bg-gray-800 rounded-xl text-xs font-medium">
                 {getTypeLabel()}
               </span>
-              { item.size && <span>• {item.size}</span>}
+              {item.size && <span>• {item.size}</span>}
               {item.duration && <span>• {item.duration}</span>}
               {item.fileCount && <span>• {item.fileCount} Files</span>}
             </div>
 
             {isAssigned && (
               <div className="pt-3">
-                <p className="text-sm font-semibold text-gray-800 mb-1">Assigned To</p>
-                <p className="text-sm text-textGray">{item.assignedTo?.join(", ")}</p>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">Assigned To</p>
+                <p className="text-sm text-textGray dark:text-gray-400">{item.assignedTo?.join(", ")}</p>
               </div>
             )}
           </div>

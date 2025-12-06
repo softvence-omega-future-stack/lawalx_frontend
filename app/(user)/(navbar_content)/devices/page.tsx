@@ -64,7 +64,7 @@ export default function DevicesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {/* Total Devices */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-borderGray dark:border-gray-700">
+        <div className="bg-navbarBg rounded-xl shadow-sm p-6 border border-border">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-full border border-borderGray dark:border-gray-600 flex items-center justify-center">
               <TvMinimal className="w-5 h-5 text-navGray dark:text-gray-400" />
@@ -85,9 +85,9 @@ export default function DevicesPage() {
         </div>
 
         {/* Online Devices */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-borderGray dark:border-gray-700">
+        <div className="bg-navbarBg rounded-xl shadow-sm p-6 border border-border">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full border border-borderGray dark:border-gray-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center">
               <Radio className="w-5 h-5 text-green-500" />
             </div>
             <div>
@@ -98,9 +98,9 @@ export default function DevicesPage() {
         </div>
 
         {/* Offline Devices */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-borderGray dark:border-gray-700">
+        <div className="bg-navbarBg rounded-xl shadow-sm p-6 border border-border">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full border border-borderGray dark:border-gray-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center">
               <WifiOff className="w-5 h-5 text-red-500" />
             </div>
             <div>
@@ -123,7 +123,7 @@ export default function DevicesPage() {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-borderGray dark:border-gray-700 overflow-hidden">
+      <div className="bg-navbarBg rounded-xl shadow-sm border border-border overflow-hidden">
         <DeviceTable
           devices={devices}
           selectedIds={selectedIds}
