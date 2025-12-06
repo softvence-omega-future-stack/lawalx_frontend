@@ -57,11 +57,15 @@ const EmptyState = ({ contentFilter, searchQuery }: EmptyStateProps) => {
     getEmptyStateContent();
 
   return (
-    <div className="bg-white border border-gray-300 rounded-xl p-16 flex justify-center">
+    <div className="bg-navbarBg border border-border rounded-xl p-16 flex justify-center">
       <div className="flex flex-col items-center justify-center text-center max-w-md w-full">
-        <Icon className="w-20 h-20 text-gray-900 stroke-[1.5] mb-6" />
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-500 text-sm mb-8">{description}</p>
+        <Icon className="w-20 h-20 text-gray-900 dark:text-gray-300 stroke-[1.5] mb-6" />
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          {title}
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+          {description}
+        </p>
         
         <ContentButton icon={buttonIcon} title={buttonTitle} />
       </div>

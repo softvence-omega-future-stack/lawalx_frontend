@@ -118,81 +118,290 @@ body {
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --newAdd: black;
+/* globals.css - KEEP ONLY THIS FOR DARK MODE */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;        /* white */
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 84% 4.9%;       /* black */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84% 60%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.75rem;
+
+    /* Your custom colors - light mode */
+    --color-primary: #0A0A0A;
+    --color-bgGray: #F5F5F5;
+    --color-borderGray: #D4D4D4;
+    --color-textGray: #525252;
+    --navbarBg: #ffffff;
+    --cardBg: #21bb57;
+    --color-test: #db1e1e;
+
+
+    /* Boni vai */
+     --bg-body: #fff;
+    --bg-card: #1e293b;
+    --bg-card-alt: #1e3a5a;
+    --bg-input: #334155;
+    --bg-hover: #1e293b;
+    --bg-selected: #1e40af;
+
+    --text-heading: #f8fafc;
+    --text-body: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-disabled: #64748b;
+
+    --border: #D4D4D4;
+
+  /* Figma mode - FIXED with real colors */
+  --bg-white: #FFFFFF;
+  --bg-black: #000000;
+  --bg-background: #f9fafb;        /* Gray/50 */
+  --bg-cardBackground: #FFFFFF;
+  --bg-cardBackgound2: rgba(10, 10, 10, 0.05);   /* Primary/50 light */
+  --selected-background: rgba(10, 10, 10, 0.05);
+  --bg-input: #f3f4f6;             /* Gray/100 */
+  --hover-background: #f3f4f6;     /* Neutral/100 */
+  --color-border: #d1d5db;         /* Neutral/300 */
+  --text-Headings: #111827;        /* Neutral/900 */
+  --button-label: #ffffff;
+  --body-texts: #374151;           /* Neutral/700 */
+  --muted: #6b7280;                /* Neutral/600 */
+  --disabled-text: #9ca3af;        /* Neutral/400 */
+
+  /* Action colors - REAL HEX VALUES */
+  --primary-action: #0FA6FF;       /* Your main blue */
+  --secondary-action: #1f2937;
+  --destructive: #ef4444;
+  --destructive-text: #991b1b;
+  --destructive-background: #fef2f2;
+  --destructive-outline: #fca5a5;
+
+  --info: #3b82f6;
+  --info-text: #1e40af;
+  --info-background: #eff6ff;
+  --info-outline: #93c5fd;
+
+  --success: #22c55e;
+  --success-text: #15803d;
+  --success-background: #f0fdf4;
+  --success-outline: #86efac;
+
+  --warning: #f59e0b;
+  --warning-text: #9a3412;
+  --warning-background: #fffbeb;
+  --warning-outline: #fcd34d;
+
+  --accent: #a855f7;
+  --accent-text: #7c3aed;
+  --accent-background: #faf5ff;
+  --accent-outline: #e9d5ff;
+
+  --transparent-bg: rgba(255, 255, 255, 0.9);
+  --transparent-border: rgba(0, 0, 0, 0.16);
+
+  --card-bg: #FFFFFF;
+
+
+  --navbarBg: #ffffff;
+
+  --addnewBg: #e0f2fe;
+
+
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;     /* dark bg */
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;          /* light text */
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 50%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    /* Your custom colors - dark mode */
+    --color-primary: #F3F3F5;
+    --color-bgGray: #1a1a1a;
+    --color-borderGray: #333333;
+    --color-textGray: #cccccc;
+    --navbarBg: #0a0a0a;
+    --cardBg: #b02323;
+    --color-test: #3511ea;
+
+    /* Boni vai */
+    --bg-body: #111827;
+  --bg-card: #1e293b;
+  --bg-card-alt: #1e3a5a;
+  --bg-input: #334155;
+  --bg-hover: #1e293b;
+  --bg-selected: #1e40af;
+
+  --text-heading: #f8fafc;
+  --text-body: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-disabled: #64748b;
+
+  --border: #334155;
+
+  /* Figma mode */
+   /* Dark mode - real values */
+  --bg-white: #262626;
+  --bg-black: #FFFFFF;
+  --bg-background: #0f172a;
+  --bg-cardBackground: #1e293b;
+  --bg-cardBackgound2: rgba(59, 130, 246, 0.1);
+  --selected-background: rgba(59, 130, 246, 0.15);
+  --bg-input: #334155;
+  --hover-background: #1e293b;
+  --color-border: #475569;
+  --text-Headings: #f8fafc;
+  --button-label: #ffffff;
+  --body-texts: #e2e8f0;
+  --muted: #94a3b8;
+  --text-disabled: #64748b;
+
+  --primary-action: #0FA6FF;
+  --destructive: #ef4444;
+  --destructive-text: #fca5a5;
+  --destructive-background: #450a0a;
+  --destructive-outline: #7f1d1d;
+
+  --info: #60a5fa;
+  --info-text: #dbeafe;
+  --info-background: #1e293b;
+  --info-outline: #1e40af;
+
+  --success: #86efac;
+  --success-text: #bbf7d0;
+  --success-background: #022e0f;
+  --success-outline: #166534;
+
+  --warning: #fbbf24;
+  --warning-text: #fde68a;
+  --warning-background: #451e0a;
+  --warning-outline: #9a3412;
+
+  --accent: #c084fc;
+  --accent-text: #e9d5ff;
+  --accent-background: #2e1065;
+  --accent-outline: #6b21b8;
+
+  --transparent-bg: rgba(0, 0, 0, 0.6);
+  --transparent-border: rgba(255, 255, 255, 0.16);
+
+  --card-bg: #171717;
+
+  --navbarBg: #171717;
+
+  --addnewBg: #062a3d;
+  }
 }
 
-.dark {
-  --newAdd: black;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* ============================================= */
+/*  FIGMA DESIGN SYSTEM → TAILWIND UTILITIES     */
+/*  Just copy-paste this into your globals.css   */
+/* ============================================= */
+
+@layer utilities {
+  /* Backgrounds */
+  .bg-White                 { background-color: var(--bg-white); }
+  .bg-black                 { background-color: var(--bg-black); }
+  .bg-background            { background-color: var(--bg-background); }
+  .bg-cardBackground        { background-color: var(--bg-cardBackground); }
+  .bg-cardBackground2       { background-color: var(--bg-cardBackgound2); }
+  .bg-selected              { background-color: var(--selected-background); }
+  .bg-input                 { background-color: var(--bg-input); }
+  .bg-hover                 { background-color: var(--hover-background); }
+  .bg-transparent           { background-color: var(--transparent-bg); }
+
+  /* Text Colors */
+  .text-headings            { color: var(--text-Headings); }
+  .text-body                { color: var(--body-texts); }
+  .text-muted               { color: var(--muted); }
+  .text-disabled            { color: var(--disabled-text); }
+  .text-button              { color: var(--button-label); }
+
+  /* Borders */
+  .border-color             { border-color: var(--color-border); }
+  .border-transparent       { border-color: var(--transparent-border); }
+
+  /* Actions & States */
+  .bg-primary-action        { background-color: var(--primary-action); }
+  .bg-secondary-action      { background-color: var(--secondary-action); }
+  .bg-destructive           { background-color: var(--destructive); }
+  .bg-destructive-bg        { background-color: var(--destructive-background); }
+  .border-destructive       { border-color: var(--destructive-outline); }
+  .text-destructive         { color: var(--destructive-text); }
+
+  .bg-info                  { background-color: var(--info); }
+  .bg-info-bg               { background-color: var(--info-background); }
+  .border-info              { border-color: var(--info-outline); }
+  .text-info                { color: var(--info-text); }
+
+  .bg-success               { background-color: var(--success); }
+  .bg-success-bg            { background-color: var(--success-background); }
+  .border-success           { border-color: var(--success-outline); }
+  .text-success             { color: var(--success-text); }
+
+  .bg-warning               { background-color: var(--warning); }
+  .bg-warning-bg            { background-color: var(--warning-background); }
+  .border-warning           { border-color: var(--warning-outline); }
+  .text-warning             { color: var(--warning-text); }
+
+  .bg-accent                { background-color: var(--accent); }
+  .bg-accent-bg             { background-color: var(--accent-background); }
+  .border-accent            { border-color: var(--accent-outline); }
+  .text-accent              { color: var(--accent-text); }
+
+  .bg-card-bg             { background-color: var(--card-bg); }
+
+  .bg-navbarBg             { background-color: var(--navbarBg); }
+
+
 }
 
-.newAdd {
-  color: var(--newAdd);
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-inter;
+  }
 }
 
+
+@layer components {
+  .cardBg {
+    background-color: var(--cardBg);
+  }
+  .bg-test {
+    background-color: var(--color-test);
+  }
+  .text-test {
+    color: var(--color-test);
+  }
+}
 
 @layer base {
   * {
@@ -255,7 +464,7 @@ body {
 
 .add-bg-img {
   width: 100%;
-  background-color: #DBF2FF;
+  background-color: var(--addnewBg);
 
   background-image: url('/userDashboard/img2.svg'), url('/userDashboard/img1.svg');
   background-repeat: no-repeat, no-repeat;

@@ -55,7 +55,7 @@ const DeleteConfirmationModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-sm w-full p-6 border border-gray-200 dark:border-gray-700">
+      <div className="bg-navbarBg rounded-xl shadow-xl max-w-sm w-full p-6 border border-border">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
           Delete Schedule
         </h3>
@@ -222,7 +222,7 @@ export default function SchedulesPage() {
           <div className="grid gap-4 sm:gap-5 lg:gap-6">
             {schedules.map((sch) => (
               <Link href={`/schedules/${sch.id}`} key={sch.id}>
-                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-700 p-4 sm:p-6 lg:p-8 hover:shadow-md dark:hover:shadow-xl transition-all cursor-pointer">
+                <div className="bg-navbarBg rounded-xl border border-border p-4 sm:p-6 lg:p-8 hover:shadow-md dark:hover:shadow-xl transition-all cursor-pointer">
                   <div className="flex items-center justify-between flex-wrap gap-4 sm:gap-6 lg:gap-8">
                     <div className="flex-1 min-w-0 w-full">
                       <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">

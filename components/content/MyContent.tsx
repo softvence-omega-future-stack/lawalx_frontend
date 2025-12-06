@@ -293,7 +293,7 @@ const MyContent = () => {
   };
 
   return (
-    <div className="mt-6 md:mt-10 space-y-6 md:space-y-8">
+   <div className="mt-6 md:mt-10 space-y-6 md:space-y-8">
       {/* Header */}
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-6">
         <DashboardHeading title="My Content" />
@@ -316,26 +316,25 @@ const MyContent = () => {
               onChange={handleCreateChange}
               options={createNew}
               placeholder="Create New"
-              placeholderIcon={<Plus className="w-5 h-5 text-black font-bold" />}   // ⬅ ADDED ICON
+              placeholderIcon={<Plus className="w-5 h-5 text-black font-bold" />}
               showLabel={false}
             />
-
           </div>
         </div>
       </div>
 
       {/* Search + Filters */}
-      <div className="bg-white border border-borderGray rounded-xl p-4 w-full">
+      <div className="bg-navbarBg border border-border rounded-xl p-4 w-full">
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
           {/* Search */}
           <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search Device"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 md:py-3 bg-bgGray border border-borderGray rounded-lg focus:ring-2 focus:ring-slate-500"
+              className="w-full pl-10 pr-4 py-2 md:py-3 bg-bgGray dark:bg-gray-800 border border-borderGray dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-slate-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
 
@@ -363,26 +362,22 @@ const MyContent = () => {
             </div>
 
             {/* GRID / LIST */}
-            <div className="w-[100px] flex items-center bg-bgGray p-1.5 rounded-lg">
+            <div className="w-[100px] flex items-center bg-bgGray dark:bg-gray-800 p-1.5 rounded-lg">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "grid" ? "bg-white" : ""
-                  }`}
+                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "grid" ? "bg-white dark:bg-gray-700" : ""}`}
               >
                 <Grid2X2
-                  className={`w-5 h-5 ${viewMode === "grid" ? "text-bgBlue" : "text-textGray"
-                    }`}
+                  className={`w-5 h-5 ${viewMode === "grid" ? "text-bgBlue" : "text-textGray dark:text-gray-400"}`}
                 />
               </button>
 
               <button
                 onClick={() => setViewMode("list")}
-                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "list" ? "bg-white" : ""
-                  }`}
+                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "list" ? "bg-white dark:bg-gray-700" : ""}`}
               >
                 <List
-                  className={`w-5 h-5 ${viewMode === "list" ? "text-bgBlue" : "text-textGray"
-                    }`}
+                  className={`w-5 h-5 ${viewMode === "list" ? "text-bgBlue" : "text-textGray dark:text-gray-400"}`}
                 />
               </button>
             </div>
@@ -391,7 +386,7 @@ const MyContent = () => {
       </div>
 
       {/* Count */}
-      <h2 className="text-lg md:text-2xl font-semibold text-Heading">
+      <h2 className="text-lg md:text-2xl font-semibold text-Heading dark:text-white">
         All Content ({filteredContent.length})
       </h2>
 

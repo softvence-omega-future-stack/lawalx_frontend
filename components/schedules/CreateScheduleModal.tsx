@@ -172,7 +172,7 @@ export default function ScheduleModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-bgGray dark:border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-navbarBg rounded-xl border border-border w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
 
         {/* Header */}
         <div className="flex items-start sm:items-center justify-between p-6 gap-4 sm:gap-0">
@@ -188,7 +188,7 @@ export default function ScheduleModal({
         </div>
 
         {/* Steps Indicator */}
-        <div className="flex items-center justify-center md:justify-between px-6 py-5 border-b border-borderGray dark:border-gray-700 gap-4">
+        <div className="flex items-center justify-center md:justify-between px-6 py-5 border-b border-border gap-4">
           {steps.map((s, i) => (
             <React.Fragment key={s.id}>
               <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
@@ -239,7 +239,7 @@ export default function ScheduleModal({
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder="e.g. Morning Welcome"
-                  className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
                 />
               </div>
               <div>

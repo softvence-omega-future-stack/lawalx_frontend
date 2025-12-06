@@ -1289,7 +1289,7 @@ export default function Dashboard() {
 
       {/* Stats Cards - Same colors in light, dark-adapted */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-[#EFF6FF] dark:bg-blue-950/40 rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-info-bg border border-border rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgBlue mr-2 bg-white dark:bg-gray-800">
               <Monitor className="w-7 h-7 text-bgBlue" />
@@ -1305,7 +1305,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-[#F7FEFB] dark:bg-green-950/40 rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-success-bg rounded-xl border border-border p-6 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgGreen mr-2 bg-white dark:bg-gray-800">
               <Wifi className="w-7 h-7 text-bgGreen" />
@@ -1320,7 +1320,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-[#FEF7F7] dark:bg-red-950/40 rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-destructive-bg border border-border rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgRed mr-2 bg-white dark:bg-gray-800">
               <WifiOff className="w-7 h-7 text-bgRed" />
@@ -1335,7 +1335,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 border border-bgGray dark:border-gray-700 rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-card-bg border border-border dark:border-gray-700 rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-gray-600 dark:border-gray-500 mr-2 bg-white dark:bg-gray-800">
               <HardDrive className="w-7 h-7 text-gray-600 dark:text-gray-400" />
@@ -1352,7 +1352,7 @@ export default function Dashboard() {
       </div>
 
       {/* Add New Section - Background image preserved */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 mb-6 add-bg-img">
+      <div className="rounded-xl shadow-sm p-6 mb-6 add-bg-img">
         <h2 className="text-lg font-semibold newAdd mb-4">Add New</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <ActionCardButton
@@ -1364,7 +1364,7 @@ export default function Dashboard() {
           />
           <button
             onClick={() => setIsAddDeviceModalOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white dark:bg-gray-800 cursor-pointer transition-colors hover:shadow-md"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md"
           >
             <Tv className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
@@ -1374,7 +1374,7 @@ export default function Dashboard() {
               </div>
             </div>
           </button>
-          <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white dark:bg-gray-800 cursor-pointer transition-colors hover:shadow-md">
+          <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md">
             <Video className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">Upload Content</div>
@@ -1385,7 +1385,7 @@ export default function Dashboard() {
           </button>
           <button
             onClick={() => setIsScheduleModalOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white dark:bg-gray-800 cursor-pointer transition-colors hover:shadow-md"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md"
           >
             <Calendar className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
@@ -1401,7 +1401,7 @@ export default function Dashboard() {
       {/* Recent Devices & Activities */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Recent Devices */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm dark:border dark:border-gray-700">
+        <div className="bg-navbarBg rounded-xl shadow-sm border border-border">
           <div className="flex items-center justify-between p-6 border-b border-borderGray dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Recent Devices
@@ -1415,7 +1415,7 @@ export default function Dashboard() {
             {devices.map((device, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50"
+                className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-navbarBg"
               >
                 <span className="mt-0.5 p-2.5 border rounded-sm border-gray-200 dark:border-gray-600">
                   <Monitor className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -1454,7 +1454,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activities */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm dark:border dark:border-gray-700">
+        <div className="bg-navbarBg rounded-xl shadow-sm border border-border">
           <div className="flex items-center justify-between border-b p-6 border-borderGray dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Recent Activities
@@ -1468,7 +1468,7 @@ export default function Dashboard() {
             {activities.map((activity, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50"
+                className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-navbarBg"
               >
                 {activity.type === "device" ? (
                   <span className="mt-0.5 p-2.5 border rounded-full border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">

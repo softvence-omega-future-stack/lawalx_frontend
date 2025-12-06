@@ -171,7 +171,7 @@ export default function ScheduleDetailPage() {
           </div>
         </div>
 
-        <div className="space-y-8 bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="space-y-8 bg-navbarBg p-8 rounded-xl border border-border shadow-sm">
           {/* Basic Info */}
           <section>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Basic Information</h2>
@@ -186,7 +186,7 @@ export default function ScheduleDetailPage() {
                   onChange={(e) =>
                     setSchedule((p) => (p ? { ...p, name: e.target.value } : p))
                   }
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-border bg-input dark:bg-gray-800 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white"
                 />
               </div>
               <div>
@@ -201,7 +201,7 @@ export default function ScheduleDetailPage() {
                     )
                   }
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-border bg-input dark:bg-gray-800 rounded-xl resize-none focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white"
                 />
               </div>
             </div>
