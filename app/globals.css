@@ -170,7 +170,7 @@ body {
   --bg-black: #000000;
   --bg-background: #f9fafb;        /* Gray/50 */
   --bg-cardBackground: #FFFFFF;
-  --bg-cardBackgound2: rgba(10, 10, 10, 0.05);   /* Primary/50 light */
+  --bg-cardBackgound2: #F0FAFF;   /* Primary/50 light */
   --selected-background: rgba(10, 10, 10, 0.05);
   --bg-input: #f3f4f6;             /* Gray/100 */
   --hover-background: #f3f4f6;     /* Neutral/100 */
@@ -535,3 +535,11 @@ body {
 
 
 
+/* Hide scrollbar but keep scrolling functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
