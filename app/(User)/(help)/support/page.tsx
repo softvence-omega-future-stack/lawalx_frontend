@@ -315,7 +315,7 @@ const Support = () => {
                   </div>
 
                   {/* Messages */}
-                  <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-900 scrollbar-hide">
+                  <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-navbarBg scrollbar-hide">
                     {selectedTicket.messages.length === 0 ? (
                       <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
                         No messages yet. Start the conversation!
@@ -377,7 +377,7 @@ const Support = () => {
                   </div>
 
                   {/* Message Input */}
-                  <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                  <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-cardBackground2">
                     {attachedFiles.length > 0 && (
                       <div className="mb-3 flex flex-wrap gap-2">
                         {attachedFiles.map((file, i) => (
