@@ -1,5 +1,5 @@
 // function UserManagement() {
-//     return ( 
+//     return (
 //         <div className="p-6">
 //             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">User Management</h1>
 //             <p className="mt-2 text-gray-600 dark:text-gray-400">Manage platform users, roles, and permissions</p>
@@ -8,7 +8,6 @@
 // }
 
 // export default UserManagement;
-
 
 "use client";
 
@@ -222,8 +221,7 @@ export default function UserManagementPage() {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPlan =
-      planFilter === "All Plans" || user.plan === planFilter;
+    const matchesPlan = planFilter === "All Plans" || user.plan === planFilter;
     const matchesStatus =
       statusFilter === "All Status" || user.status === statusFilter;
     return matchesSearch && matchesPlan && matchesStatus;
@@ -236,7 +234,9 @@ export default function UserManagementPage() {
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
           <Home className="w-4 h-4" />
           <ChevronRight className="w-4 h-4" />
-          <span className="text-blue-500 dark:text-blue-400 text-xs">User Management</span>
+          <span className="text-blue-500 dark:text-blue-400">
+            User Management
+          </span>
         </div>
         <div className="flex justify-between items-start">
           <div>
@@ -249,15 +249,15 @@ export default function UserManagementPage() {
           </div>
           <div className="flex gap-3">
             <button className="px-4 py-2 shadow-customShadow bg-white dark:bg-gray-800 text-nowrap rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
-            <CloudDownload className="w-4 h-4" />
-             <span className="hidden lg:block"> Export User Report</span>
+              <CloudDownload className="w-4 h-4" />
+              <span className="hidden lg:block"> Export User Report</span>
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
               className="px-4 py-2 shadow-customShadow bg-blue-500 hover:bg-blue-600 text-nowrap text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
             >
-                <UserRoundPlus className="w-4 h-4" />
-                <span className="hidden lg:block">Add New User</span>
+              <UserRoundPlus className="w-4 h-4" />
+              <span className="hidden lg:block">Add New User</span>
             </button>
           </div>
         </div>
@@ -270,12 +270,18 @@ export default function UserManagementPage() {
             <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
               <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">Total Users</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Total Users
+            </span>
           </div>
-          <div className="text-3xl font-semibold text-gray-900 dark:text-white">1,100</div>
+          <div className="text-3xl font-semibold text-gray-900 dark:text-white">
+            1,100
+          </div>
           <div className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
             <span>↓ -8.2 %</span>
-            <span className="text-gray-500 dark:text-gray-400">From Last Month</span>
+            <span className="text-gray-500 dark:text-gray-400">
+              From Last Month
+            </span>
           </div>
         </div>
 
@@ -284,12 +290,18 @@ export default function UserManagementPage() {
             <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
               <UserCheck className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">Active Users</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Active Users
+            </span>
           </div>
-          <div className="text-3xl font-semibold text-gray-900 dark:text-white">1,100</div>
+          <div className="text-3xl font-semibold text-gray-900 dark:text-white">
+            1,100
+          </div>
           <div className="text-sm text-green-500 dark:text-green-400 flex items-center gap-1 mt-1">
             <span>↑ +8.2 %</span>
-            <span className="text-gray-500 dark:text-gray-400">From Last Month</span>
+            <span className="text-gray-500 dark:text-gray-400">
+              From Last Month
+            </span>
           </div>
         </div>
 
@@ -298,12 +310,18 @@ export default function UserManagementPage() {
             <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
               <Clock className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">Trial Users</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Trial Users
+            </span>
           </div>
-          <div className="text-3xl font-semibold text-gray-900 dark:text-white">1,100</div>
+          <div className="text-3xl font-semibold text-gray-900 dark:text-white">
+            1,100
+          </div>
           <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
             <span>45 %</span>
-            <span className="text-gray-500 dark:text-gray-400">Conversion rate</span>
+            <span className="text-gray-500 dark:text-gray-400">
+              Conversion rate
+            </span>
           </div>
         </div>
 
@@ -312,9 +330,13 @@ export default function UserManagementPage() {
             <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
               <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
             </div>
-            <span className="text-sm text-gray-600 dark:text-gray-400">Need Attention</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Need Attention
+            </span>
           </div>
-          <div className="text-3xl font-semibold text-gray-900 dark:text-white">12</div>
+          <div className="text-3xl font-semibold text-gray-900 dark:text-white">
+            12
+          </div>
           <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Overdue, Offline, Errors
           </div>
@@ -395,7 +417,7 @@ export default function UserManagementPage() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto scrollbar-hide">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <tr>
@@ -430,7 +452,10 @@ export default function UserManagementPage() {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr
+                  key={user.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
@@ -444,7 +469,9 @@ export default function UserManagementPage() {
                       <div className="font-medium text-gray-900 dark:text-white text-nowrap">
                         {user.name}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {user.email}
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -521,7 +548,9 @@ export default function UserManagementPage() {
                         ))}
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-500 dark:text-gray-400">No issues</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        No issues
+                      </span>
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -538,8 +567,32 @@ export default function UserManagementPage() {
                       </button>
                       {openActionMenu === user.id && (
                         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
-                          <button
+                          {/* <button
                             onClick={() => router.push(`/admin/user-management/${user.id}`)}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View Profile
+                          </button> */}
+                          <button
+                            onClick={() => {
+                              // Pass user data as query params or use router state
+                              router.push(
+                                `/admin/user-management/${
+                                  user.id
+                                }?name=${encodeURIComponent(
+                                  user.name
+                                )}&email=${encodeURIComponent(
+                                  user.email
+                                )}&plan=${user.plan}&status=${
+                                  user.status
+                                }&device=${user.device}&storage=${
+                                  user.storage
+                                }&deviceUsage=${
+                                  user.deviceUsage
+                                }&storageUsage=${user.storageUsage}`
+                              );
+                            }}
                             className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
                           >
                             <Eye className="w-4 h-4" />
@@ -577,7 +630,9 @@ export default function UserManagementPage() {
 
         {/* Pagination */}
         <div className="p-4 border-t border-border flex justify-between items-center bg-navbarBg rounded-b-lg">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Showing 6 of 6 users</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Showing 6 of 6 users
+          </div>
           <div className="flex gap-2">
             <button className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-customShadow">
               Previous
