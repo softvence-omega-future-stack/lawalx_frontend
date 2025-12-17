@@ -261,7 +261,7 @@ export default function UserProfilePage() {
   };
 
   return (
-    <div className="min-h-screen mx-4 pt-4">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="mb-6">
         {/* <button
@@ -302,12 +302,12 @@ export default function UserProfilePage() {
           <div className="flex gap-3">
             <button
               onClick={() => setIsEditModalOpen(true)}
-              className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+              className="cursor-pointer px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
             >
               <Edit2 className="w-4 h-4" />
               Edit User
             </button>
-            <button className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
+            <button className="cursor-pointer px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
               <User className="w-4 h-4" />
               Login as user
             </button>
@@ -325,7 +325,7 @@ export default function UserProfilePage() {
                       setIsResetPasswordOpen(true);
                       setIsActionMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 transition-colors"
+                    className="w-full cursor-pointer px-4 py-3 text-left flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 transition-colors"
                   >
                     <RotateCcw className="w-4 h-4" /> Reset Password
                   </button>
@@ -334,7 +334,7 @@ export default function UserProfilePage() {
                       setIsChangePlanOpen(true);
                       setIsActionMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 transition-colors"
+                    className="w-full cursor-pointer px-4 py-3 text-left flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700 transition-colors"
                   >
                     <Shuffle className="w-4 h-4" /> Change Plan
                   </button>
@@ -343,7 +343,7 @@ export default function UserProfilePage() {
                       setIsSuspendOpen(true);
                       setIsActionMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-orange-600 dark:text-orange-400 border-t border-gray-200 dark:border-gray-700 transition-colors"
+                    className="w-full cursor-pointer px-4 py-3 text-left flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm text-orange-600 dark:text-orange-400 border-t border-gray-200 dark:border-gray-700 transition-colors"
                   >
                     <UserX className="w-4 h-4" /> Suspend User
                   </button>
@@ -352,7 +352,7 @@ export default function UserProfilePage() {
                       setIsDeleteUserOpen(true);
                       setIsActionMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 border-t border-gray-200 dark:border-gray-700 transition-colors rounded-b-lg"
+                    className="w-full cursor-pointer px-4 py-3 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 border-t border-gray-200 dark:border-gray-700 transition-colors rounded-b-lg"
                   >
                     <Trash2 className="w-4 h-4" /> Delete User
                   </button>
@@ -538,7 +538,7 @@ export default function UserProfilePage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as TabType)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`py-4 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                   activeTab === tab
                     ? "border-blue-500 text-blue-600 dark:text-blue-400"
                     : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"

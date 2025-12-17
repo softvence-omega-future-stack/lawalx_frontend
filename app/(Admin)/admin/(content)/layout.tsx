@@ -21,6 +21,7 @@ import { ThemeProvider } from '@/components/Admin/layout/ThemeProvider';
 import Navbar from '@/components/Admin/layout/AdminNavbar';
 import Sidebar from '@/components/Admin/layout/AdminSidebar';
 import { useState } from 'react';
+import Wrapper from '@/components/layout/Wrapper';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -32,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Sidebar isCollapsed={isCollapsed} />
 
         <main className={`pt-16 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
-          <div className="p-2 md:p-6">{children}</div>
+          <Wrapper>{children}</Wrapper>
         </main>
       </div>
     </ThemeProvider>

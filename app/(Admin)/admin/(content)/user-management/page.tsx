@@ -13,13 +13,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import EditUserModal from "@/components/Admin/modals/EditUserModal";
+import ResetPasswordModal from "@/components/Admin/modals/ResetPasswordModal";
+import SuspendUserModal from "@/components/Admin/modals/SuspendUserModal";
+import DeleteUserModal from "@/components/Admin/modals/DeleteUserModal";
+// Add LoginAsUserModal if you have one
 import {
   Users,
   UserCheck,
   Clock,
   AlertTriangle,
   Search,
-  ChevronDown,
   MoreVertical,
   Eye,
   Edit,
@@ -30,9 +34,7 @@ import {
   X,
   Home,
   ChevronRight,
-  UserRound,
   UserRoundPlus,
-  Cloud,
   CloudDownload,
 } from "lucide-react";
 
@@ -138,6 +140,12 @@ export default function UserManagementPage() {
   const [storageFilter, setStorageFilter] = useState(">80% Storage");
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+  const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null); // To pass data to modals
+
   const [formData, setFormData] = useState({
     fullName: "John Doe",
     email: "user@example.com",
@@ -228,7 +236,7 @@ export default function UserManagementPage() {
   });
 
   return (
-    <div className="min-h-screen mx-4 mt-4">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
@@ -240,7 +248,7 @@ export default function UserManagementPage() {
         </div>
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               User Management
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -248,13 +256,13 @@ export default function UserManagementPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <button className="px-4 py-2 shadow-customShadow bg-white dark:bg-gray-800 text-nowrap rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
+            <button className="px-4 py-2 shadow-customShadow cursor-pointer bg-white dark:bg-gray-800 text-nowrap rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
               <CloudDownload className="w-4 h-4" />
               <span className="hidden lg:block"> Export User Report</span>
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 shadow-customShadow bg-blue-500 hover:bg-blue-600 text-nowrap text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+              className="px-4 py-2 shadow-customShadow cursor-pointer bg-blue-500 hover:bg-blue-600 text-nowrap text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
             >
               <UserRoundPlus className="w-4 h-4" />
               <span className="hidden lg:block">Add New User</span>
@@ -357,13 +365,13 @@ export default function UserManagementPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleBulkAction("deactivate")}
-                  className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  className="px-4 cursor-pointer py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
                   Deactivate
                 </button>
                 <button
                   onClick={() => handleBulkAction("suspend")}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium"
+                  className="px-4 cursor-pointer py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium"
                 >
                   Suspend
                 </button>
@@ -447,7 +455,9 @@ export default function UserManagementPage() {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                   Issues
                 </th>
-                <th className="px-4 py-3"></th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -561,7 +571,7 @@ export default function UserManagementPage() {
                             openActionMenu === user.id ? null : user.id
                           )
                         }
-                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors cursor-pointer"
                       >
                         <MoreVertical className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                       </button>
@@ -593,28 +603,66 @@ export default function UserManagementPage() {
                                 }&storageUsage=${user.storageUsage}`
                               );
                             }}
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
                           >
                             <Eye className="w-4 h-4" />
                             View Profile
                           </button>
-                          <button className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsEditModalOpen(true);
+                              setOpenActionMenu(null);
+                            }}
+                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                          >
                             <Edit className="w-4 h-4" />
                             Edit User
                           </button>
-                          <button className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
+
+                          <button
+                            onClick={() => {
+                              alert("Login as user clicked");
+                              setOpenActionMenu(null);
+                            }}
+                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                          >
                             <LogIn className="w-4 h-4" />
                             Login as user
                           </button>
-                          <button className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
+
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsResetPasswordOpen(true);
+                              setOpenActionMenu(null);
+                            }}
+                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                          >
                             <RotateCcw className="w-4 h-4" />
                             Reset Password
                           </button>
-                          <button className="w-full px-4 py-2 text-left text-sm text-orange-600 dark:text-orange-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
+
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsSuspendModalOpen(true);
+                              setOpenActionMenu(null);
+                            }}
+                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-orange-600 dark:text-orange-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                          >
                             <UserX className="w-4 h-4" />
                             Suspend User
                           </button>
-                          <button className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
+
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsDeleteModalOpen(true);
+                              setOpenActionMenu(null);
+                            }}
+                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                          >
                             <Trash2 className="w-4 h-4" />
                             Delete User
                           </button>
@@ -1115,6 +1163,61 @@ export default function UserManagementPage() {
           </div>
         </div>
       )}
+
+      {/* Reusable Modals */}
+      <EditUserModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        userData={selectedUser}
+        onSave={(updatedData) => {
+          console.log("User updated:", updatedData);
+          // Update users array here if needed
+          setIsEditModalOpen(false);
+        }}
+      />
+
+      <ResetPasswordModal
+        isOpen={isResetPasswordOpen}
+        onClose={() => setIsResetPasswordOpen(false)}
+        userName={selectedUser?.name || ""}
+        onConfirm={(newPassword) => {
+          console.log(
+            "Password reset for",
+            selectedUser?.name,
+            "to",
+            newPassword
+          );
+          setIsResetPasswordOpen(false);
+        }}
+      />
+
+      <SuspendUserModal
+        isOpen={isSuspendModalOpen}
+        onClose={() => setIsSuspendModalOpen(false)}
+        userName={selectedUser?.name || ""}
+        onConfirm={() => {
+          // Update user status to Suspended
+          setUsers(
+            users.map((u) =>
+              u.id === selectedUser?.id
+                ? { ...u, status: "Suspended" as Status }
+                : u
+            )
+          );
+          setIsSuspendModalOpen(false);
+        }}
+      />
+
+      <DeleteUserModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        userName={selectedUser?.name || ""}
+        onConfirm={() => {
+          // Remove user from list
+          setUsers(users.filter((u) => u.id !== selectedUser?.id));
+          setIsDeleteModalOpen(false);
+        }}
+      />
     </div>
   );
 }

@@ -60,14 +60,14 @@ export default function DeleteUserModal({ isOpen, onClose, onConfirm, userName }
         <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium"
+            className="px-6 cursor-pointer py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={text !== "DELETE"}
-            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed text-white rounded-xl transition-colors font-medium"
+            className="px-6 cursor-pointer py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed text-white rounded-xl transition-colors font-medium"
           >
             Delete User
           </button>
