@@ -12,9 +12,9 @@ const HomeNavbar = () => {
         <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100">
             <CommonWrapper>
                 <div className="mx-auto">
-                    <div className="flex justify-between items-center py-2">
+                    <div className="flex justify-between items-center ">
                         <div className="">
-                            <h1 className="text-[56px] font-bold text-[#0FA6FF]">tape</h1>
+                            <h1 className="text-[56px] font-bold text-bgBlue">tape</h1>
                         </div>
 
                         <div className="hidden md:flex items-center space-x-8">

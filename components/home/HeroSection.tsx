@@ -3,8 +3,9 @@ import { Button } from "../ui/button";
 
 const HeroSection = () => {
     return (
-        <section className="pt-24 pb-8 px-4 sm:px-6 lg:px-8 bg-linear-to-br from-blue-50 via-white to-pink-50">
+        <section className="pt-24 pb-8 px-4 sm:px-6 lg:px-8 bg-linear-to-br from-blue-50 via-white to-pink-100">
             <CommonWrapper>
+
                 <div className="mx-auto text-center py-8 mt-10">
                     <h2 className="text-4xl sm:text-5xl md:text-[80px] font-extrabold text-gray-900 mb-10 leading-tight">
                         Turbo speed.<br />Enterprise scale.

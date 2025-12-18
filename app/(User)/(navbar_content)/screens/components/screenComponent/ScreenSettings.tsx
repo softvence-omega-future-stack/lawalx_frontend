@@ -1,0 +1,142 @@
+"use client";
+
+import { Monitor, Trash2, Plus } from "lucide-react";
+import { useState } from "react";
+import AddDeviceDialog from "./AddDeviceDialog";
+
+interface ConnectedDevice {
+    id: number;
+    name: string;
+    location: string;
+    isOnline: boolean;
+}
+
+interface ScreenSettingsProps {
+    screenName?: string;
+    description?: string;
+    devices?: ConnectedDevice[];
+}
+
+const sampleDevices: ConnectedDevice[] = [
+    { id: 1, name: "Office 1", location: "LA, USA", isOnline: true },
+    { id: 2, name: "Office 2", location: "NY, USA", isOnline: false },
+];
+
+const ScreenSettings: React.FC<ScreenSettingsProps> = ({
+    screenName = "",
+    description = "",
+    devices = sampleDevices,
+}) => {
+    const [name, setName] = useState(screenName);
+    const [desc, setDesc] = useState(description);
+    const [connectedDevices, setConnectedDevices] = useState<ConnectedDevice[]>(devices);
+    const [open, setOpen] = useState(false);
+
+    const handleRemoveDevice = (id: number) => {
+        setConnectedDevices(connectedDevices.filter((device) => device.id !== id));
+    };
+
+    return (
+        <div className="mx-auto min-h-screen">
+            <div className="bg-white rounded-xl border border-borderGray p-4 sm:p-6">
+                {/* Header */}
+                <div className="mb-6">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">Screen Settings</h2>
+                    <p className="text-sm sm:text-base text-textGray">
+                        Manage device configuration and connected screens
+                    </p>
+                </div>
+
+                {/* Screen Name */}
+                <div className="mb-6">
+                    <label className="block text-sm sm:text-base font-medium text-gray-900 mb-2">Screen Name</label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Conference Room Display"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm sm:text-base text-gray-900"
+                    />
+                </div>
+
+                {/* Description */}
+                <div className="mb-6">
+                    <label className="block text-sm sm:text-base font-medium text-gray-900 mb-2">Description</label>
+                    <textarea
+                        value={desc}
+                        onChange={(e) => setDesc(e.target.value)}
+                        placeholder="Display for meeting room presentations and schedules"
+                        rows={3}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-borderGray rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm sm:text-base text-gray-900 resize-none"
+                    />
+                </div>
+
+                {/* Connected Devices */}
+                <div className="mb-6">
+                    <h3 className="text-base sm:text-xl font-medium text-gray-900 mb-2">Connected Devices</h3>
+                    <p className="text-sm sm:text-base text-gray-500 mb-4">
+                        Manage devices connected to this screen
+                    </p>
+
+                    <div className="space-y-3 mb-6">
+                        {connectedDevices.map((device) => (
+                            <div
+                                key={device.id}
+                                className="flex  items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-6 bg-bgGray border border-borderGray rounded-xl hover:border-gray-300 transition-colors"
+                            >
+                                <div className="shrink-0 p-2 border border-borderGray hover:bg-gray-200 rounded-lg">
+                                    <Monitor className="w-5 sm:w-6 h-5 sm:h-6 text-gray-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                                        <span className="font-semibold text-base sm:text-lg text-gray-900">{device.name}</span>
+                                        {device.isOnline && (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs sm:text-sm font-medium rounded-full w-fit">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                Online
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-sm sm:text-base text-gray-500">{device.location}</p>
+                                </div>
+                                <button
+                                    onClick={() => handleRemoveDevice(device.id)}
+                                    className="shrink-0 p-2 border border-borderGray bg-white cursor-pointer hover:bg-gray-200 rounded-lg"
+                                >
+                                    <Trash2 className="w-5 sm:w-6 h-5 sm:h-6 text-gray-600" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <button
+                        onClick={() => setOpen(true)}
+                        className="w-full py-2.5 border-2 border-bgBlue text-black hover:bg-gray-100 rounded-lg text-sm sm:text-base font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                        <Plus className="w-4 sm:w-6 h-4 sm:h-6 text-black font-semibold" />
+                        Add Devices
+                    </button>
+                </div>
+
+                {/* Delete Screen */}
+                <div className="mt-6 p-4 sm:p-6 rounded-xl bg-red-50">
+                    <button
+                        className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm sm:text-base font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                        <Trash2 className="w-4 sm:w-5 h-4 sm:h-5" />
+                        Delete Screen
+                    </button>
+
+                    <div className="mt-3 p-3 rounded-lg flex items-start gap-2">
+                        <p className="text-sm sm:text-base text-red-700">
+                            These actions cannot be undone. Please proceed with caution.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {open && <AddDeviceDialog open={open} setOpen={setOpen} />}
+        </div>
+    );
+};
+
+export default ScreenSettings;
