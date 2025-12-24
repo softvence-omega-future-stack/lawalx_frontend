@@ -7,6 +7,8 @@ import { Monitor, ScreenShare, Search } from "lucide-react";
 import { useState } from "react";
 import ScreenCard from "./components/screenComponent/ScreenCard";
 import screen from "@/public/images/screen.png";
+import Breadcrumb from "@/common/BreadCrumb";
+import { divIcon } from "leaflet";
 
 
 export type SortOption = {
@@ -124,66 +126,76 @@ const MyScreensPage: React.FC = () => {
   });
 
   return (
-    <div className="flex flex-col items-center justify-start w-full mt-4 md:mt-0">
-  <div className="w-full mx-auto">
-    {/* Header */}
-    <div className="flex flex-wrap items-center justify-between md:flex-nowrap mb-6 gap-3">
-      <DashboardHeading title="My Screens" />
-      <AddButton icon={<ScreenShare />} text="Create New Screen" />
-    </div>
+    <>
+      <div className="mb-3">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Program", href: "/programs" },
+          ]}
+        />
+      </div>
+      <div className="flex flex-col items-center justify-start w-full mt-4 md:mt-0">
+        <div className="w-full mx-auto">
+          {/* Header */}
+          <div className="flex flex-wrap items-center justify-between md:flex-nowrap mb-6 gap-3">
+            <DashboardHeading title="My Screens" />
+            <AddButton icon={<ScreenShare />} text="Create New Screen" />
+          </div>
 
-    {/* Search + Filter Bar */}
-    <div className="bg-navbarBg border border-border rounded-xl p-4 mb-6 w-full shadow-sm">
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Search screen..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-bgGray dark:bg-gray-800 border border-border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-          />
-        </div>
+          {/* Search + Filter Bar */}
+          <div className="bg-navbarBg border border-border rounded-xl p-4 mb-6 w-full shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search screen..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-bgGray dark:bg-gray-800 border border-border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                />
+              </div>
 
-        <div className="w-full sm:w-48">
-          <BaseSelect
-            value={sortOption}
-            onChange={setSortOption}
-            options={sortOptions}
-            placeholder="All"
-            showLabel={false}
-          />
+              <div className="w-full sm:w-48">
+                <BaseSelect
+                  value={sortOption}
+                  onChange={setSortOption}
+                  options={sortOptions}
+                  placeholder="All"
+                  showLabel={false}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Content Area */}
+          {filteredScreens.length === 0 ? (
+            <div className="bg-white dark:bg-gray-900 border border-borderGray dark:border-gray-700 rounded-xl p-16 flex justify-center shadow-sm">
+              <div className="flex flex-col items-center justify-center text-center max-w-md w-full">
+                <Monitor className="w-20 h-20 text-gray-900 dark:text-gray-300 stroke-[1.5] mb-6" />
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  No Screens Found
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+                  {searchQuery || sortOption !== "all"
+                    ? "Try adjusting your search or filter criteria"
+                    : "Create your first screen to get started"}
+                </p>
+                <AddButton icon={<ScreenShare />} text="Create New Screen" />
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredScreens.map((screen) => (
+                <ScreenCard key={screen.id} screen={screen} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </div>
-
-    {/* Content Area */}
-    {filteredScreens.length === 0 ? (
-      <div className="bg-white dark:bg-gray-900 border border-borderGray dark:border-gray-700 rounded-xl p-16 flex justify-center shadow-sm">
-        <div className="flex flex-col items-center justify-center text-center max-w-md w-full">
-          <Monitor className="w-20 h-20 text-gray-900 dark:text-gray-300 stroke-[1.5] mb-6" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            No Screens Found
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
-            {searchQuery || sortOption !== "all"
-              ? "Try adjusting your search or filter criteria"
-              : "Create your first screen to get started"}
-          </p>
-          <AddButton icon={<ScreenShare />} text="Create New Screen" />
-        </div>
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredScreens.map((screen) => (
-          <ScreenCard key={screen.id} screen={screen} />
-        ))}
-      </div>
-    )}
-  </div>
-</div>
+    </>
   );
 };
 
-export default MyScreensPage;
+export default MyScreensPage; 

@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  ArrowLeft,
   Clock,
   FileText,
   ListTree,
@@ -20,6 +19,7 @@ import ContentSchedule from "../components/screenComponent/ContentSchedule";
 import ScreenSettings from "../components/screenComponent/ScreenSettings";
 import MapLocation from "../components/screenComponent/MapLocation";
 import BaseVideoPlayer from "@/common/BaseVideoPlayer";
+import Breadcrumb from "@/common/BreadCrumb";
 
 // Mock screens
 const mockScreens: ScreenData[] = [
@@ -105,18 +105,27 @@ const ScreenCardDetails = () => {
 
   return (
     <div className="min-h-screen">
+      <div className="mb-3">
+        <Breadcrumb
+  items={[
+    { label: "Home", href: "/" },
+    { label: "Program", href: "/program" },
+    { label: "Main Lobby Display" },
+  ]}
+/>
+
+      </div>
       <div className="mx-auto w-full">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-9 gap-4">
-          <div className="flex items-start gap-3">
+          <div className="">
             <button
               onClick={() => router.push("/screens")}
               className="hover:bg-gray-100 rounded-lg transition-colors mt-1 p-1 cursor-pointer"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
             </button>
             <div>
-              <h1 className="text-lg sm:text-2xl md:text-[30px] font-semibold text-gray-900">
+              <h1 className="text-lg sm:text-2xl md:text-[30px] font-semibold text-gray-900 dark:text-white">
                 {screen.title}
               </h1>
               <p className="text-sm sm:text-base text-textGray mt-1">
@@ -174,19 +183,21 @@ const ScreenCardDetails = () => {
                 <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
                   {screen.title}
                 </h3>
-                <button
-                  className={`p-2 rounded-lg transition-all flex items-center justify-center cursor-pointer ${
-                    screen.status === "active"
-                      ? "bg-bgBlue hover:bg-blue-500"
-                      : "bg-[#EF4444] hover:bg-red-600"
-                  } text-white`}
-                >
-                  {screen.status === "active" ? (
-                    <Power className="w-4 h-4 sm:w-5 sm:h-5" />
-                  ) : (
-                    <PowerOff className="w-4 h-4 sm:w-5 sm:h-5" />
-                  )}
-                </button>
+               <button
+                  className={`shadow-customShadow rounded-full transition-all flex items-center justify-center text-white py-3 sm:py-3.5 px-3 sm:px-3.5 cursor-pointer
+                            ${
+                              screen.status === "active"
+                                ? "bg-bgBlue hover:bg-blue-500"
+                                : "bg-bgRed hover:bg-red-600"
+                            }`}
+                          title={screen.status === "active" ? "Turn Off" : "Turn On"}
+                        >
+                          {screen.status === "active" ? (
+                            <Power className="w-4 h-4 sm:w-5 sm:h-5" />
+                          ) : (
+                            <PowerOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                          )}
+                        </button>
               </div>
 
               <p className="text-sm sm:text-base text-gray-500 mt-2">
