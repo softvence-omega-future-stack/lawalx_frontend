@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Users, Activity, LogIn, Clock, AlertTriangle, ChevronDown, Download, Filter, CheckCircle, AlertCircle, Shield, TrendingUp } from 'lucide-react';
+import { Users, Activity, LogIn, Clock, AlertTriangle, ChevronDown, Download, Filter, CheckCircle, AlertCircle, Shield, TrendingUp, Home } from 'lucide-react';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -149,6 +149,13 @@ const UserActivityReports = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+                <span><Home className="w-4 h-4 text-gray-400" /></span>
+                <span>›</span>
+                <span>Reports & Analytics</span>
+                <span>›</span>
+                <span>User & Activity Reports</span>
+              </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-1">User & Activity Reports</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               User behavior, system access, and accountability tracking
@@ -241,22 +248,20 @@ const UserActivityReports = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-navbarBg rounded-lg border border-border mb-6">
-          <div className="flex overflow-x-auto">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors cursor-pointer${
-                  activeTab === tab.id
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex overflow-x-auto max-w-full">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 shadow-customShadow${
+                activeTab === tab.id
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-100 dark:ring-blue-800'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* Activity Log Tab */}

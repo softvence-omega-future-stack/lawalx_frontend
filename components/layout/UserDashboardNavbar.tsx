@@ -453,13 +453,12 @@ import {
   CalendarPlus,
   FolderPlus,
   VideoIcon,
-  Mail,
-  AlertCircle,
   UserRoundCogIcon,
   LogOutIcon,
   HelpCircleIcon,
   SettingsIcon,
   Monitor,
+  Headphones,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -604,16 +603,10 @@ export default function UserDashboardNavbar() {
                       <span className="ml-2">Video Tutorials</span>
                     </button>
                   </Link>
-                  <Link href="/contact">
+                  <Link href="/support">
                     <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
-                      <Mail className="w-4 h-4" />
-                      <span className="ml-2">Contact</span>
-                    </button>
-                  </Link>
-                  <Link href="/report&problem">
-                    <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
-                      <AlertCircle className="w-4 h-4" />
-                      <span className="ml-2">Report a Problem</span>
+                      <Headphones className="w-4 h-4" />
+                      <span className="ml-2">Support</span>
                     </button>
                   </Link>
                 </div>

@@ -197,7 +197,7 @@ const Support = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="">
+      <div className="mt-8">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">
@@ -209,7 +209,7 @@ const Support = () => {
         </div>
 
         {/* All Tickets Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 px-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             All Tickets
           </h2>
@@ -222,7 +222,7 @@ const Support = () => {
         </div>
 
         {/* Main Layout */}
-        <div className="bg-navbarBg rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden scrollbar-hide">
+        <div className="bg-navbarBg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden scrollbar-hide">
           <div className="flex flex-col lg:flex-row h-[700px] overflow-y-auto">
             {/* Tickets List */}
             <div className="w-full lg:w-1/2 border-r border-gray-200 dark:border-gray-700">

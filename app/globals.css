@@ -517,6 +517,32 @@ body {
   pointer-events: none;
 }
 
+.help-header-bg {
+  position: relative;
+  height: 220px;
+  width: 100%;
+  /* border-radius: 0.75rem; Tailwind rounded-xl */
+  overflow: hidden;
+  /* Gradient background */
+  border-bottom: 1px solid var(--Border, #D4D4D4);
+  background: linear-gradient(180deg, rgba(15, 166, 255, 0.10) -7.42%, rgba(236, 151, 207, 0.10) 100%), var(--Card-Background, #FAFAFA);
+}
+
+/* Top-left image (first image) */
+.help-header-bg::after {
+  content: '';
+  position: absolute;
+  top: 18%;      /* adjust vertical position */
+  left: 20px;      /* adjust horizontal position */
+  width: 22rem;
+  height: 22rem;
+  background-image: url('/userDashboard/img2.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: top left;
+  pointer-events: none;
+}
+
 /* Right-middle image (second image) */
 /* .dashboard-header-bg::before {
   content: '';

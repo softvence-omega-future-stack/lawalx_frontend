@@ -38,23 +38,13 @@ const customItems = [
     label: 'Support',
     href: '/support',
   },
-  {
-    icon: <HelpCircle className="w-5 h-5" />,
-    label: 'Contact Us',
-    href: '/contact',
-  },
-  {
-    icon: <HelpCircle className="w-5 h-5" />,
-    label: 'Report and Problems',
-    href: '/report&problem',
-  }
 ];
 
 // app/dashboard/content/layout.tsx
 
 export default function ContentLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-White ">
+    <div className="min-h-screen bg-White">
       <UserDashboardNavbar />
       
       <div className="flex">
@@ -62,7 +52,7 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
         
         {/* Main content - push right on desktop */}
         <main className="flex-1 min-h-screen lg:ml-64">
-          <Wrapper>{children}</Wrapper>
+          {children}
         </main>
       </div>
     </div>

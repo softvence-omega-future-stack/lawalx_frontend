@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { CheckCircle, Clock, TrendingUp, ChevronDown, Download, Filter } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, ChevronDown, Download, Filter, Home } from 'lucide-react';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -82,7 +82,14 @@ const CustomerServiceReports = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold mb-1">Customer Service & Support Reports</h1>
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+                <span><Home className="w-4 h-4 text-gray-400" /></span>
+                <span>›</span>
+                <span>Reports & Analytics</span>
+                <span>›</span>
+                <span>Customer Service & Support Reports</span>
+              </div>
+            <h1 className="text-2xl md:text-3xl font-bold mb-1">Customer Service & Support Reports</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Ticket, support operations, and customer satisfaction
             </p>

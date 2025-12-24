@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Monitor, Wifi, WifiOff, TrendingUp, ChevronDown, Download } from 'lucide-react';
+import { Monitor, Wifi, WifiOff, TrendingUp, ChevronDown, Download, Home } from 'lucide-react';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -70,6 +70,13 @@ const DeviceReportDashboard = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+                <span><Home className="w-4 h-4 text-gray-400" /></span>
+                <span>›</span>
+                <span>Reports & Analytics</span>
+                <span>›</span>
+                <span>Device Report</span>
+              </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-1">Device Report</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Monitor and manage all connected devices across customers

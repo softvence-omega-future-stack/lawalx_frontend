@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Users, DollarSign, Percent, TrendingUp, TrendingDown, UserPlus, ChevronDown, Download, Target, Zap } from 'lucide-react';
+import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
+import { useTheme } from 'next-themes';
+import { Users, DollarSign, Percent, TrendingUp, TrendingDown, UserPlus, ChevronDown, Download, Target, Zap, Home } from 'lucide-react';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -112,7 +113,16 @@ const generateData = (days: number) => {
 };
 
 const FinancialReport = () => {
+  const { theme, resolvedTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('mrr');
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && (resolvedTheme === 'dark' || theme === 'dark');
+
   const [timeRange, setTimeRange] = useState(30);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -139,7 +149,16 @@ const FinancialReport = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold mb-1">Financial Report</h1>
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+                <span><Home className="w-4 h-4 text-gray-400" /></span>
+                <span>›</span>
+                <span>Reports & Analytics</span>
+                <span>›</span>
+                <span>Financial Report</span>
+                {/* <span>›</span>
+                <span className="text-cyan-600 font-medium">MRR/ARR</span> */}
+              </div>
+            <h1 className="text-2xl md:text-3xl font-bold mb-1">Financial Report</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Comprehensive financial analytics and subscription metrics
             </p>
@@ -237,22 +256,20 @@ const FinancialReport = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-navbarBg border border-border rounded-lg mb-6">
-          <div className="flex overflow-x-auto">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors cursor-pointer${
-                  activeTab === tab.id
-                    ? 'text-bgBlue border-b-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex overflow-x-auto max-w-full">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 shadow-customShadow${
+                activeTab === tab.id
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-100 dark:ring-blue-800'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* MRR/ARR Tab */}
@@ -325,13 +342,16 @@ const FinancialReport = () => {
                       border: '1px solid var(--tooltip-border)',
                       borderRadius: '0.5rem'
                     }}
+                    cursor={{ fill: 'transparent' }}
+                    formatter={(value: number) => [`$${Math.abs(value).toLocaleString()}`, undefined]}
                     wrapperClassName="dark:[--tooltip-bg:#1f2937] dark:[--tooltip-border:#374151] [--tooltip-bg:#ffffff] [--tooltip-border:#e5e7eb]"
                   />
                   <Legend />
-                  <Bar dataKey="churned" stackId="a" fill="#ef4444" name="Churned" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="downgrades" stackId="a" fill="#f59e0b" name="Downgrades" radius={[0, 0, 0, 0]} />
+                  <ReferenceLine y={0} stroke={isDark ? '#4b5563' : '#9ca3af'} />
                   <Bar dataKey="newSales" stackId="a" fill="#8b5cf6" name="New Sales" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="upgrades" stackId="a" fill="#10b981" name="Upgrades" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="upgrades" stackId="a" fill="#3b82f6" name="Upgrades" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="churned" stackId="a" fill="#ef4444" name="Churned" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="downgrades" stackId="a" fill="#f59e0b" name="Downgrades" radius={[0, 0, 4, 4]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

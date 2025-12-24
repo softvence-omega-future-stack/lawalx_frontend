@@ -24,9 +24,9 @@ const CouponsTab: React.FC<{ darkMode: boolean; onCreate: () => void; onEdit: (c
   const itemsPerPage = 5;
   const totalPages = Math.ceil(demoCoupons.length / itemsPerPage);
   const currentData = demoCoupons.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const [showMenu, setShowMenu] = useState(null);
+  const [showMenu, setShowMenu] = useState<number | null>(null);
 
-  const handleMenu = (index) => {
+  const handleMenu = (index: number) => {
     setShowMenu(showMenu === index ? null : index);
   };
 

@@ -1177,18 +1177,20 @@ export default function UserManagementPage() {
       />
 
       <ResetPasswordModal
-        isOpen={isResetPasswordOpen}
-        onClose={() => setIsResetPasswordOpen(false)}
-        userName={selectedUser?.name || ""}
-        onConfirm={(newPassword) => {
-          console.log(
-            "Password reset for",
-            selectedUser?.name,
-            "to",
-            newPassword
-          );
-          setIsResetPasswordOpen(false);
-        }}
+        {...({
+          isOpen: isResetPasswordOpen,
+          onClose: () => setIsResetPasswordOpen(false),
+          userName: selectedUser?.name || "",
+          onConfirm: (newPassword: string) => {
+            console.log(
+              "Password reset for",
+              selectedUser?.name,
+              "to",
+              newPassword
+            );
+            setIsResetPasswordOpen(false);
+          },
+        } as any)}
       />
 
       <SuspendUserModal
