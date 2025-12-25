@@ -8,8 +8,6 @@ import { useState } from "react";
 import ScreenCard from "./components/screenComponent/ScreenCard";
 import screen from "@/public/images/screen.png";
 import Breadcrumb from "@/common/BreadCrumb";
-import { divIcon } from "leaflet";
-
 
 export type SortOption = {
   value: string;
@@ -108,8 +106,6 @@ const MyScreensPage: React.FC = () => {
       video: "./iceVideo.mp4",
     },
   ];
-
-
 
   const [hasScreens] = useState(true);
   const screens = hasScreens ? mockScreens : [];

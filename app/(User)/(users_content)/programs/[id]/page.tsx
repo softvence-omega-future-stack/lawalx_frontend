@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+"use client"
 
 import { useState } from "react";
 import {
   Clock,
   FileText,
   ListTree,
-  Settings2,
   Save,
   Power,
   PowerOff,
   Tv,
+  CalendarClock,
+  Settings,
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import type { ScreenData } from "../page";
@@ -20,6 +20,7 @@ import ScreenSettings from "../components/screenComponent/ScreenSettings";
 import MapLocation from "../components/screenComponent/MapLocation";
 import BaseVideoPlayer from "@/common/BaseVideoPlayer";
 import Breadcrumb from "@/common/BreadCrumb";
+import ActionButton from "@/components/ActionButton";
 
 // Mock screens
 const mockScreens: ScreenData[] = [
@@ -107,12 +108,12 @@ const ScreenCardDetails = () => {
     <div className="min-h-screen">
       <div className="mb-3">
         <Breadcrumb
-  items={[
-    { label: "Home", href: "/" },
-    { label: "Program", href: "/program" },
-    { label: "Main Lobby Display" },
-  ]}
-/>
+        items={[
+           { label: "Home", href: "/" },
+           { label: "Programs", href: "/programs" },
+           { label: "Main Lobby Display" },
+           ]}
+        />
 
       </div>
       <div className="mx-auto w-full">
@@ -125,39 +126,47 @@ const ScreenCardDetails = () => {
             >
             </button>
             <div>
-              <h1 className="text-lg sm:text-2xl md:text-[30px] font-semibold text-gray-900 dark:text-white">
+              <h1 className="text-lg sm:text-2xl md:text-[30px] font-semibold text-headings">
                 {screen.title}
               </h1>
-              <p className="text-sm sm:text-base text-textGray mt-1">
+              <p className="text-sm sm:text-base text-muted mt-1">
                 {screen.description}
               </p>
             </div>
           </div>
-
-          <button className="flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-colors">
-            <Save className="w-4 h-4 sm:w-5 sm:h-5" /> Update Changes
-          </button>
+          <ActionButton title="Update Changes" bgColor="#0FA6FF" hoverColor="#00A4FF" icon={<Save className="w-5 h-5" />}/>
         </div>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap justify-start gap-2 sm:gap-4 mb-6">
-          {["timeline", "schedule", "settings"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab as any)}
-              className={`flex items-center gap-2 capitalize cursor-pointer px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base font-medium rounded-lg transition-all duration-200 border ${
-                activeTab === tab
-                  ? "text-bgBlue border-gray-200 bg-white"
-                  : "text-textGray hover:text-gray-700 hover:bg-gray-100 border-transparent"
-              }`}
-            >
-              {tab === "timeline" && <Clock className="w-4 h-4" />}
-              {tab === "schedule" && <ListTree className="w-4 h-4" />}
-              {tab === "settings" && <Settings2 className="w-4 h-4" />}
-              <span>{tab}</span>
-            </button>
-          ))}
-        </div>
+   {/* Tabs */}
+<div className="bg-navbarBg rounded-full border border-border p-1 mb-6 inline-flex overflow-x-auto max-w-full">
+  {(["timeline", "schedule", "settings"] as const).map((tab) => {
+    const isActive = activeTab === tab;
+    return (
+      <button
+        key={tab}
+        onClick={() => setActiveTab(tab)}
+        className={`px-4 py-2 text-sm sm:text-base rounded-full mr-2 font-medium whitespace-nowrap transition-all duration-200 cursor-pointer shrink-0 ${
+          isActive
+            ? "bg-blue-50 dark:bg-blue-900/20 shadow-customShadow"
+            : "hover:bg-gray-50 dark:hover:bg-gray-800"
+        }`}
+      >
+        <span
+          className={`flex items-center gap-2 ${
+            isActive ? "text-bgBlue" : "text-muted hover:text-gray-900 dark:hover:text-white"
+          }`}
+        >
+          {tab === "timeline" && <ListTree className="w-4 h-4" />}
+          {tab === "schedule" && <CalendarClock className="w-4 h-4" />}
+          {tab === "settings" && <Settings className="w-4 h-4" />}
+          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+        </span>
+      </button>
+    );
+  })}
+</div>
+
+
 
         {/* Main layout */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
@@ -171,7 +180,7 @@ const ScreenCardDetails = () => {
           {/* Right side */}
           <div className="w-full md:w-[55%] space-y-6">
             {/* Video Section */}
-            <div className="bg-white border border-borderGray p-4 sm:p-6 rounded-xl overflow-hidden">
+            <div className=" border border-border p-4 sm:p-6 rounded-xl overflow-hidden bg-navbarBg">
               <BaseVideoPlayer
                   src={screen.video || ""}
                   poster={screen.thumbnail}
@@ -180,7 +189,7 @@ const ScreenCardDetails = () => {
                 />
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 sm:mt-6 gap-3 sm:gap-0">
-                <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
+                <h3 className="text-xl md:text-2xl font-semibold text-headings">
                   {screen.title}
                 </h3>
                <button
@@ -200,55 +209,62 @@ const ScreenCardDetails = () => {
                         </button>
               </div>
 
-              <p className="text-sm sm:text-base text-gray-500 mt-2">
+              <p className="text-sm sm:text-base text-muted mt-2">
                 Playing: {screen.description}
               </p>
             </div>
 
-            {/* Overview */}
-            <div className="bg-white rounded-xl border border-borderGray p-4 sm:p-6">
-              <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">
-                Overview
-              </h3>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center justify-between py-2 border-b border-borderGray">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <FileText className="w-5 h-5 text-gray-800" />
-                    <span className="text-sm sm:text-base text-gray-600">
-                      Content
-                    </span>
-                  </div>
-                  <span className="text-sm sm:text-base font-medium text-gray-900">
-                    {screen.assignedContent}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-borderGray">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <Tv className="w-5 h-5 text-gray-800" />
-                    <span className="text-sm sm:text-base text-gray-600">
-                      Total Devices
-                    </span>
-                  </div>
-                  <span className="text-sm sm:text-base font-medium text-gray-900">
-                    {screen.devices}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <Clock className="w-5 h-5 text-gray-800" />
-                    <span className="text-sm sm:text-base text-gray-600">
-                      Last Updated
-                    </span>
-                  </div>
-                  <span className="text-sm sm:text-base font-medium text-gray-900">
-                    {screen.lastUpdated}
-                  </span>
-                </div>
-              </div>
-            </div>
+           {/* Overview */}
+<div className="rounded-xl border border-border p-4 sm:p-6 bg-navbarBg">
+  <h3 className="text-xl md:text-2xl font-semibold text-headings mb-3 sm:mb-4">
+    Overview
+  </h3>
+
+  <div className="space-y-3 sm:space-y-4">
+    {/* Content */}
+    <div className="flex justify-between items-center py-2 border-b border-border">
+      <div className="flex items-center gap-2 sm:gap-3 w-[60%]">
+        <FileText className="w-5 h-5 text-body" />
+        <span className="text-sm sm:text-base text-body truncate">
+          Content
+        </span>
+      </div>
+      <div className="text-sm sm:text-base font-medium text-body text-right w-[40%] truncate">
+        {screen.assignedContent}
+      </div>
+    </div>
+
+    {/* Total Devices */}
+    <div className="flex justify-between items-center py-2 border-b border-borderGray">
+      <div className="flex items-center gap-2 sm:gap-3 w-[60%]">
+        <Tv className="w-5 h-5 text-body" />
+        <span className="text-sm sm:text-base text-body truncate">
+          Total Devices
+        </span>
+      </div>
+      <div className="text-sm sm:text-base font-medium text-body text-right w-[40%] truncate">
+        {screen.devices}
+      </div>
+    </div>
+
+    {/* Last Updated */}
+    <div className="flex justify-between items-center py-2">
+      <div className="flex items-center gap-2 sm:gap-3 w-[60%]">
+        <Clock className="w-5 h-5 text-body" />
+        <span className="text-sm sm:text-base text-body truncate">
+          Last Updated
+        </span>
+      </div>
+      <div className="text-sm sm:text-base font-medium text-body text-right w-[40%] truncate">
+        {screen.lastUpdated}
+      </div>
+    </div>
+  </div>
+</div>
+
 
             {/* Map Section */}
-            <div className="bg-white rounded-xl border border-borderGray p-4 sm:p-6">
+            <div className="rounded-xl border border-border p-4 sm:p-6 bg-navbarBg">
               <MapLocation />
             </div>
           </div>

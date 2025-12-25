@@ -48,7 +48,7 @@ export default function UserNavbar() {
                   {item.name}
                   {/* Smooth underline animation */}
                   <span
-                    className={`absolute left-0 bottom-[-4px] h-[2px] bg-cyan-500 transition-all duration-300 ease-out ${
+                    className={`absolute left-0 -bottom-1 h-0.5 bg-cyan-500 transition-all duration-300 ease-out ${
                       isActive ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}
                   ></span>
