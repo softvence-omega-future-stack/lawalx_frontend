@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Plus, Video, Image, FileText, GripVertical, MoreVertical, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, GripVertical, MoreVertical, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
 import AddContentDialog from "./AddContentDialog";
 import ActionButton from "@/components/ActionButton";
@@ -34,14 +34,14 @@ const ContentTimeline = () => {
     return `${String(minutes).padStart(2, "0")} min ${String(seconds).padStart(2, "0")} sec`;
   };
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "video": return <Video className="w-5 h-5 text-gray-800" />;
-      case "image": return <Image fill="none" className="w-5 h-5 text-gray-800" />;
-      case "content": return <FileText className="w-5 h-5 text-gray-800" />;
-      default: return <FileText className="w-5 h-5 text-gray-800" />;
-    }
-  };
+  // const getIcon = (type: string) => {
+  //   switch (type) {
+  //     case "video": return <Video className="w-5 h-5 text-gray-800" />;
+  //     case "image": return <Image fill="none" className="w-5 h-5 text-gray-800" />;
+  //     case "content": return <FileText className="w-5 h-5 text-gray-800" />;
+  //     default: return <FileText className="w-5 h-5 text-gray-800" />;
+  //   }
+  // };
 
   const handleRemove = (id: number) => {
     setItems(items.filter(item => item.id !== id));
@@ -59,10 +59,10 @@ const ContentTimeline = () => {
 
   return (
     <div className="mx-auto min-h-screen">
-      <div className="bg-white rounded-xl border border-borderGray p-4 sm:p-6">
+      <div className="bg-white rounded-xl border border-border p-4 sm:p-6 bg-navbarBg">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
-          <h2 className="text-xl md:text-2xl font-semibold text-gray-900">Content Timeline</h2>
-          <p className="text-sm text-gray-600">Total: {items.length ? calculateTotal() : "00 min 00 sec"}</p>
+          <h2 className="text-xl md:text-2xl font-semibold text-headings">Content Timeline</h2>
+          <p className="text-sm text-muted">Total: {items.length ? calculateTotal() : "00 min 00 sec"}</p>
         </div>
 
         <div className="mb-4 sm:mb-6">
@@ -73,15 +73,15 @@ const ContentTimeline = () => {
           items={items}
           setItems={setItems}
           renderItem={(item, index) => (
-            <div className="relative bg-bgGray rounded-lg border border-gray-200 p-3 sm:p-4 flex flex-row items-start sm:items-center gap-3 sm:gap-3 hover:border-gray-300 transition-colors">
-              <GripVertical className="w-5 h-5 text-gray-600 cursor-grab shrink-0" />
-              <div className="shrink-0">{getIcon(item.type)}</div>
+            <div className="relative bg-navbarBg  rounded-lg border border-border p-3 sm:p-4 flex flex-row items-start sm:items-center gap-3 sm:gap-3 hover:border-border transition-colors">
+              <GripVertical className="w-5 h-5 text-muted cursor-grab shrink-0" />
+              {/* <div className="shrink-0">{getIcon(item.type)}</div> */}
 
               <div className="flex-1 min-w-0 w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1 flex-wrap">
-                  <h3 className="font-semibold text-sm md:text-lg text-gray-900">{item.title}</h3>
+                  <h3 className="font-semibold text-sm md:text-lg text-headings">{item.title}</h3>
                   {item.format && (
-                    <span className="text-xs w-fit px-2 py-0.5 border border-borderGray text-gray-600 rounded-lg whitespace-nowrap">{item.format}</span>
+                    <span className="text-xs w-fit px-2 py-0.5 border border-border text-muted rounded-lg whitespace-nowrap">{item.format}</span>
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-1 text-sm text-textGray">
@@ -91,12 +91,12 @@ const ContentTimeline = () => {
               </div>
 
               <div className="shrink-0 text-right mt-2 sm:mt-0 sm:mr-2">
-                <div className="text-lg font-medium text-gray-900 bg-white px-3 py-1 rounded-lg border border-gray-200">{item.duration}</div>
+                <div className="text-lg font-medium text-bgBlue bg-cardBackground px-3 py-1 rounded-lg border border-border">{item.duration}</div>
               </div>
 
               <div className="relative shrink-0 mt-2 sm:mt-0">
                 <button onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)} className="p-1 hover:bg-gray-200 rounded transition-colors">
-                  <MoreVertical className="w-5 h-5 text-gray-600 cursor-pointer" />
+                  <MoreVertical className="w-5 h-5 text-muted cursor-pointer" />
                 </button>
 
                 {openMenuId === item.id && (

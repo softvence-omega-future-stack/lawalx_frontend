@@ -22,10 +22,10 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
         const isLast = index === items.length - 1;
 
         return (
-          <div key={index} className="flex items-center gap-2">
+          <div key={index} className="flex items-center">
             {/* Separator */}
             {index !== 0 && (
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-gray-400 mx-2" />
             )}
 
             {/* Home (icon only) */}
@@ -33,7 +33,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
               <Link
                 href={item.href}
                 aria-label="Home"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-600 hover:text-bgBlue transition-colors dark:text-white dark:hover:text-bgBlue"
               >
                 <House className="w-4 h-4" />
               </Link>
@@ -41,7 +41,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
               /* Active Page */
               <span
                 aria-current="page"
-                className="text-blue-600 font-medium"
+                className="text-bgBlue font-medium dark:text-white dark:hover:text-bgBlue"
               >
                 {item.label}
               </span>
@@ -49,7 +49,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
               /* Normal Link */
               <Link
                 href={item.href ?? "#"}
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-600 hover:text-bgBlue transition-colors dark:text-white dark:hover:text-bgBlue"
               >
                 {item.label}
               </Link>

@@ -73,14 +73,17 @@ const MapLocation: React.FC = () => {
     <div className="relative">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3">
+        <h1 className="text-xl md:text-2xl font-semibold text-headings mb-3">
           Locations
         </h1>
-        <h2 className="text-base text-gray-500">Map</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-base text-muted">Map</h2>
+          <h2 className="text-base text-muted">Time Zone: <span className="text-headings font-semibold">Asia/Dhaka</span></h2>
+        </div>
       </div>
 
       {/* Map Container */}
-      <div className="relative bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden z-0">
+      <div className="relative bg-white rounded-xl shadow-sm border border-border overflow-hidden z-0">
         <div className="relative h-96 overflow-hidden rounded-xl">
           <MapContainer
             center={position}
@@ -96,7 +99,6 @@ const MapLocation: React.FC = () => {
 
             {/* Custom Zoom Buttons */}
             <ZoomControls />
-
             {/* Main Custom Marker */}
             <Marker position={position} icon={customIcon}>
               <Popup>
@@ -140,10 +142,10 @@ const MapLocation: React.FC = () => {
       </div>
 
       {/* Time Zone Info */}
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <div className="text-gray-600 font-semibold">Time Zone</div>
         <div className="text-gray-900 mt-1">Asia/Dhaka</div>
-      </div>
+      </div> */}
 
       {/* Tailwind inline override for Leaflet internal layers */}
       <style>{`
@@ -162,7 +164,8 @@ const MapLocation: React.FC = () => {
         .leaflet-popup {
           z-index: 10 !important;
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 };
