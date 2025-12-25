@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { notFound } from "next/navigation";
+import Dropdown from "@/components/shared/Dropdown";
 
 interface ContentItem {
   id: string;
@@ -260,22 +261,12 @@ export default function ScheduleDetailPage() {
                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                   Repeat
                 </label>
-                <select
+                <Dropdown
                   value={schedule.repeat}
-                  onChange={(e) =>
-                    setSchedule((p) =>
-                      p
-                        ? { ...p, repeat: e.target.value as Schedule["repeat"] }
-                        : p
-                    )
-                  }
-                  className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent text-gray-900 dark:text-white"
-                >
-                  <option value="once">Run Once</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                </select>
+                  options={["once", "daily", "weekly", "monthly"]}
+                  onChange={(val) => setSchedule((p) => p ? { ...p, repeat: val as any } : p)}
+                  className="w-full"
+                />
               </div>
 
               {/* Weekly Days */}

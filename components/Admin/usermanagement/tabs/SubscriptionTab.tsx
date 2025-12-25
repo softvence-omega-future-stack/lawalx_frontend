@@ -56,8 +56,8 @@ export default function SubscriptionTab({
   return (
     <div className="space-y-8">
       {/* Current Plan */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-        <div className="flex justify-between items-start mb-6">
+      <div className="bg-navbarBg rounded-xl border border-border shadow-sm">
+        <div className="flex justify-between items-start mb-6 border-b border-border p-4">
           <div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
               Current Plan
@@ -68,7 +68,7 @@ export default function SubscriptionTab({
           </div>
           <button
             onClick={onOpenChangePlan}
-            className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors cursor-pointer"
+            className="px-4 shadow-customShadow py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors cursor-pointer"
           >
             <Edit2 className="w-4 h-4" />
             Change Plan
@@ -76,9 +76,9 @@ export default function SubscriptionTab({
         </div>
 
         {/* 2 Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-6 p-4">
           {/* Row 1 */}
-          <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex justify-between items-center py-3 border-b border-border">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Plan
             </span>
@@ -86,7 +86,7 @@ export default function SubscriptionTab({
               Enterprise
             </span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex justify-between items-center py-3 border-b border-border">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Billing Cycle
             </span>
@@ -96,7 +96,7 @@ export default function SubscriptionTab({
           </div>
 
           {/* Row 2 */}
-          <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex justify-between items-center py-3 border-b border-border">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Price
             </span>
@@ -104,7 +104,7 @@ export default function SubscriptionTab({
               $299/month
             </span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex justify-between items-center py-3 border-b border-border">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Next Billing
             </span>
@@ -114,7 +114,7 @@ export default function SubscriptionTab({
           </div>
 
           {/* Row 3 */}
-          <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex justify-between items-center py-3 border-b border-border">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Auto Renew
             </span>
@@ -122,7 +122,7 @@ export default function SubscriptionTab({
               Enabled
             </span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex justify-between items-center py-3 border-b border-border">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Billing Status
             </span>
@@ -135,18 +135,18 @@ export default function SubscriptionTab({
       </div>
 
       {/* Payment History */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-navbarBg rounded-xl border border-border shadow-sm">
+        <div className="flex justify-between items-center border-b border-border p-4">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
             Payment History
           </h3>
-          <button className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+          <button className="px-4 shadow-customShadow py-2 bg-white dark:bg-gray-700 border border-border rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer">
             Download All
           </button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto px-4">
           <table className="w-full">
-            <thead className="border-b border-gray-200 dark:border-gray-700">
+            <thead className="border-b border-border">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">
                   Invoice
@@ -166,7 +166,7 @@ export default function SubscriptionTab({
                 <th className="px-6 py-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody className="divide-y divide-border">
               {paymentHistory.map((p, i) => (
                 <tr
                   key={i}

@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Download, Filter, Moon, Sun, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, XCircle, Clock, RefreshCw, DollarSign, ChevronDown, Home } from 'lucide-react';
+import Dropdown from '@/components/shared/Dropdown';
 
 import { useTheme } from 'next-themes';
 
@@ -144,7 +145,6 @@ const BillingDashboard = () => {
   const isDark = mounted && (resolvedTheme === 'dark' || currentTheme === 'dark');
 
   const [timeRange, setTimeRange] = useState(30);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const {
     xAxisKey,
@@ -1069,36 +1069,11 @@ const BillingDashboard = () => {
               <p className={`${theme.textSecondary} mt-1`}>Comprehensive financial analytics and subscription metrics</p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <span className="text-sm text-gray-700 dark:text-gray-200">
-                    {timeRanges.find(t => t.value === timeRange)?.label}
-                  </span>
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
-                </button>
-                
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg z-10">
-                    {timeRanges.map(range => (
-                      <button
-                        key={range.value}
-                        onClick={() => {
-                          setTimeRange(range.value);
-                          setDropdownOpen(false);
-                        }}
-                        className={`w-full cursor-pointer text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                          timeRange === range.value ? 'bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400' : 'text-gray-700 dark:text-gray-200'
-                        }`}
-                      >
-                        {range.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+            <Dropdown
+              value={timeRanges.find(t => t.value === timeRange)?.label || ''}
+              options={timeRanges.map(t => t.label)}
+              onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
+            />
               <button className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors">
                 <Download size={18} />
                 <span>Export Financial Report</span>

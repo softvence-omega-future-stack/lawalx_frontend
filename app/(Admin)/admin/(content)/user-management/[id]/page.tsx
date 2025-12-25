@@ -228,8 +228,8 @@ export default function UserProfilePage() {
     }
   };
 
-  const handleChangePlan = () => {
-    console.log("Plan changed to:", selectedPlan);
+  const handleChangePlan = (data: any) => {
+    console.log("Plan updated:", data);
     setIsChangePlanOpen(false);
   };
 
@@ -255,7 +255,7 @@ export default function UserProfilePage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-6 border-b border-border pb-4">
         {/* <button
           onClick={() => router.push("/user-management")}
           className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
@@ -263,7 +263,7 @@ export default function UserProfilePage() {
           <ArrowLeft className="w-5 h-5" />
         </button> */}
 
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
           <Home className="w-4 h-4" />
           <ChevronRight className="w-4 h-4" />
           <span
@@ -272,7 +272,7 @@ export default function UserProfilePage() {
           >
             User Management
           </span>
-          <span className="text-gray-400 dark:text-gray-500">&gt;</span>
+          <ChevronRight className="w-4 h-4" />
           <span className="text-gray-900 dark:text-white">{user.name}</span>
         </div>
 
@@ -299,7 +299,7 @@ export default function UserProfilePage() {
               <Edit2 className="w-4 h-4" />
               Edit User
             </button> */}
-            <button className="cursor-pointer px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
+            <button className="cursor-pointer px-6 py-2 bg-primary-action text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-customShadow">
               <User className="w-4 h-4" />
               Login as user
             </button>
@@ -311,7 +311,9 @@ export default function UserProfilePage() {
                 <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </button>
               {isActionMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsActionMenuOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                   <button
                     onClick={() => {
                       setIsResetPasswordOpen(true);
@@ -349,7 +351,8 @@ export default function UserProfilePage() {
                     <Trash2 className="w-4 h-4" /> Delete User
                   </button>
                 </div>
-              )}
+              </>
+            )}
             </div>
           </div>
         </div>
@@ -367,9 +370,9 @@ export default function UserProfilePage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm rounded-full mr-2 font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 shadow-customShadow ${
+            className={`px-4 py-2 text-sm rounded-full mr-2 font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${
               activeTab === tab
-                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-100 dark:ring-blue-800"
+                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-customShadow"
                 : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
             }`}
           >
@@ -430,7 +433,7 @@ export default function UserProfilePage() {
         isOpen={isChangePlanOpen}
         onClose={() => setIsChangePlanOpen(false)}
         currentPlan={user.plan}
-        onConfirm={() => {}}
+        onConfirm={handleChangePlan}
       />
       <SuspendUserModal
         isOpen={isSuspendOpen}

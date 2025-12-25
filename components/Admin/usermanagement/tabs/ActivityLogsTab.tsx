@@ -1,169 +1,264 @@
 "use client";
 
-import React, { useState } from "react";
-import { Search, Filter, Clock, LogIn, Edit, Trash, Upload, Download, Shield } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Monitor, FileText, MapPin, Search, Calendar, X } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-const activityData = [
+// --- Types ---
+
+type ActivityIconType = 'device' | 'content';
+
+interface ActivityLog {
+  id: number;
+  title: string;
+  subtitle: string;
+  location: string;
+  ipAddress: string;
+  deviceName: string;
+  time: string; // Display time string
+  date: Date;   // Actual date for filtering
+  iconType: ActivityIconType;
+}
+
+// --- Demo Data ---
+// Using specific dates for 2024-12-02 to match the design, and some others for range testing
+const activityData: ActivityLog[] = [
   {
     id: 1,
-    action: "User Logged In",
-    details: "Logged in from Chrome on MacOS (IP: 192.168.1.1)",
-    time: "Today, 10:23 AM",
-    type: "Login",
+    title: "New Devices added",
+    subtitle: "John Doe has added a new device",
+    location: "Chicago, IL",
+    ipAddress: "192.00.110.11",
+    deviceName: "MacBook Air 2025",
+    time: "December 2, 2024 at 8:30 AM",
+    date: new Date(2024, 11, 2, 8, 30),
+    iconType: 'device'
   },
   {
     id: 2,
-    action: "Updated Profile",
-    details: "Changed contact phone number",
-    time: "Today, 09:15 AM",
-    type: "Update",
+    title: "Content Uploaded",
+    subtitle: "John Doe has uploaded video.mp4",
+    location: "Chicago, IL",
+    ipAddress: "192.00.110.11",
+    deviceName: "MacBook Air 2025",
+    time: "December 2, 2024 at 8:30 AM",
+    date: new Date(2024, 11, 2, 8, 30),
+    iconType: 'content'
   },
   {
     id: 3,
-    action: "Content Uploaded",
-    details: "Uploaded 'Summer Campaign 2024.mp4'",
-    time: "Yesterday, 4:45 PM",
-    type: "Upload",
+    title: "New Devices added",
+    subtitle: "John Doe has added a new device",
+    location: "Chicago, IL",
+    ipAddress: "192.00.110.11",
+    deviceName: "MacBook Air 2025",
+    time: "December 2, 2024 at 8:30 AM",
+    date: new Date(2024, 11, 2, 8, 30),
+    iconType: 'device'
   },
   {
     id: 4,
-    action: "Device Unlinked",
-    details: "Removed 'Meeting Room B' display",
-    time: "Dec 22, 2024, 2:30 PM",
-    type: "Security",
+    title: "System Update",
+    subtitle: "Security patch applied to terminal",
+    location: "New York, NY",
+    ipAddress: "192.168.1.50",
+    deviceName: "Dell XPS 15",
+    time: "December 5, 2024 at 10:15 AM",
+    date: new Date(2024, 11, 5, 10, 15),
+    iconType: 'device'
   },
   {
     id: 5,
-    action: "Plan Changed",
-    details: "Upgraded from Pro to Enterprise",
-    time: "Dec 20, 2024, 11:00 AM",
-    type: "Billing",
+    title: "New Devices added",
+    subtitle: "James Bond linked a new iPad",
+    location: "London, UK",
+    ipAddress: "10.0.0.45",
+    deviceName: "iPad Pro",
+    time: "December 10, 2024 at 2:00 PM",
+    date: new Date(2024, 11, 10, 14, 0),
+    iconType: 'device'
   },
   {
     id: 6,
-    action: "User Logged In",
-    details: "Logged in from Safari on iPhone",
-    time: "Dec 18, 2024, 8:45 AM",
-    type: "Login",
+    title: "Content Uploaded",
+    subtitle: "Presentation.pdf uploaded",
+    location: "Miami, FL",
+    ipAddress: "172.16.0.100",
+    deviceName: "MacBook Pro",
+    time: "December 15, 2024 at 11:45 AM",
+    date: new Date(2024, 11, 15, 11, 45),
+    iconType: 'content'
   },
 ];
 
-const getActivityIcon = (type: string) => {
-  switch (type) {
-    case "Login":
-      return <LogIn className="w-4 h-4 text-green-600 dark:text-green-400" />;
-    case "Update":
-      return <Edit className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
-    case "Upload":
-      return <Upload className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
-    case "Security":
-      return <Shield className="w-4 h-4 text-red-600 dark:text-red-400" />;
-    case "Billing":
-      return <Download className="w-4 h-4 text-orange-600 dark:text-orange-400" />;
-    default:
-      return <Clock className="w-4 h-4 text-gray-600 dark:text-gray-400" />;
-  }
-};
+// --- Components ---
 
-const getActivityColor = (type: string) => {
-  switch (type) {
-    case "Login": return "bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-800";
-    case "Update": return "bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800";
-    case "Upload": return "bg-purple-100 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800";
-    case "Security": return "bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800";
-    case "Billing": return "bg-orange-100 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800";
-    default: return "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
+const ActivityIcon = ({ type }: { type: ActivityIconType }) => {
+  if (type === 'device') {
+    return (
+      <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <Monitor className="w-4 h-4 text-gray-500" />
+      </div>
+    );
   }
+  return (
+    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+      <FileText className="w-4 h-4 text-gray-500" />
+    </div>
+  );
 };
 
 export default function ActivityLogsTab() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
-  const filteredData = activityData.filter((activity) =>
-    activity.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    activity.details.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = useMemo(() => {
+    return activityData.filter((activity) => {
+      // Search matching
+      const matchesSearch = 
+        activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.ipAddress.includes(searchTerm) ||
+        activity.deviceName.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Date range matching
+      let matchesDate = true;
+      if (startDate && endDate) {
+        // Normalizing to start/end of day for inclusive comparison
+        const logTime = activity.date.getTime();
+        const start = new Date(startDate).setHours(0, 0, 0, 0);
+        const end = new Date(endDate).setHours(23, 59, 59, 999);
+        matchesDate = logTime >= start && logTime <= end;
+      } else if (startDate) {
+        const logTime = activity.date.getTime();
+        const start = new Date(startDate).setHours(0, 0, 0, 0);
+        matchesDate = logTime >= start;
+      }
+      
+      return matchesSearch && matchesDate;
+    });
+  }, [searchTerm, startDate, endDate]);
+
+  const clearDateRange = () => {
+    setStartDate(null);
+    setEndDate(null);
+  };
 
   return (
     <div className="space-y-6">
-      {/* Filters */}
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-          Activity History
+      {/* Header & Filters */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+          Activity Logs
         </h3>
-        <div className="flex gap-3">
-            <div className="relative">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full lg:w-auto">
+          {/* Search Input */}
+          <div className="relative flex-1 md:flex-initial">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search logs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none w-64"
+              className="pl-10 pr-4 py-2 bg-navbarBg border border-border rounded-lg text-sm text-gray-900 dark:text-white focus:ring-1 focus:ring-blue-500 outline-none w-full md:w-64"
             />
           </div>
-          <button className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors cursor-pointer">
-            <Calendar className="w-4 h-4" />
-            Date Range
-          </button>
-          <button className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors cursor-pointer">
-            <Filter className="w-4 h-4" />
-            Filter Type
-          </button>
+
+          {/* Date Range Picker */}
+          <div className="relative flex items-center bg-navbarBg border border-border rounded-lg px-3 py-1 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group">
+            <Calendar className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
+            <div className="flex items-center gap-2">
+              <DatePicker
+                selectsRange={true}
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(update) => {
+                  const [start, end] = update;
+                  setStartDate(start);
+                  setEndDate(end);
+                }}
+                isClearable={false}
+                placeholderText="Select Date Range"
+                className="bg-transparent border-none text-sm text-gray-700 dark:text-gray-300 outline-none cursor-pointer w-full"
+              />
+              {(startDate || endDate) && (
+                <button 
+                  onClick={clearDateRange}
+                  className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors"
+                >
+                  <X className="w-3 h-3 text-gray-500" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Timeline */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm relative">
-        <div className="absolute left-9 top-8 bottom-8 w-px bg-gray-200 dark:bg-gray-700"></div>
-        <div className="space-y-8">
-          {filteredData.map((activity) => (
-            <div key={activity.id} className="relative flex gap-4">
-              <div className={`relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border ${getActivityColor(activity.type)}`}>
-                {getActivityIcon(activity.type)}
-              </div>
-              <div className="flex-1 pt-1.5">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {activity.action}
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {activity.details}
-                    </p>
-                  </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap flex items-center gap-1.5">
-                    <Clock className="w-3 h-3" />
-                    {activity.time}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* Table Container */}
+      <div className="bg-navbarBg border border-border rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto scrollbar-hide">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-border">
+                <th className="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Activity</th>
+                <th className="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>
+                <th className="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Device & IP Address</th>
+                <th className="px-6 py-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time & Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filteredData.length > 0 ? (
+                filteredData.map((log) => (
+                  <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group">
+                    {/* Activity Column */}
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-4">
+                        <ActivityIcon type={log.iconType} />
+                        <div>
+                          <p className="text-sm font-bold text-gray-900 dark:text-white">{log.title}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{log.subtitle}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Location Column */}
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-2 text-sm text-gray-900 dark:text-white font-bold">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        {log.location}
+                      </div>
+                    </td>
+
+                    {/* Device & IP Column */}
+                    <td className="px-6 py-5">
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white">{log.ipAddress}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{log.deviceName}</p>
+                      </div>
+                    </td>
+
+                    {/* Time & Date Column */}
+                    <td className="px-6 py-5">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {log.time}
+                      </p>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    No activity logs found matching your criteria.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   );
-}
-
-function Calendar({ className }: { className?: string }) {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={className}
-        >
-            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-            <line x1="16" x2="16" y1="2" y2="6" />
-            <line x1="8" x2="8" y1="2" y2="6" />
-            <line x1="3" x2="21" y1="10" y2="10" />
-        </svg>
-    );
 }

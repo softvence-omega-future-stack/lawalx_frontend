@@ -2,6 +2,7 @@ import { Monitor, MapPin } from "lucide-react";
 import { Device } from "@/types/device";
 import DeviceActionsMenu from "./DeviceActionsMenu";
 import { useState } from "react";
+import Dropdown from "@/components/shared/Dropdown";
 
 interface Props {
   device: Device;
@@ -54,9 +55,12 @@ export default function DeviceRow({
       </td>
 
       <td className="px-4 py-4">
-        <select className="text-sm text-Heading dark:text-gray-300 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
-          <option>{device.screen}</option>
-        </select>
+        <Dropdown
+          value={device.screen}
+          options={[device.screen]}
+          onChange={() => {}}
+          className="w-full"
+        />
       </td>
 
       <td className="px-4 py-4">

@@ -17,6 +17,7 @@ import EditUserModal from "@/components/Admin/modals/EditUserModal";
 import ResetPasswordModal from "@/components/Admin/modals/ResetPasswordModal";
 import SuspendUserModal from "@/components/Admin/modals/SuspendUserModal";
 import DeleteUserModal from "@/components/Admin/modals/DeleteUserModal";
+import AddUserModal from "@/components/Admin/usermanagement/AddUserModal";
 // Add LoginAsUserModal if you have one
 import {
   Users,
@@ -36,7 +37,9 @@ import {
   ChevronRight,
   UserRoundPlus,
   CloudDownload,
+  ChevronDown,
 } from "lucide-react";
+import Dropdown from "@/components/shared/Dropdown";
 
 type Plan = "Starter" | "Professional" | "Business" | "Trial" | "Enterprise";
 type Status = "Active" | "Suspended" | "Disabled";
@@ -146,31 +149,6 @@ export default function UserManagementPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null); // To pass data to modals
 
-  const [formData, setFormData] = useState({
-    fullName: "John Doe",
-    email: "user@example.com",
-    password: "",
-    plan: "Demo (For developers)",
-    deviceLimit: "50",
-    storageLimit: "200",
-    price: "$5000",
-    advanceCustomization: false,
-    imageLimit: "1000",
-    maxImageSize: "20MB",
-    imageFormat: "JPG, PNG, WEBP",
-    videoLimit: "1000",
-    maxVideoSize: "200MB",
-    videoFormat: "MP4, MKV",
-    audioLimit: "1000",
-    maxAudioSize: "50MB",
-    audioFormat: "MP3",
-    enableCustomBranding: false,
-    companyName: "",
-    industryType: "Select industry",
-    website: "https://example.com",
-    locationType: "City, Country",
-  });
-
   const toggleSelectAll = () => {
     if (selectedUsers.size === users.length) {
       setSelectedUsers(new Set());
@@ -204,19 +182,19 @@ export default function UserManagementPage() {
     setSelectedUsers(new Set());
   };
 
-  const handleAddUser = () => {
+  const handleAddUser = (data: any) => {
     const newUser: User = {
       id: Date.now().toString(),
-      name: formData.fullName,
-      email: formData.email,
-      plan: formData.plan.includes("Enterprise")
+      name: data.fullName,
+      email: data.email,
+      plan: data.plan.includes("Enterprise")
         ? "Professional"
-        : formData.plan.includes("Demo")
+        : data.plan.includes("Demo")
         ? "Trial"
         : "Starter",
-      device: `0/${formData.deviceLimit}`,
+      device: `0/${data.deviceLimit}`,
       deviceUsage: 0,
-      storage: `${formData.storageLimit} GB`,
+      storage: `${data.storageLimit} GB`,
       storageUsage: 0,
       status: "Active",
       issues: [],
@@ -388,39 +366,24 @@ export default function UserManagementPage() {
                 placeholder="Search by name, email, or user ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                className="w-full pl-10 pr-4 py-2 border border-border bg-navbarBg rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
               />
             </div>
-            <select
+            <Dropdown
               value={planFilter}
-              onChange={(e) => setPlanFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
-            >
-              <option>All Plans</option>
-              <option>Starter</option>
-              <option>Professional</option>
-              <option>Business</option>
-              <option>Trial</option>
-            </select>
-            <select
+              options={["All Plans", "Starter", "Professional", "Business", "Trial"]}
+              onChange={setPlanFilter}
+            />
+            <Dropdown
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
-            >
-              <option>All Status</option>
-              <option>Active</option>
-              <option>Suspended</option>
-              <option>Disabled</option>
-            </select>
-            <select
+              options={["All Status", "Active", "Suspended", "Disabled"]}
+              onChange={setStatusFilter}
+            />
+            <Dropdown
               value={storageFilter}
-              onChange={(e) => setStorageFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
-            >
-              <option>80% Storage</option>
-              <option>50% Storage</option>
-              <option>90% Storage</option>
-            </select>
+              options={[">80% Storage", "50% Storage", "90% Storage"]}
+              onChange={setStorageFilter}
+            />
           </div>
         </div>
 
@@ -461,122 +424,138 @@ export default function UserManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredUsers.map((user) => (
-                <tr
-                  key={user.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedUsers.has(user.id)}
-                      onChange={() => toggleSelectUser(user.id)}
-                      className="rounded border-gray-300 dark:border-gray-600"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white text-nowrap">
-                        {user.name}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {user.email}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-medium">
-                      {user.plan}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-sm text-gray-900 dark:text-white mb-1">
-                      {user.device}
-                    </div>
-                    <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${
-                          user.deviceUsage > 80
-                            ? "bg-red-500"
-                            : user.deviceUsage > 60
-                            ? "bg-orange-500"
-                            : "bg-blue-500"
-                        }`}
-                        style={{ width: `${user.deviceUsage}%` }}
+              {filteredUsers.map((user, index) => {
+                const isFirstRows = index < 2;
+                const isLastRows = index >= filteredUsers.length - 2;
+                return (
+                  <tr
+                    key={user.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.has(user.id)}
+                        onChange={() => toggleSelectUser(user.id)}
+                        className="rounded border-gray-300 dark:border-gray-600"
                       />
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-sm text-gray-900 dark:text-white mb-1">
-                      {user.storage}
-                    </div>
-                    <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${
-                          user.storageUsage > 80
-                            ? "bg-red-500"
-                            : user.storageUsage > 60
-                            ? "bg-orange-500"
-                            : "bg-blue-500"
-                        }`}
-                        style={{ width: `${user.storageUsage}%` }}
-                      />
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`flex items-center gap-1 w-fit px-3 py-1 rounded-full text-xs font-medium border ${
-                        user.status === "Active"
-                          ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
-                          : user.status === "Suspended"
-                          ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          user.status === "Active"
-                            ? "bg-green-500"
-                            : user.status === "Suspended"
-                            ? "bg-red-500"
-                            : "bg-gray-500"
-                        }`}
-                      />
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {user.issues.length > 0 ? (
-                      <div className="flex gap-2">
-                        {user.issues.map((issue, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2 py-1 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded text-xs text-nowrap"
-                          >
-                            {issue}
-                          </span>
-                        ))}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white text-nowrap">
+                          {user.name}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {user.email}
+                        </div>
                       </div>
-                    ) : (
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        No issues
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-medium">
+                        {user.plan}
                       </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="relative">
-                      <button
-                        onClick={() =>
-                          setOpenActionMenu(
-                            openActionMenu === user.id ? null : user.id
-                          )
-                        }
-                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors cursor-pointer"
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm text-gray-900 dark:text-white mb-1">
+                        {user.device}
+                      </div>
+                      <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${
+                            user.deviceUsage > 80
+                              ? "bg-red-500"
+                              : user.deviceUsage > 60
+                              ? "bg-orange-500"
+                              : "bg-blue-500"
+                          }`}
+                          style={{ width: `${user.deviceUsage}%` }}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-sm text-gray-900 dark:text-white mb-1">
+                        {user.storage}
+                      </div>
+                      <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${
+                            user.storageUsage > 80
+                              ? "bg-red-500"
+                              : user.storageUsage > 60
+                              ? "bg-orange-500"
+                              : "bg-blue-500"
+                          }`}
+                          style={{ width: `${user.storageUsage}%` }}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`flex items-center gap-1 w-fit px-3 py-1 rounded-full text-xs font-medium border ${
+                          user.status === "Active"
+                            ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+                            : user.status === "Suspended"
+                            ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
+                        }`}
                       >
-                        <MoreVertical className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                      </button>
-                      {openActionMenu === user.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            user.status === "Active"
+                              ? "bg-green-500"
+                              : user.status === "Suspended"
+                              ? "bg-red-500"
+                              : "bg-gray-500"
+                          }`}
+                        />
+                        {user.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {user.issues.length > 0 ? (
+                        <div className="flex gap-2">
+                          {user.issues.map((issue, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-1 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded text-xs text-nowrap"
+                            >
+                              {issue}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          No issues
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="relative">
+                        <button
+                          onClick={() =>
+                            setOpenActionMenu(
+                              openActionMenu === user.id ? null : user.id
+                            )
+                          }
+                          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors cursor-pointer"
+                        >
+                          <MoreVertical className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                        </button>
+                        {openActionMenu === user.id && (
+                          <>
+                            <div
+                              className="fixed inset-0 z-10"
+                              onClick={() => setOpenActionMenu(null)}
+                            />
+                            <div
+                              className={`absolute right-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 ${
+                                isFirstRows
+                                  ? "mt-2"
+                                  : isLastRows
+                                  ? "bottom-full mb-2"
+                                  : "mt-2"
+                              }`}
+                            >
                           {/* <button
                             onClick={() => router.push(`/admin/user-management/${user.id}`)}
                             className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
@@ -667,11 +646,13 @@ export default function UserManagementPage() {
                             Delete User
                           </button>
                         </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      </>
+                    )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -693,476 +674,11 @@ export default function UserManagementPage() {
       </div>
 
       {/* Add User Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/30 dark:bg-white/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-White rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-start">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    <Users className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Add New User
-                  </h2>
-                </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Create a new user account with subscription and profile
-                  details
-                </p>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* User Credentials */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  🛡️ User Credentials
-                </h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.fullName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, fullName: e.target.value })
-                      }
-                      className="w-full px-3 py-2 border dark:text-white border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className="w-full px-3 py-2 border dark:text-white border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="Enter secure password"
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
-                      className="w-full px-3 py-2 border dark:text-white border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Subscription Plan */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  💳 Subscription Plan
-                </h3>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                    Choose Plan
-                  </label>
-                  <select
-                    value={formData.plan}
-                    onChange={(e) =>
-                      setFormData({ ...formData, plan: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option>Demo (For developers)</option>
-                    <option>Basic</option>
-                    <option>Pro</option>
-                    <option>Enterprise</option>
-                  </select>
-                </div>
-
-                {formData.plan === "Enterprise" && (
-                  <div className="mt-4 grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                        Device Limit
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.deviceLimit}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            deviceLimit: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                        Storage Limit (GB)
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.storageLimit}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            storageLimit: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                        Price
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.price}
-                        onChange={(e) =>
-                          setFormData({ ...formData, price: e.target.value })
-                        }
-                        className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Advance Customization */}
-              {formData.plan === "Enterprise" && (
-                <div>
-                  <div className="flex items-center justify-between p-3 bg-navbarBg rounded-lg mb-4">
-                    <div className="flex items-center gap-2">
-                      <span>🔧</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        Advance Customization
-                      </span>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.advanceCustomization}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            advanceCustomization: e.target.checked,
-                          })
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring peer-focus:ring-blue-300 dark:peer-focus:ring-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                  </div>
-
-                  {formData.advanceCustomization && (
-                    <div className="space-y-4 pl-4">
-                      <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Image Limit
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.imageLimit}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                imageLimit: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Max Image Size
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.maxImageSize}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                maxImageSize: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Format
-                          </label>
-                          <select
-                            value={formData.imageFormat}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                imageFormat: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option>JPG, PNG, WEBP</option>
-                            <option>JPG, PNG</option>
-                            <option>All Formats</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Video Limit
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.videoLimit}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                videoLimit: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Max Video Size
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.maxVideoSize}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                maxVideoSize: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Format
-                          </label>
-                          <select
-                            value={formData.videoFormat}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                videoFormat: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option>MP4, MKV</option>
-                            <option>MP4</option>
-                            <option>All Formats</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Audio
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.audioLimit}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                audioLimit: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Max Video Size
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.maxAudioSize}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                maxAudioSize: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Format
-                          </label>
-                          <select
-                            value={formData.audioFormat}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                audioFormat: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option>MP3</option>
-                            <option>WAV</option>
-                            <option>All Formats</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="p-3 bg-blue-50 border border-border dark:bg-blue-900 rounded-lg">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={formData.enableCustomBranding}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                enableCustomBranding: e.target.checked,
-                              })
-                            }
-                            className="rounded border-gray-300 dark:border-gray-600"
-                          />
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              Enable Custom Branding
-                            </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              Allow custom logo, colors, and white-label
-                              features
-                            </div>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Company Info */}
-              {formData.plan === "Enterprise" &&
-                formData.advanceCustomization && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                      🏢 Company Info
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Company Name
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Enter company name"
-                            value={formData.companyName}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                companyName: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Industry Type
-                          </label>
-                          <select
-                            value={formData.industryType}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                industryType: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option>Select industry</option>
-                            <option>Technology</option>
-                            <option>Healthcare</option>
-                            <option>Finance</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Website
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.website}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                website: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">
-                            Location Type
-                          </label>
-                          <input
-                            type="text"
-                            value={formData.locationType}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                locationType: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border border-border dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-6 border-t border-border dark:border-gray-700 flex justify-between">
-              <button className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-border rounded-lg text-sm font-medium hover:bg-gray-200">
-                Label
-              </button>
-              <button
-                onClick={handleAddUser}
-                className="px-6 py-2 bg-blue-500 text-white dark:text-white rounded-lg text-sm font-medium hover:bg-blue-600 flex items-center gap-2"
-              >
-                <span>+</span> Add User
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AddUserModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddUser={handleAddUser}
+      />
 
       {/* Reusable Modals */}
       <EditUserModal

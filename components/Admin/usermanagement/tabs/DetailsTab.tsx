@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Mail,
   Phone,
@@ -46,21 +45,21 @@ export default function DetailsTab({ user, onEdit }: DetailsTabProps) {
   return (
     <div className="space-y-6">
       {/* Personal Info Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-navbarBg rounded-xl border border-border shadow-sm">
+        <div className="flex justify-between items-center mb-6 border-b border-border p-4">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Personal Info
           </h2>
           <button
             onClick={onEdit}
-            className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors cursor-pointer"
+            className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors cursor-pointer shadow-customShadow"
           >
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-4 p-4">
           {/* Email */}
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
@@ -157,21 +156,21 @@ export default function DetailsTab({ user, onEdit }: DetailsTabProps) {
       </div>
 
       {/* Enterprise Info Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-navbarBg rounded-xl border border-border shadow-sm">
+        <div className="flex justify-between items-center mb-6 border-b border-border p-4">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Enterprise Info
           </h2>
           <button
             onClick={onEdit}
-            className="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors cursor-pointer"
+            className="px-4 shadow-customShadow py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2 transition-colors cursor-pointer"
           >
             <Edit2 className="w-4 h-4" />
             Edit
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-4 p-4">
           {/* Company Name */}
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">

@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { CheckCircle, Clock, TrendingUp, ChevronDown, Download, Filter, Home } from 'lucide-react';
+import Dropdown from '@/components/shared/Dropdown';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -46,7 +47,6 @@ const generateData = (days: number) => {
 
 const CustomerServiceReports = () => {
   const [timeRange, setTimeRange] = useState(30);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const data = useMemo(() => generateData(timeRange), [timeRange]);
 
@@ -96,34 +96,11 @@ const CustomerServiceReports = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="px-4 py-2 rounded-lg bg-navbarBg border border-border flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm cursor-pointer"
-              >
-                <span>{timeRanges.find(t => t.value === timeRange)?.label}</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-lg bg-navbarBg border border-border shadow-lg z-10">
-                  {timeRanges.map(range => (
-                    <button
-                      key={range.value}
-                      onClick={() => {
-                        setTimeRange(range.value);
-                        setDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg cursor-pointer${
-                        timeRange === range.value ? 'bg-bgBlue text-black dark:text-white hover:bg-blue-600 dark:hover:bg-blue-600' : ''
-                      }`}
-                    >
-                      {range.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <Dropdown
+              value={timeRanges.find(t => t.value === timeRange)?.label || ''}
+              options={timeRanges.map(t => t.label)}
+              onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
+            />
             
             <button className="px-4 py-2 bg-bgBlue text-white rounded-lg flex items-center gap-2 hover:bg-blue-600 transition-colors text-sm cursor-pointer">
               <Download className="w-4 h-4" />

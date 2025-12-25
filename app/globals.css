@@ -320,7 +320,6 @@ body {
 
 /* ============================================= */
 /*  FIGMA DESIGN SYSTEM → TAILWIND UTILITIES     */
-/*  Just copy-paste this into your globals.css   */
 /* ============================================= */
 
 @layer utilities {
@@ -348,6 +347,7 @@ body {
 
   /* Actions & States */
   .bg-primary-action        { background-color: var(--primary-action); }
+  .text-primary-action      { color: var(--primary-action); }
   .bg-secondary-action      { background-color: var(--secondary-action); }
   .bg-destructive           { background-color: var(--destructive); }
   .bg-destructive-bg        { background-color: var(--destructive-background); }
@@ -360,9 +360,9 @@ body {
   .text-info                { color: var(--info-text); }
 
   .bg-success               { background-color: var(--success); }
+  .text-success             { color: var(--success-text); }
   .bg-success-bg            { background-color: var(--success-background); }
   .border-success           { border-color: var(--success-outline); }
-  .text-success             { color: var(--success-text); }
 
   .bg-warning               { background-color: var(--warning); }
   .bg-warning-bg            { background-color: var(--warning-background); }
