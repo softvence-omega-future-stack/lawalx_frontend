@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Play } from "lucide-react";
@@ -65,7 +66,11 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
     );
   };
 
-  const handleClearSelection = () => setSelectedItems([]);
+  const handleClearSelection = () => {
+    setSelectedItems([]);
+    setOpen(false);
+  };
+
   const handleAddContent = () => {
     console.log("Selected items:", selectedItems);
     setOpen(false);
@@ -79,7 +84,7 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
     <BaseDialog
       open={open}
       setOpen={setOpen}
-      title="Add Content to Screen"
+      title="Add Content to Program"
       description="Select videos, images, or documents to add to your screen timeline."
       maxWidth="xl"
       maxHeight="xl"
@@ -87,13 +92,13 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
       {/* Search and Filter */}
       <div className="flex flex-col md:flex-row gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted w-5 h-5" />
           <input
             type="text"
             placeholder="Search content..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 md:py-2.5 bg-gray-50 border border-gray-300 rounded-lg"
+            className="w-full pl-10 pr-4 py-2 md:py-2.5 bg-input border border-border rounded-lg"
           />
         </div>
         <div className="w-full md:w-36">
@@ -109,7 +114,7 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
       </div>
 
       {/* Content List */}
-      <div className="divide-y divide-gray-300">
+      <div className="divide-y divide-border">
         {filteredContent.map((item) => {
           const isSelected = selectedItems.includes(item.id);
           return (
@@ -118,23 +123,21 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
               className="flex items-center gap-3 px-3 md:py-4 cursor-pointer transition-all duration-150 "
               onClick={() => handleSelectItem(item.id)}
             >
-              {/* ✅ FIXED: Prevent parent click when clicking checkbox */}
-              <div
-                onClick={(e) => e.stopPropagation()} // 👈 stop bubbling
-              >
+              <div onClick={(e) => e.stopPropagation()}>
                 <Checkbox
                   checked={isSelected}
                   onCheckedChange={() => handleSelectItem(item.id)}
                   className="h-5 w-5 cursor-pointer data-[state=checked]:bg-bgBlue data-[state=checked]:border-bgBlue hover:bg-transparent hover:border-gray-300"
                 />
               </div>
+
               {/* Thumbnail */}
               <div className="relative w-20 h-16 bg-gray-200 rounded overflow-hidden shrink-0">
                 <Image
                   src={item.thumbnail}
                   alt={item.name}
-                  width={80} // Corresponds to w-20 (80px)
-                  height={64} // Corresponds to h-16 (64px)
+                  width={80}
+                  height={64}
                   className="w-full h-full object-cover"
                 />
                 {item.type === "MP4" && (
@@ -152,14 +155,14 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm md:text-lg font-medium text-gray-900 truncate">
+                  <h4 className="text-sm md:text-lg font-medium text-headings truncate">
                     {item.name}
                   </h4>
-                  <span className="text-xs px-2 py-0.5 rounded-md text-gray-600 font-medium border border-gray-400 bg-white">
+                  <span className="text-xs px-2 py-0.5 rounded-md text-muted font-medium border border-border bg-cardBackground">
                     {item.type}
                   </span>
                 </div>
-                <p className="text-xs md:text-sm text-gray-500 mt-0.5">
+                <p className="text-xs md:text-sm text-muted mt-0.5">
                   {item.size}
                 </p>
               </div>
@@ -174,9 +177,9 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
           variant="outline"
           onClick={handleClearSelection}
           disabled={selectedItems.length === 0}
-          className="border-bgBlue font-semibold text-base"
+          className="border-bgBlue font-semibold text-base hover:bg-bgBlue hover:text-white"
         >
-          Clear Selection
+          Cancel
         </Button>
         <Button
           onClick={handleAddContent}

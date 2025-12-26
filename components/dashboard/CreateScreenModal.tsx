@@ -1,7 +1,7 @@
 // components/CreateScreenModal.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   X,
   FileText,
@@ -100,11 +100,11 @@ export default function CreateScreenModal({
         {/* Header */}
         <div className="flex items-start sm:items-center justify-between p-6 gap-4 sm:gap-0">
           <h2 className="text-xl sm:text-3xl font-bold text-Headings dark:text-white text-nowrap">
-            Create New Screen
+            Create New Program
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors self-end sm:self-auto"
+            className="text-gray-400 hover:text-red-500 dark:hover:text-gray-300 transition-colors self-end sm:self-auto cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
@@ -250,7 +250,7 @@ export default function CreateScreenModal({
                     ]}
                     value={selectedType}
                     onChange={(value) => setSelectedType(String(value))}
-                    className="w-full"
+                    className="w-full cursor-pointer"
                   />
                 </div>
               </div>
@@ -349,13 +349,13 @@ export default function CreateScreenModal({
                       placeholder="Enter the PIN or scan the QR code"
                       className="flex-1 px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                     />
-                    <button className="p-3 border border-borderGray dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shrink-0">
+                    <button className="p-3 border border-borderGray dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shrink-0 shadow-customShadow cursor-pointer">
                       <QrCode className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                     </button>
                   </div>
 
                   <div className="w-full sm:w-auto flex justify-end">
-                    <button className="px-6 py-3 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium">
+                    <button className="px-6 py-3 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium shadow-customShadow cursor-pointer">
                       Add
                     </button>
                   </div>
@@ -370,7 +370,7 @@ export default function CreateScreenModal({
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className={`flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 border border-borderGray dark:border-gray-600 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 border border-borderGray dark:border-gray-600 rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer ${
               currentStep === 1
                 ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
                 : "text-gray-700 dark:text-gray-300 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -385,7 +385,7 @@ export default function CreateScreenModal({
           {currentStep < 3 ? (
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 bg-bgBlue hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 bg-bgBlue hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer"
             >
               <span className="hidden md:block">Next</span>
               <ChevronRight className="w-5 h-5" />
@@ -393,7 +393,7 @@ export default function CreateScreenModal({
           ) : (
             <button
               onClick={handleCreate}
-              className="px-6 py-2.5 bg-bgBlue hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+              className="px-6 py-2.5 bg-bgBlue hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer"
             >
               Create
             </button>

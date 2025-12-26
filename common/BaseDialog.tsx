@@ -60,8 +60,8 @@ const BaseDialog = ({
       <DialogContent className={`${widthClass} ${heightClass} flex flex-col`}>
         <DialogHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
           <div className="flex-1">
-            <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
-            <DialogDescription className="text-sm text-gray-600 mt-1">
+            <DialogTitle className="text-xl font-bold text-headings">{title}</DialogTitle>
+            <DialogDescription className="text-sm text-muted mt-1">
               {description}
             </DialogDescription>
           </div>
