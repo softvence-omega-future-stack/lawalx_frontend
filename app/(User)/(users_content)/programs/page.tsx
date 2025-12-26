@@ -8,6 +8,7 @@ import { useState } from "react";
 import ScreenCard from "./components/screenComponent/ScreenCard";
 import screen from "@/public/images/screen.png";
 import Breadcrumb from "@/common/BreadCrumb";
+import CreateScreenModal from "@/components/dashboard/CreateScreenModal";
 
 export type SortOption = {
   value: string;
@@ -30,6 +31,7 @@ export type ScreenData = {
 const MyScreensPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<string>("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const sortOptions: SortOption[] = [
     { value: "all", label: "All" },
@@ -121,6 +123,8 @@ const MyScreensPage: React.FC = () => {
     return matchesSearch && matchesSort;
   });
 
+
+
   return (
     <>
       <div className="mb-3">
@@ -136,7 +140,7 @@ const MyScreensPage: React.FC = () => {
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between md:flex-nowrap mb-6 gap-3">
             <DashboardHeading title="My Screens" />
-            <AddButton icon={<ScreenShare />} text="Create New Screen" />
+            <AddButton onClick={() => setIsModalOpen(true)} icon={<ScreenShare />} text="Create New Screen" />
           </div>
 
           {/* Search + Filter Bar */}
@@ -190,6 +194,7 @@ const MyScreensPage: React.FC = () => {
           )}
         </div>
       </div>
+      <CreateScreenModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

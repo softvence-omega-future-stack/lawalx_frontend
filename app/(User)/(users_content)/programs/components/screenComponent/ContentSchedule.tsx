@@ -1,6 +1,5 @@
 "use client";
 
-import BlueSelect from "@/common/BlueSelect";
 import { Plus, ChevronDown, Clock, Video, Edit, Pause, Play, X, CalendarClock } from "lucide-react";
 import { useState } from "react";
 

@@ -12,7 +12,7 @@ import {
   CalendarClock,
   Settings,
 } from "lucide-react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import type { ScreenData } from "../page";
 import ContentTimeline from "../components/screenComponent/ContentTimeline";
 import ContentSchedule from "../components/screenComponent/ContentSchedule";
@@ -94,7 +94,6 @@ const mockScreens: ScreenData[] = [
 
 
 const ScreenCardDetails = () => {
-  const router = useRouter();
   const { id } = useParams();
   const screen = mockScreens.find((s) => s.id === Number(id));
 
@@ -119,20 +118,13 @@ const ScreenCardDetails = () => {
       <div className="mx-auto w-full">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-9 gap-4">
-          <div className="">
-            <button
-              onClick={() => router.push("/screens")}
-              className="hover:bg-gray-100 rounded-lg transition-colors mt-1 p-1 cursor-pointer"
-            >
-            </button>
-            <div>
+          <div className="mt-3">
               <h1 className="text-lg sm:text-2xl md:text-[30px] font-semibold text-headings">
                 {screen.title}
               </h1>
               <p className="text-sm sm:text-base text-muted mt-1">
                 {screen.description}
               </p>
-            </div>
           </div>
           <ActionButton title="Update Changes" bgColor="#0FA6FF" hoverColor="#00A4FF" icon={<Save className="w-5 h-5" />}/>
         </div>
@@ -165,9 +157,6 @@ const ScreenCardDetails = () => {
     );
   })}
 </div>
-
-
-
         {/* Main layout */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           {/* Left side */}
