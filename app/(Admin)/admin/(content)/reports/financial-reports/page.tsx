@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
 import { useTheme } from 'next-themes';
-import { Users, DollarSign, Percent, TrendingUp, TrendingDown, UserPlus, ChevronDown, Download, Target, Zap, Home } from 'lucide-react';
+import { Users, DollarSign, Percent, TrendingUp, TrendingDown, UserPlus, ChevronDown, Download, Target, Zap, Home, TargetIcon } from 'lucide-react';
 import Dropdown from '@/components/shared/Dropdown';
 
 // Demo data generator
@@ -171,9 +171,9 @@ const FinancialReport = () => {
               onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
             />
             
-            <button className="px-4 py-2 bg-bgBlue text-white rounded-lg flex items-center gap-2 hover:bg-blue-600 transition-colors text-sm cursor-pointer">
+            <button className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg flex items-center gap-2 hover:scale-105 transition-all text-sm bg-navbarBg cursor-pointer dark:shadow-customShadow">
               <Download className="w-4 h-4" />
-              Export Financial Report
+              <span className='hidden md:block'>Export Financial Report</span>
             </button>
           </div>
         </div>
@@ -181,8 +181,8 @@ const FinancialReport = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           <div className="bg-navbarBg border border-border rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Users className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 mb-6">
+              <span className='border border-border rounded-full p-2'><DollarSign className="w-4 h-4 text-red-500" /></span>
               <span className="text-xs text-gray-500 dark:text-gray-400">MRR</span>
             </div>
             <div className="text-2xl font-bold mb-1">${data.summary.mrr.toLocaleString()}</div>
@@ -193,8 +193,8 @@ const FinancialReport = () => {
           </div>
 
           <div className="bg-navbarBg border border-border rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <DollarSign className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 mb-6">
+              <span className='border border-border rounded-full p-2'><TargetIcon className="w-4 h-4 text-green-500" /></span>
               <span className="text-xs text-gray-500 dark:text-gray-400">ARR</span>
             </div>
             <div className="text-2xl font-bold mb-1">${data.summary.arr.toLocaleString()}</div>
@@ -202,8 +202,8 @@ const FinancialReport = () => {
           </div>
 
           <div className="bg-navbarBg border border-border rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Percent className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 mb-6">
+              <span className='border border-border rounded-full p-2'><Percent className="w-4 h-4 text-red-500" /></span>
               <span className="text-xs text-gray-500 dark:text-gray-400">Churn Rate</span>
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.churnRate}%</div>
@@ -211,8 +211,8 @@ const FinancialReport = () => {
           </div>
 
           <div className="bg-navbarBg border border-border rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 mb-6">
+              <span className='border border-border rounded-full p-2'><TrendingUp className="w-4 h-4 text-green-500" /></span>
               <span className="text-xs text-gray-500 dark:text-gray-400">ARPU</span>
             </div>
             <div className="text-2xl font-bold mb-1">${data.summary.arpu}</div>
@@ -223,8 +223,8 @@ const FinancialReport = () => {
           </div>
 
           <div className="bg-navbarBg border border-border rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <UserPlus className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 mb-6">
+              <span className='border border-border rounded-full p-2'><UserPlus className="w-4 h-4 text-green-500" /></span>
               <span className="text-xs text-gray-500 dark:text-gray-400">New Subscriptions</span>
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.newSubscriptions}</div>
@@ -233,15 +233,15 @@ const FinancialReport = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex overflow-x-auto max-w-full">
+        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex overflow-x-auto max-w-full scrollbar-hide">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 shadow-customShadow${
+              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 mx-2 shadow-customShadow ${
                 activeTab === tab.id
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-100 dark:ring-blue-800'
-                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
+                    ? 'bg-blue-50 text-blue-600 dark:text-blue-400 ring-1 ring-blue-100 dark:ring-blue-800'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200' 
               }`}
             >
               {tab.label}
@@ -335,24 +335,24 @@ const FinancialReport = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <Target className="w-8 h-8 text-purple-500" />
+                <div className="flex items-center justify-between gap-3 mb-4">
                   <div>
                     <div className="text-sm text-purple-600 dark:text-purple-400">Annual Recurring Revenue</div>
                     <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">${data.mrrArr.annualRevenue.toLocaleString()}</div>
                     <div className="text-xs text-purple-600 dark:text-purple-400">Based on current MRR</div>
                   </div>
+                  <span><TargetIcon className="w-12 h-12 text-purple-500" /></span>
                 </div>
               </div>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
-                <div className="flex items-center gap-3 mb-4">
-                  <TrendingUp className="w-8 h-8 text-blue-500" />
+                <div className="flex items-center justify-between gap-3 mb-4">
                   <div>
                     <div className="text-sm text-blue-600 dark:text-blue-400">Growth Rate</div>
                     <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">{data.mrrArr.growthRate}%</div>
                     <div className="text-xs text-blue-600 dark:text-blue-400">Month over month</div>
                   </div>
+                  <span><TrendingUp className="w-12 h-12 text-blue-500" /></span>
                 </div>
               </div>
             </div>
@@ -362,38 +362,38 @@ const FinancialReport = () => {
         {/* Churn Tab */}
         {activeTab === 'churn' && (
           <div className="space-y-6">
-            <div className="bg-navbarBg border border-border rounded-lg p-6">
+            <div className="bg-navbarBg border border-border rounded-xl p-6">
               <h2 className="text-lg font-semibold mb-2">Subscriber Activity & Churn Analysis</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Monitor subscription lifecycle and retention</p>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <UserPlus className="w-5 h-5 text-green-500" />
+                <div className='flex items-center justify-between border border-border rounded-xl p-4'>
+                  <div className="flex flex-col gap-2 mb-2">
                     <div className="text-xs text-gray-500 dark:text-gray-400">New Sign-ups</div>
+                    <div className="text-2xl font-bold text-green-800">{data.churn.newSignups}</div>
                   </div>
-                  <div className="text-3xl font-bold">{data.churn.newSignups}</div>
+                  <span className="flex items-center justify-center"><UserPlus className="w-8 h-8 text-green-800" /></span>
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingDown className="w-5 h-5 text-red-500" />
+                <div className='flex items-center justify-between border border-border rounded-xl p-4'>
+                  <div className="flex flex-col gap-2 mb-2">
                     <div className="text-xs text-gray-500 dark:text-gray-400">Cancellations</div>
+                  <div className="text-2xl font-bold text-[#E7000B]">{data.churn.cancellations}</div>
                   </div>
-                  <div className="text-3xl font-bold">{data.churn.cancellations}</div>
+                  <span className="flex items-center justify-center"><TrendingDown className="w-8 h-8 text-[#E7000B]" /></span>
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="w-5 h-5 text-purple-500" />
+                <div className='flex items-center justify-between border border-border rounded-xl p-4'>
+                  <div className="flex flex-col gap-2 mb-2">
                     <div className="text-xs text-gray-500 dark:text-gray-400">Net Growth</div>
+                  <div className="text-2xl font-bold text-[#9810FA]">+{data.churn.netGrowth}</div>
                   </div>
-                  <div className="text-3xl font-bold">+{data.churn.netGrowth}</div>
+                  <span className="flex items-center justify-center"><TrendingUp className="w-8 h-8 text-[#9810FA]" /></span>
                 </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Percent className="w-5 h-5 text-blue-500" />
+                <div className='flex items-center justify-between border border-border rounded-xl p-4'>
+                  <div className="flex flex-col gap-2 mb-2">
                     <div className="text-xs text-gray-500 dark:text-gray-400">Retention Rate</div>
+                  <div className="text-2xl font-bold text-[#0092B8]">{data.churn.retentionRate}%</div>
                   </div>
-                  <div className="text-3xl font-bold">{data.churn.retentionRate}%</div>
+                  <span className="flex items-center justify-center"><Percent className="w-8 h-8 text-[#0092B8]" /></span>
                 </div>
               </div>
 
@@ -423,7 +423,7 @@ const FinancialReport = () => {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-navbarBg border border-border rounded-xl p-6">
               <h2 className="text-lg font-semibold mb-4">Churn Rate by Plan</h2>
               <div className="space-y-4">
                 {data.churn.churnByPlan.map((plan, idx) => (
@@ -455,7 +455,7 @@ const FinancialReport = () => {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Comparative analysis of subscription tiers</p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="rounded-lg p-4 border-2 border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/20">
+                <div className="rounded-lg p-4 border border-yellow-300 dark:border-yellow-700">
                   <div className="text-xs text-yellow-600 dark:text-yellow-400 mb-2">Starter</div>
                   <div className="text-3xl font-bold mb-2">{data.plans.starter.subscribers}</div>
                   <div className="text-xs text-yellow-600 dark:text-yellow-400 mb-1">subscribers</div>
@@ -479,7 +479,7 @@ const FinancialReport = () => {
                   </div>
                 </div>
 
-                <div className="rounded-lg p-4 border-2 border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20">
+                <div className="rounded-lg p-4 border border-blue-300 dark:border-blue-700">
                   <div className="text-xs text-blue-600 dark:text-blue-400 mb-2">Business</div>
                   <div className="text-3xl font-bold mb-2">{data.plans.business.subscribers}</div>
                   <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">subscribers</div>
@@ -503,7 +503,7 @@ const FinancialReport = () => {
                   </div>
                 </div>
 
-                <div className="rounded-lg p-4 border-2 border-purple-300 dark:border-purple-700 bg-purple-50 dark:bg-purple-900/20">
+                <div className="rounded-lg p-4 border border-purple-300 dark:border-purple-700">
                   <div className="text-xs text-purple-600 dark:text-purple-400 mb-2">Enterprise</div>
                   <div className="text-3xl font-bold mb-2">{data.plans.enterprise.subscribers}</div>
                   <div className="text-xs text-purple-600 dark:text-purple-400 mb-1">subscribers</div>
@@ -545,7 +545,7 @@ const FinancialReport = () => {
                       }}
                       wrapperClassName="dark:[--tooltip-bg:#1f2937] dark:[--tooltip-border:#374151] [--tooltip-bg:#ffffff] [--tooltip-border:#e5e7eb]"
                     />
-                    <Bar dataKey="revenue" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="revenue" fill="#8B5CF6" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -565,7 +565,7 @@ const FinancialReport = () => {
                       }}
                       wrapperClassName="dark:[--tooltip-bg:#1f2937] dark:[--tooltip-border:#374151] [--tooltip-bg:#ffffff] [--tooltip-border:#e5e7eb]"
                     />
-                    <Bar dataKey="subscribers" fill="#10b981" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="subscribers" fill="#06B6D4" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -582,28 +582,28 @@ const FinancialReport = () => {
                   <h2 className="text-lg font-semibold mb-2">Average Revenue Per User (ARPU)</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Track revenue per subscriber month</p>
                 </div>
-                <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
+                {/* <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
                   Export
-                </button>
+                </button> */}
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div>
+                <div className="rounded-xl p-4 border border-border">
                   <div className="text-xs text-purple-600 dark:text-purple-400 mb-1">Overall ARPU</div>
                   <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">${data.arpu.overall}</div>
                   <div className="text-xs text-purple-600 dark:text-purple-400">Per month</div>
                 </div>
-                <div>
+                <div className="rounded-xl p-4 border border-border">
                   <div className="text-xs text-yellow-600 dark:text-yellow-400 mb-1">Starter ARPU</div>
                   <div className="text-3xl font-bold text-yellow-700 dark:text-yellow-300">${data.arpu.starter}</div>
                   <div className="text-xs text-yellow-600 dark:text-yellow-400">Per month</div>
                 </div>
-                <div>
+                <div className="rounded-xl p-4 border border-border">
                   <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Business ARPU</div>
                   <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">${data.arpu.business}</div>
                   <div className="text-xs text-green-600 dark:text-green-400">+2.3% growth</div>
                 </div>
-                <div>
+                <div className="rounded-xl p-4 border border-border">
                   <div className="text-xs text-purple-600 dark:text-purple-400 mb-1">Enterprise ARPU</div>
                   <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">${data.arpu.enterprise}</div>
                   <div className="text-xs text-red-600 dark:text-red-400">-1.8% growth</div>
@@ -667,28 +667,28 @@ const FinancialReport = () => {
                   <h2 className="text-lg font-semibold mb-2">Trial Conversion Rate</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Track trial-to-paid conversion metrics</p>
                 </div>
-                <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-800 dark:hover:bg-gray-600">
+                {/* <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm hover:bg-gray-800 dark:hover:bg-gray-600">
                   Export
-                </button>
+                </button> */}
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div>
+                <div className='rounded-xl p-4 border border-border'>
                   <div className="text-xs text-purple-600 dark:text-purple-400 mb-1">Overall Conversion</div>
                   <div className="text-3xl font-bold text-purple-700 dark:text-purple-300">{data.trials.overallConversion}%</div>
                   <div className="text-xs text-purple-600 dark:text-purple-400">Last 14 days</div>
                 </div>
-                <div>
+                <div className='rounded-xl p-4 border border-border'>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Trials Started</div>
                   <div className="text-3xl font-bold">{data.trials.trialsStarted}</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">This month</div>
                 </div>
-                <div>
+                <div className='rounded-xl p-4 border border-border'>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Converted to Paid</div>
                   <div className="text-3xl font-bold">{data.trials.convertedToPaid}</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">This month</div>
                 </div>
-                <div>
+                <div className='rounded-xl p-4 border border-border'>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Trial Duration</div>
                   <div className="text-3xl font-bold">{data.trials.avgTrialDuration}</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">days (14-day trial)</div>
