@@ -2,6 +2,7 @@
 
 import { Plus, ChevronDown, Clock, Video, Edit, Pause, Play, X, CalendarClock } from "lucide-react";
 import { useState } from "react";
+import AddExistingDialog from "./AddExistingDialog";
 
 interface Schedule {
   id: number;
@@ -46,6 +47,7 @@ const defaultSchedules: Schedule[] = [
 const ContentSchedule = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [scheduleList, setScheduleList] = useState<Schedule[]>(defaultSchedules);
+  const [open, setOpen] = useState(false);
 
   const getStatusBadge = (status: string) => {
     const badges = {
@@ -86,12 +88,12 @@ const ContentSchedule = () => {
             {isDropdownOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setIsDropdownOpen(false)} />
-                <div className="absolute right-0 top-12 z-20 bg-white rounded-lg shadow-xl border border-gray-200 py-2 w-full sm:w-48">
-                  <button className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
-                    <CalendarClock className="w-4 h-4 md:w-5 md:h-5 inline mr-1" /> Use Existing
+                <div className="absolute right-0 top-12 z-20 bg-navbarBg rounded-lg shadow-xl border border-border py-2 w-full sm:w-48">
+                  <button onClick={() => setOpen(true)} className="w-full px-4 py-2.5 text-left text-sm font-medium text-body hover:text-bgBlue transition-colors cursor-pointer">
+                    <CalendarClock className="w-4 h-4 md:w-5 md:h-5 inline mr-1" /> Add Existing
                   </button>
-                  <div className="border-t border-gray-200 my-1" />
-                  <button className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div className="border-t border-border my-1" />
+                  <button className="w-full px-4 py-2.5 text-left text-sm font-medium text-body hover:text-bgBlue transition-colors cursor-pointer">
                     <Plus className="w-4 h-4 md:w-5 md:h-5 inline mr-1" /> Create New
                   </button>
                 </div>
@@ -168,6 +170,7 @@ const ContentSchedule = () => {
           ))}
         </div>
       </div>
+      {open && <AddExistingDialog open={open} setOpen={setOpen} />}
     </div>
   );
 };
