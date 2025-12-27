@@ -36,6 +36,27 @@
   0 -3px 3px 0 rgba(0, 0, 0, 0.10) inset,
   0 3px 3px 0 rgba(255, 255, 255, 0.10) inset,
   0 0 0 1px rgba(0, 0, 0, 0.20) inset;
+
+  /* dark color variables */
+  
+  --color-darkBg: #111827;
+  --color-cardBg: #1F1F1F;
+  --color-cardBg-2: #1e3a5a;
+  --color-inputBg: #333333;
+  --color-selectBg: #1e3a5a;
+  --color-hover: #333333;
+  
+  /* Colors - Text (Inverted) */
+  --color-headings: #ffffff;
+  --color-body-text: #E2E2E2;
+  --color-muted: #919191;
+  --color-disabled: #606060;
+  
+  /* Colors - Border */
+  --color-borderColor: #404040;
+  
+  /* Colors - Actions (Adjusted for dark mode) */
+  --color-secondary-action: #ffffff;
 }
 
 .project-font {

@@ -44,13 +44,12 @@ export default function Dropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex justify-between items-center`}
+        className={`w-full px-4 py-3 border border-border rounded-lg bg-input cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex justify-between items-center`}
       >
         <span>{selectedLabel}</span>
         <svg
-          className={`w-4 h-4 ml-2 transition-transform ${
-            isOpen ? "rotate-180" : "rotate-0"
-          }`}
+          className={`w-4 h-4 ml-2 transition-transform ${isOpen ? "rotate-180" : "rotate-0"
+            }`}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -61,14 +60,13 @@ export default function Dropdown({
       </button>
 
       {isOpen && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+        <ul className="absolute z-10 w-full mt-1 bg-cardBackground border border-border rounded-lg shadow-lg max-h-60 overflow-auto">
           {options.map((option) => (
             <li
               key={option.value}
               onClick={() => handleSelect(option)}
-              className={`px-4 py-2 cursor-pointer hover:bg-blue-50 ${
-                value === option.value ? "bg-blue-100 font-medium" : ""
-              }`}
+              className={`px-4 py-2 cursor-pointer hover:bg-blue-500 ${value === option.value ? "bg-cardBackground font-medium" : ""
+                }`}
             >
               {option.label}
             </li>
