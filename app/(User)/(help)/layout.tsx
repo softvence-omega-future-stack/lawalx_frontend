@@ -1,24 +1,5 @@
-// app/dashboard/layout.tsx
-// import UserDashboardNavbar from "@/components/layout/UserDashboardNavbar";
-// import Wrapper from "@/components/layout/Wrapper";
 
-// export default function DashboardLayout({
-//   children,
-// }: {
-//   children: React.ReactNode;
-// }) {
-//   return (
-//     <div className="min-h-screen bg-White ">
-//       <UserDashboardNavbar />
-//       <Wrapper>{children}</Wrapper>
-//     </div>
-//   );
-// }
-
-
-// app/dashboard/content/layout.tsx
 import UserDashboardNavbar from "@/components/layout/UserDashboardNavbar";
-import Wrapper from "@/components/layout/Wrapper";
 import SidebarComponent from "@/components/sidebar/SidebarComponent";
 import { HelpCircle, Video, Headphones } from 'lucide-react';
 

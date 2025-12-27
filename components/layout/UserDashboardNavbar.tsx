@@ -113,10 +113,9 @@ export default function UserDashboardNavbar() {
                 href={item.href}
                 className={`
                   relative px-3 xl:px-3 ml-2 py-2 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap group
-                  ${
-                    isActive(item.href)
-                      ? "text-bgBlue dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20 w-fit rounded"
-                      : "text-navGray dark:text-gray-400 hover:text-bgBlue dark:hover:text-blue-400"
+                  ${isActive(item.href)
+                    ? "text-bgBlue dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20 w-fit rounded"
+                    : "text-navGray dark:text-gray-400 hover:text-bgBlue dark:hover:text-blue-400"
                   }
                 `}
               >
@@ -347,16 +346,16 @@ export default function UserDashboardNavbar() {
 
                   <div className="py-1 space-y-1">
                     <div className="px-4">
-                      <button className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <Link href="/profile-settings/general" onClick={() => setMobileMenuOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <UserRoundCogIcon className="w-4 h-4 mr-2" />
                         Edit Profile
-                      </button>
+                      </Link>
                     </div>
                     <div className="px-4">
-                      <button className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <Link href="" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <SettingsIcon className="w-4 h-4 mr-2" />
                         Settings
-                      </button>
+                      </Link>
                     </div>
                     <div className="px-4">
                       <button className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
@@ -396,22 +395,112 @@ export default function UserDashboardNavbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 max-h-[85vh] overflow-y-auto shadow-lg">
           <nav className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 text-sm rounded-md transition-colors ${
-                  isActive(item.href)
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800"
-                }`}
+                className={`block px-4 py-2.5 text-sm rounded-md transition-colors ${isActive(item.href)
+                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  }`}
               >
                 {item.label}
               </Link>
             ))}
+
+            <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+
+            {/* Create New Section */}
+            <div className="px-4 py-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Create New</p>
+              <button className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <ScreenShareIcon className="w-4 h-4 mr-3" /> Add Device
+              </button>
+              <button className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <FilePlus className="w-4 h-4 mr-3" /> Upload Content
+              </button>
+              <button className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <CalendarPlus className="w-4 h-4 mr-3" /> Schedule
+              </button>
+              <button className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <FolderPlus className="w-4 h-4 mr-3" /> New Folder
+              </button>
+            </div>
+
+            <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+
+            {/* Notifications Section */}
+            <div className="px-4 py-2">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Notifications</p>
+                {notifications.length > 0 && (
+                  <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{notifications.length}</span>
+                )}
+              </div>
+              {notifications.slice(0, 2).map((notif) => (
+                <div key={notif.id} className="py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{notif.title}</p>
+                  <p className="text-xs text-gray-500 truncate">{notif.description}</p>
+                </div>
+              ))}
+              <button className="w-full text-left text-xs text-bgBlue dark:text-blue-400 font-medium py-1 mt-1">View All Notifications</button>
+            </div>
+
+            <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+
+            {/* Help Section */}
+            <div className="px-4 py-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Help & Support</p>
+              <Link href="/faqs" onClick={() => setMobileMenuOpen(false)} className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <HelpCircle className="w-4 h-4 mr-3" /> FAQs
+              </Link>
+              <Link href="/video_tutorials" onClick={() => setMobileMenuOpen(false)} className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <VideoIcon className="w-4 h-4 mr-3" /> Video Tutorials
+              </Link>
+              <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <Headphones className="w-4 h-4 mr-3" /> Support
+              </Link>
+            </div>
+
+            <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+
+            {/* Profile & Settings & Theme */}
+            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg mx-2">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm font-medium">
+                  JD
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">James David</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">James@gmail.com</p>
+                </div>
+              </div>
+
+              <button
+                onClick={toggleTheme}
+                className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400"
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4 mr-3" /> : <Moon className="w-4 h-4 mr-3" />}
+                {theme === 'dark' ? "Light Mode" : "Dark Mode"}
+              </button>
+
+              <Link href="/profile-settings/account" onClick={() => setMobileMenuOpen(false)} className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <UserRoundCogIcon className="w-4 h-4 mr-3" /> Edit Profile
+              </Link>
+              <Link href="/profile-settings/general" onClick={() => setMobileMenuOpen(false)} className="flex items-center w-full py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-bgBlue dark:hover:text-blue-400">
+                <SettingsIcon className="w-4 h-4 mr-3" /> Settings
+              </Link>
+
+              <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+
+              <button className="flex items-center w-full py-2 text-sm text-red-600 dark:text-red-400 hover:text-red-700 font-medium">
+                <LogOutIcon className="w-4 h-4 mr-3" /> Sign Out
+              </button>
+            </div>
+
           </nav>
         </div>
       )}
