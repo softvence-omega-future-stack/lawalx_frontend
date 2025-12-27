@@ -9,7 +9,7 @@ import Dropdown from '@/components/shared/Dropdown';
 // Demo data generator
 const generateData = (days: number) => {
   const factor = days === 1 ? 0.8 : days === 7 ? 0.95 : days === 30 ? 1 : 1.1;
-  
+
   return {
     summary: {
       mrr: Math.round(28100 * factor),
@@ -24,15 +24,15 @@ const generateData = (days: number) => {
       downgrades: Math.round(-400 * factor),
       churned: Math.round(-800 * factor),
       mrrTrend: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-               days === 30 ? `Day ${i + 1}` : 
-               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+          days === 30 ? `Day ${i + 1}` :
+            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
         mrr: 20000 + i * 1000 + Math.random() * 2000
       })),
       monthlyBreakdown: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 4 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-               days === 30 ? `Week ${i + 1}` : 
-               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+          days === 30 ? `Week ${i + 1}` :
+            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
         churned: -(Math.random() * 200 + 100),
         downgrades: -(Math.random() * 300 + 200),
         newSales: Math.random() * 1500 + 1000,
@@ -47,9 +47,9 @@ const generateData = (days: number) => {
       netGrowth: Math.round(50 * factor),
       retentionRate: 97.1,
       activityData: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-               days === 30 ? `Day ${i + 1}` : 
-               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+          days === 30 ? `Day ${i + 1}` :
+            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
         cancellations: Math.random() * 20 + 10,
         netGrowth: Math.random() * 30 + 20,
         newSignups: Math.random() * 60 + 40
@@ -81,9 +81,9 @@ const generateData = (days: number) => {
       business: Math.round(135 * factor),
       enterprise: Math.round(630 * factor),
       arpuTrend: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-               days === 30 ? `Day ${i + 1}` : 
-               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+          days === 30 ? `Day ${i + 1}` :
+            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
         business: 130 + Math.random() * 20,
         enterprise: 600 + Math.random() * 100,
         overall: 110 + Math.random() * 20,
@@ -150,27 +150,27 @@ const FinancialReport = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-                <span><Home className="w-4 h-4 text-gray-400" /></span>
-                <span>›</span>
-                <span>Reports & Analytics</span>
-                <span>›</span>
-                <span>Financial Report</span>
-                {/* <span>›</span>
+              <span><Home className="w-4 h-4 text-gray-400" /></span>
+              <span>›</span>
+              <span>Reports & Analytics</span>
+              <span>›</span>
+              <span>Financial Report</span>
+              {/* <span>›</span>
                 <span className="text-cyan-600 font-medium">MRR/ARR</span> */}
-              </div>
+            </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-1">Financial Report</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Comprehensive financial analytics and subscription metrics
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <Dropdown
               value={timeRanges.find(t => t.value === timeRange)?.label || ''}
               options={timeRanges.map(t => t.label)}
               onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
             />
-            
+
             <button className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg flex items-center gap-2 hover:scale-105 transition-all text-sm bg-navbarBg cursor-pointer dark:shadow-customShadow">
               <Download className="w-4 h-4" />
               <span className='hidden md:block'>Export Financial Report</span>
@@ -238,11 +238,10 @@ const FinancialReport = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${
-                activeTab === tab.id
-                    ? 'text-blue-600 dark:text-blue-400 ring-1 ring-blue-100 dark:ring-blue-800 shadow-customShadow'
-                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200' 
-              }`}
+              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${activeTab === tab.id
+                  ? 'text-blue-600 dark:text-blue-400 ring-1 ring-blue-100 dark:ring-blue-800 shadow-customShadow'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
             >
               {tab.label}
             </button>
@@ -283,14 +282,14 @@ const FinancialReport = () => {
                 <AreaChart data={data.mrrArr.mrrTrend}>
                   <defs>
                     <linearGradient id="colorMRR" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-                  <XAxis 
-                    dataKey="month" 
-                    className="fill-gray-600 dark:fill-gray-400" 
+                  <XAxis
+                    dataKey="month"
+                    className="fill-gray-600 dark:fill-gray-400"
                     tick={{ fontSize: 12 }}
                     interval={timeRange === 30 ? 4 : 0}
                   />
@@ -320,7 +319,7 @@ const FinancialReport = () => {
                       borderRadius: '0.5rem'
                     }}
                     cursor={{ fill: 'transparent' }}
-                    formatter={(value: number) => [`$${Math.abs(value).toLocaleString()}`, undefined]}
+                    formatter={(value: number | undefined) => value !== undefined ? [`$${Math.abs(value).toLocaleString()}`, undefined] : ['', undefined]}
                     wrapperClassName="dark:[--tooltip-bg:#1f2937] dark:[--tooltip-border:#374151] [--tooltip-bg:#ffffff] [--tooltip-border:#e5e7eb]"
                   />
                   <Legend />
@@ -377,21 +376,21 @@ const FinancialReport = () => {
                 <div className='flex items-center justify-between border border-border rounded-xl p-4'>
                   <div className="flex flex-col gap-2 mb-2">
                     <div className="text-xs text-gray-500 dark:text-gray-400">Cancellations</div>
-                  <div className="text-2xl font-bold text-[#E7000B]">{data.churn.cancellations}</div>
+                    <div className="text-2xl font-bold text-[#E7000B]">{data.churn.cancellations}</div>
                   </div>
                   <span className="flex items-center justify-center"><TrendingDown className="w-8 h-8 text-[#E7000B]" /></span>
                 </div>
                 <div className='flex items-center justify-between border border-border rounded-xl p-4'>
                   <div className="flex flex-col gap-2 mb-2">
                     <div className="text-xs text-gray-500 dark:text-gray-400">Net Growth</div>
-                  <div className="text-2xl font-bold text-[#9810FA]">+{data.churn.netGrowth}</div>
+                    <div className="text-2xl font-bold text-[#9810FA]">+{data.churn.netGrowth}</div>
                   </div>
                   <span className="flex items-center justify-center"><TrendingUp className="w-8 h-8 text-[#9810FA]" /></span>
                 </div>
                 <div className='flex items-center justify-between border border-border rounded-xl p-4'>
                   <div className="flex flex-col gap-2 mb-2">
                     <div className="text-xs text-gray-500 dark:text-gray-400">Retention Rate</div>
-                  <div className="text-2xl font-bold text-[#0092B8]">{data.churn.retentionRate}%</div>
+                    <div className="text-2xl font-bold text-[#0092B8]">{data.churn.retentionRate}%</div>
                   </div>
                   <span className="flex items-center justify-center"><Percent className="w-8 h-8 text-[#0092B8]" /></span>
                 </div>
@@ -400,9 +399,9 @@ const FinancialReport = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data.churn.activityData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-                  <XAxis 
-                    dataKey="month" 
-                    className="fill-gray-600 dark:fill-gray-400" 
+                  <XAxis
+                    dataKey="month"
+                    className="fill-gray-600 dark:fill-gray-400"
                     tick={{ fontSize: 12 }}
                     interval={timeRange === 30 ? 4 : 0}
                   />
@@ -434,9 +433,8 @@ const FinancialReport = () => {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full ${
-                          idx === 0 ? 'bg-yellow-500' : idx === 1 ? 'bg-orange-500' : 'bg-green-500'
-                        }`}
+                        className={`h-2 rounded-full ${idx === 0 ? 'bg-yellow-500' : idx === 1 ? 'bg-orange-500' : 'bg-green-500'
+                          }`}
                         style={{ width: `${plan.rate * 20}%` }}
                       ></div>
                     </div>
@@ -613,9 +611,9 @@ const FinancialReport = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data.arpu.arpuTrend}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-                  <XAxis 
-                    dataKey="month" 
-                    className="fill-gray-600 dark:fill-gray-400" 
+                  <XAxis
+                    dataKey="month"
+                    className="fill-gray-600 dark:fill-gray-400"
                     tick={{ fontSize: 12 }}
                     interval={timeRange === 30 ? 4 : 0}
                   />
@@ -646,9 +644,8 @@ const FinancialReport = () => {
                       <div className="font-medium text-sm">{factor.name}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{factor.description}</div>
                     </div>
-                    <div className={`text-lg font-bold ${
-                      factor.impact.startsWith('+') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                    }`}>
+                    <div className={`text-lg font-bold ${factor.impact.startsWith('+') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                      }`}>
                       {factor.impact}
                     </div>
                   </div>
