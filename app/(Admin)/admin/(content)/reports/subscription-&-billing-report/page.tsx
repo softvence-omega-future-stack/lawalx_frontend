@@ -194,24 +194,24 @@ const BillingDashboard = () => {
   // --- Render Functions ---
   const renderTransactionsTab = () => (
     <div className="space-y-6">
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-lg p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Detailed Transaction Report</h3>
         <p className={`${theme.textSecondary} text-sm mb-6`}>Complete transaction history with status and payment methods</p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="text-center p-4 bg-navbarBg rounded-xl border border-border">
             <div className="text-3xl font-bold text-purple-600">387</div>
             <div className={`text-sm ${theme.textSecondary}`}>Total Transactions</div>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="text-center p-4 bg-navbarBg rounded-xl border border-border">
             <div className="text-3xl font-bold text-green-600">378</div>
             <div className={`text-sm ${theme.textSecondary}`}>Successful</div>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="text-center p-4 bg-navbarBg rounded-xl border border-border">
             <div className="text-3xl font-bold text-red-600">9</div>
             <div className={`text-sm ${theme.textSecondary}`}>Failed</div>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="text-center p-4 bg-navbarBg rounded-xl border border-border">
             <div className="text-3xl font-bold text-orange-600">3</div>
             <div className={`text-sm ${theme.textSecondary}`}>Refunded</div>
           </div>
@@ -237,7 +237,7 @@ const BillingDashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-lg p-6 shadow-sm border border-border`}>
         <div className="flex justify-between items-center mb-4">
           <h3 className={`text-lg font-semibold ${theme.text}`}>Recent Transactions</h3>
           <button className={`p-2 ${theme.hover} rounded-lg`}>
@@ -283,7 +283,7 @@ const BillingDashboard = () => {
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
+          <div className='border border-border rounded-xl p-4'>
             <h4 className={`font-semibold mb-2 ${theme.text}`}>Payment Methods</h4>
             <div className="space-y-2">
               <div className="flex justify-between">
@@ -305,7 +305,7 @@ const BillingDashboard = () => {
             </div>
           </div>
           
-          <div>
+          <div className='border border-border rounded-xl p-4'>
             <h4 className={`font-semibold mb-2 ${theme.text}`}>Transaction Volume</h4>
             <div className="space-y-2">
               <div className={`text-2xl font-bold ${theme.text}`}>$43,890</div>
@@ -314,7 +314,7 @@ const BillingDashboard = () => {
             </div>
           </div>
           
-          <div>
+          <div className='border border-border rounded-xl p-4'>
             <h4 className={`font-semibold mb-2 ${theme.text}`}>Average Transaction</h4>
             <div className="space-y-2">
               <div className={`text-2xl font-bold ${theme.text}`}>$113</div>
@@ -329,27 +329,27 @@ const BillingDashboard = () => {
 
   const renderInvoiceAgingTab = () => (
     <div className="space-y-6">
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Invoice Aging Report</h3>
         <p className={`${theme.textSecondary} text-sm mb-6`}>Outstanding invoices categorized by age</p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+          <div className="p-4 rounded-xl bg-yellow-50 dark:bg-yellow-50 border border-border">
             <div className="text-sm text-gray-600 mb-1">1-30 Days</div>
             <div className="text-2xl font-bold text-gray-900">2 invoices</div>
             <div className="text-sm text-yellow-600">$630 outstanding</div>
           </div>
-          <div className="p-4 rounded-lg bg-orange-50 border border-orange-200">
+          <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-50 border border-border">
             <div className="text-sm text-gray-600 mb-1">31-60 Days</div>
             <div className="text-2xl font-bold text-gray-900">1 invoice</div>
             <div className="text-sm text-orange-600">$101 outstanding</div>
           </div>
-          <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+          <div className="p-4 rounded-xl bg-red-50 dark:bg-red-50 border border-border">
             <div className="text-sm text-gray-600 mb-1">61-90 Days</div>
             <div className="text-2xl font-bold text-gray-900">1 invoice</div>
             <div className="text-sm text-red-600">$120 outstanding</div>
           </div>
-          <div className="p-4 rounded-lg bg-red-100 border border-red-300">
+          <div className="p-4 rounded-xl bg-red-100 dark:bg-red-100 border border-border">
             <div className="text-sm text-gray-600 mb-1">90+ Days</div>
             <div className="text-2xl font-bold text-gray-900">1 invoice</div>
             <div className="text-sm text-red-700">$19 critical</div>
@@ -372,7 +372,7 @@ const BillingDashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Overdue Invoice Details</h3>
         
         <div className="overflow-x-auto">
@@ -410,7 +410,7 @@ const BillingDashboard = () => {
           </table>
         </div>
 
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mt-6 p-4 bg-blue-50 border border-border rounded-xl">
           <div className="flex items-start">
             <AlertTriangle className="text-blue-600 mr-3 mt-1 flex-shrink-0" size={20} />
             <div>
@@ -425,12 +425,12 @@ const BillingDashboard = () => {
 
   const renderFailedPaymentTab = () => (
     <div className="space-y-6">
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Failed Payments Analysis</h3>
         <p className={`${theme.textSecondary} text-sm mb-6`}>Tracker for failed transaction attempts and recovery</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="h-80">
+          <div className="h-80 pb-6">
             <h4 className={`font-semibold mb-4 ${theme.text}`}>Failed Payments vs Recovery</h4>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={failedPaymentData}>
@@ -459,7 +459,7 @@ const BillingDashboard = () => {
             </ResponsiveContainer>
           </div>
 
-          <div className="h-80">
+          <div className="h-80 pb-6">
             <h4 className={`font-semibold mb-4 ${theme.text}`}>Recovery Rate Trend</h4>
             <ResponsiveContainer width="100%" height="100%">
                <LineChart data={recoveryRateData}>
@@ -479,11 +479,11 @@ const BillingDashboard = () => {
         </div>
       </div>
 
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Dunning Effectiveness</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="p-4 bg-green-50 rounded-xl border border-green-200">
             <div className="flex justify-between items-center">
               <div>
                 <div className="font-semibold text-gray-900">Email Campaign</div>
@@ -496,7 +496,7 @@ const BillingDashboard = () => {
             </div>
           </div>
 
-          <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+          <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
             <div className="flex justify-between items-center">
               <div>
                 <div className="font-semibold text-gray-900">In-App Prompt</div>
@@ -509,7 +509,7 @@ const BillingDashboard = () => {
             </div>
           </div>
 
-          <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+          <div className="p-4 bg-red-50 rounded-xl border border-red-200">
             <div className="flex justify-between items-center">
               <div>
                 <div className="font-semibold text-gray-900">Manual Outreach</div>
@@ -526,19 +526,19 @@ const BillingDashboard = () => {
         <div className="mt-6">
           <h4 className={`font-semibold mb-3 ${theme.text}`}>Common Failure Reasons</h4>
           <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <div className="flex justify-between items-center p-2 bg-navbarBg border border-border rounded-sm">
               <span className={theme.text}>Insufficient Funds</span>
               <span className="text-red-600 font-semibold">44%</span>
             </div>
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <div className="flex justify-between items-center p-2 bg-navbarBg border border-border rounded-sm">
               <span className={theme.text}>Expired Card</span>
               <span className="text-orange-600 font-semibold">32%</span>
             </div>
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <div className="flex justify-between items-center p-2 bg-navbarBg border border-border rounded-sm">
               <span className={theme.text}>Card Declined</span>
               <span className="text-yellow-600 font-semibold">13%</span>
             </div>
-            <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <div className="flex justify-between items-center p-2 bg-navbarBg border border-border rounded-sm">
               <span className={theme.text}>Technical Error</span>
               <span className="text-blue-600 font-semibold">6%</span>
             </div>
@@ -550,27 +550,27 @@ const BillingDashboard = () => {
 
   const renderDelinquencyTab = () => (
     <div className="space-y-6">
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Overdue & Delinquency Report</h3>
         <p className={`${theme.textSecondary} text-sm mb-6`}>Accounts with payment issues and outstanding balances</p>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+          <div className="p-4 bg-red-50 rounded-xl border border-red-200">
             <div className="text-sm text-gray-600 mb-1">Delinquent Accounts</div>
             <div className="text-3xl font-bold text-red-600">3</div>
             <div className="text-sm text-red-600">Active delinquencies</div>
           </div>
-          <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div className="p-4 bg-orange-50 rounded-xl border border-orange-200">
             <div className="text-sm text-gray-600 mb-1">Total Outstanding</div>
             <div className="text-3xl font-bold text-orange-600">$510</div>
             <div className="text-sm text-orange-600">Across 3 accounts</div>
           </div>
-          <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+          <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
             <div className="text-sm text-gray-600 mb-1">Avg Days Past Due</div>
             <div className="text-3xl font-bold text-yellow-600">57</div>
             <div className="text-sm text-yellow-600">Average delay</div>
           </div>
-          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
             <div className="text-sm text-gray-600 mb-1">Collection Attempts</div>
             <div className="text-3xl font-bold text-blue-600">10</div>
             <div className="text-sm text-blue-600">Total this month</div>
@@ -578,7 +578,7 @@ const BillingDashboard = () => {
         </div>
       </div>
 
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Delinquent Account Details</h3>
         
         <div className="overflow-x-auto">
@@ -622,7 +622,7 @@ const BillingDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Delinquency by Plan Type</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
@@ -645,11 +645,11 @@ const BillingDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Collection Actions Required</h3>
           
           <div className="space-y-4">
-            <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+            <div className="p-4 bg-red-50 rounded-xl border border-red-200">
               <div className="flex items-center mb-2">
                 <AlertTriangle className="text-red-600 mr-2" size={20} />
                 <span className="font-semibold text-gray-900">Critical Priority</span>
@@ -658,7 +658,7 @@ const BillingDashboard = () => {
               <p className="text-xs text-gray-600 mt-1">Requires immediate escalation</p>
             </div>
 
-            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+            <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
               <div className="flex items-center mb-2">
                 <Clock className="text-yellow-600 mr-2" size={20} />
                 <span className="font-semibold text-gray-900">High Priority</span>
@@ -670,7 +670,7 @@ const BillingDashboard = () => {
         </div>
       </div>
 
-      <div className={`p-4 bg-blue-50 border border-blue-200 rounded-lg`}>
+      <div className={`p-4 bg-blue-50 border border-blue-200 rounded-xl`}>
         <div className="flex items-start">
           <AlertTriangle className="text-blue-600 mr-3 mt-1 flex-shrink-0" size={20} />
           <div>
@@ -684,27 +684,27 @@ const BillingDashboard = () => {
 
   const renderRefundTab = () => (
     <div className="space-y-6">
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Refund & Chargeback Report</h3>
         <p className={`${theme.textSecondary} text-sm mb-6`}>Track refunds and customer-initiated disputes</p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-200">
             <RefreshCw className="mx-auto text-orange-600 mb-2" size={32} />
             <div className="text-3xl font-bold text-orange-600">2</div>
             <div className="text-sm text-gray-600">Total Refunds</div>
           </div>
-          <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+          <div className="text-center p-4 bg-yellow-50 rounded-xl border border-yellow-200">
             <DollarSign className="mx-auto text-yellow-600 mb-2" size={32} />
             <div className="text-3xl font-bold text-yellow-600">$630</div>
             <div className="text-sm text-gray-600">Refund Amount</div>
           </div>
-          <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+          <div className="text-center p-4 bg-red-50 rounded-xl border border-red-200">
             <AlertTriangle className="mx-auto text-red-600 mb-2" size={32} />
             <div className="text-3xl font-bold text-red-600">1</div>
             <div className="text-sm text-gray-600">Chargebacks</div>
           </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
             <DollarSign className="mx-auto text-purple-600 mb-2" size={32} />
             <div className="text-3xl font-bold text-purple-600">$15</div>
             <div className="text-sm text-gray-600">Chargeback Fees</div>
@@ -712,7 +712,7 @@ const BillingDashboard = () => {
         </div>
       </div>
 
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Refund & Chargeback Details</h3>
         
         <div className="overflow-x-auto">
@@ -760,7 +760,7 @@ const BillingDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Refund Reasons</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
@@ -793,7 +793,7 @@ const BillingDashboard = () => {
           </div>
         </div>
 
-        <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Chargeback Rate</h3>
           <div className="text-center py-4">
             <div className="text-5xl font-bold text-yellow-600">0.26%</div>
@@ -806,24 +806,24 @@ const BillingDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-4 shadow-sm border border-border`}>
           <h4 className={`font-semibold mb-2 ${theme.text}`}>Refund Rate</h4>
           <div className="text-2xl font-bold text-orange-600">0.77%</div>
           <div className={`text-sm ${theme.textSecondary}`}>3 refunds / 387 transactions</div>
         </div>
-        <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-4 shadow-sm border border-border`}>
           <h4 className={`font-semibold mb-2 ${theme.text}`}>Revenue Impact</h4>
           <div className="text-2xl font-bold text-red-600">$645</div>
           <div className={`text-sm ${theme.textSecondary}`}>Lost revenue (inc. fees)</div>
         </div>
-        <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-4 shadow-sm border border-border`}>
           <h4 className={`font-semibold mb-2 ${theme.text}`}>Avg Refund Value</h4>
           <div className="text-2xl font-bold text-purple-600">$210</div>
           <div className={`text-sm ${theme.textSecondary}`}>Per refund request</div>
         </div>
       </div>
 
-      <div className={`p-4 bg-blue-50 border border-blue-200 rounded-lg`}>
+      <div className={`p-4 bg-blue-50 border border-blue-200 rounded-xl`}>
         <div className="flex items-start">
           <AlertTriangle className="text-blue-600 mr-3 mt-1 flex-shrink-0" size={20} />
           <div>
@@ -837,27 +837,27 @@ const BillingDashboard = () => {
 
   const renderTaxTab = () => (
     <div className="space-y-6">
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Tax Report</h3>
         <p className={`${theme.textSecondary} text-sm mb-6`}>Sales tax and GST breakdown by jurisdiction</p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-200">
             <div className="text-sm text-gray-600 mb-1">Tax by Collected</div>
             <div className="text-3xl font-bold text-blue-600">$2,490</div>
             <div className="text-sm text-blue-600">This month</div>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="text-center p-4 bg-green-50 rounded-xl border border-green-200">
             <div className="text-sm text-gray-600 mb-1">Jurisdictions</div>
             <div className="text-3xl font-bold text-green-600">6</div>
             <div className="text-sm text-green-600">Active regions</div>
           </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
             <div className="text-sm text-gray-600 mb-1">Taxable Revenue</div>
             <div className="text-3xl font-bold text-purple-600">$22,080</div>
             <div className="text-sm text-purple-600">Total taxable</div>
           </div>
-          <div className="text-center p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-200">
             <div className="text-sm text-gray-600 mb-1">Avg Tax Rate</div>
             <div className="text-3xl font-bold text-orange-600">11.3%</div>
             <div className="text-sm text-orange-600">Weighted average</div>
@@ -865,7 +865,7 @@ const BillingDashboard = () => {
         </div>
       </div>
 
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Tax Breakdown by Jurisdiction</h3>
         
         <div className="overflow-x-auto">
@@ -895,7 +895,7 @@ const BillingDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Tax Collection by Region</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -918,11 +918,11 @@ const BillingDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+        <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Tax Compliance Status</h3>
           
           <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex justify-between items-center p-3 bg-green-50 rounded-xl border border-green-200">
               <div className="flex items-center">
                 <CheckCircle className="text-green-600 mr-2" size={20} />
                 <span className="font-medium text-gray-900">USA - Sales Tax</span>
@@ -930,7 +930,7 @@ const BillingDashboard = () => {
               <span className="text-sm text-green-700 font-semibold">Compliant</span>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex justify-between items-center p-3 bg-green-50 rounded-xl border border-green-200">
               <div className="flex items-center">
                 <CheckCircle className="text-green-600 mr-2" size={20} />
                 <span className="font-medium text-gray-900">UK - VAT</span>
@@ -938,7 +938,7 @@ const BillingDashboard = () => {
               <span className="text-sm text-green-700 font-semibold">Compliant</span>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex justify-between items-center p-3 bg-green-50 rounded-xl border border-green-200">
               <div className="flex items-center">
                 <CheckCircle className="text-green-600 mr-2" size={20} />
                 <span className="font-medium text-gray-900">EU - VAT</span>
@@ -946,7 +946,7 @@ const BillingDashboard = () => {
               <span className="text-sm text-green-700 font-semibold">Compliant</span>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex justify-between items-center p-3 bg-green-50 rounded-xl border border-green-200">
               <div className="flex items-center">
                 <CheckCircle className="text-green-600 mr-2" size={20} />
                 <span className="font-medium text-gray-900">Canada - GST/HST</span>
@@ -961,29 +961,29 @@ const BillingDashboard = () => {
 
   const renderDSOTab = () => (
     <div className="space-y-6">
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>DSO Analysis</h3>
         <p className={`${theme.textSecondary} text-sm mb-6`}>Day Sales Outstanding (DSO) trend and efficiency metrics</p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+          <div className="p-4 bg-green-50 rounded-xl border border-green-200">
             <div className="text-sm text-gray-600 mb-1">Current DSO</div>
             <div className="text-3xl font-bold text-green-600">28 days</div>
             <div className="text-sm text-green-600">2 days below target</div>
           </div>
-          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
             <div className="text-sm text-gray-600 mb-1">Best Possible DSO</div>
             <div className="text-3xl font-bold text-blue-600">22 days</div>
             <div className="text-sm text-blue-600">Theoretical minimum</div>
           </div>
-          <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
             <div className="text-sm text-gray-600 mb-1">Collection Efficiency</div>
             <div className="text-3xl font-bold text-purple-600">77.8%</div>
             <div className="text-sm text-purple-600">Collection Effectiveness Index</div>
           </div>
         </div>
 
-        <div className="h-80">
+        <div className="h-80 p-6">
           <h4 className={`font-semibold mb-4 ${theme.text}`}>DSO Trend vs Target</h4>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={dsoTrendData}>
@@ -1009,7 +1009,7 @@ const BillingDashboard = () => {
         </div>
       </div>
 
-      <div className={`${theme.card} rounded-lg p-6 shadow-sm border ${theme.border}`}>
+      <div className={`bg-navbarBg rounded-xl p-6 shadow-sm border border-border`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme.text}`}>Aging Bucket Analysis</h3>
         <p className={`${theme.textSecondary} text-sm mb-4`}>Current accounts receivable aging distribution compared to industry standard</p>
         
@@ -1061,7 +1061,7 @@ const BillingDashboard = () => {
                 <span>›</span>
                 <span>Reports & Analytics</span>
                 <span>›</span>
-                <span>Billing & Payment Report</span>
+                <span className='text-bgBlue'>Billing & Payment Report</span>
                 {/* <span>›</span>
                 <span className="text-cyan-600 font-medium">MRR/ARR</span> */}
               </div>
@@ -1084,7 +1084,7 @@ const BillingDashboard = () => {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-          <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+          <div className={`bg-navbarBg rounded-lg p-4 shadow-sm border border-border`}>
             <div className="flex items-center justify-between mb-2">
               <span className={`text-sm ${theme.textSecondary}`}>Success Rate</span>
               <CheckCircle size={20} className="text-green-600" />
@@ -1097,7 +1097,7 @@ const BillingDashboard = () => {
             </div>
           </div>
 
-          <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+          <div className={`bg-navbarBg rounded-lg p-4 shadow-sm border border-border`}>
             <div className="flex items-center justify-between mb-2">
               <span className={`text-sm ${theme.textSecondary}`}>Failed Payments</span>
               <XCircle size={20} className="text-red-600" />
@@ -1110,7 +1110,7 @@ const BillingDashboard = () => {
             </div>
           </div>
 
-          <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+          <div className={`bg-navbarBg rounded-lg p-4 shadow-sm border border-border`}>
             <div className="flex items-center justify-between mb-2">
               <span className={`text-sm ${theme.textSecondary}`}>Overdue Invoices</span>
               <AlertTriangle size={20} className="text-orange-600" />
@@ -1119,7 +1119,7 @@ const BillingDashboard = () => {
             <div className={`text-sm ${theme.textSecondary} mt-1`}>${kpiData.overdueInvoices.amount} outstanding</div>
           </div>
 
-          <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+          <div className={`bg-navbarBg rounded-lg p-4 shadow-sm border border-border`}>
             <div className="flex items-center justify-between mb-2">
               <span className={`text-sm ${theme.textSecondary}`}>Recovery Rate</span>
               <RefreshCw size={20} className="text-purple-600" />
@@ -1128,7 +1128,7 @@ const BillingDashboard = () => {
             <div className={`text-sm text-green-600 mt-1`}>{kpiData.recoveryRate.recovered} recovered</div>
           </div>
 
-          <div className={`${theme.card} rounded-lg p-4 shadow-sm border ${theme.border}`}>
+          <div className={`bg-navbarBg rounded-lg p-4 shadow-sm border border-border`}>
             <div className="flex items-center justify-between mb-2">
               <span className={`text-sm ${theme.textSecondary}`}>Avg DSO</span>
               <Clock size={20} className="text-cyan-600" />
@@ -1139,7 +1139,7 @@ const BillingDashboard = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex overflow-x-auto max-w-full">
+        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex gap-2 overflow-x-auto max-w-full">
           {tabs.map(tab => (
             <button
               key={tab.id}

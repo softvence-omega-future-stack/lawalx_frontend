@@ -199,7 +199,7 @@ export default function ReportHub() {
     return (
         <div className="min-h-screen">
             {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
                 <Home className="w-4 h-4" />
                 <ChevronRight className="w-4 h-4" />
                 <span>Reports & Analytics</span>
@@ -272,7 +272,7 @@ export default function ReportHub() {
                             placeholder="Search by name, creator..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                            className="pl-10 h-11 bg-gray-50 dark:bg-gray-800/50 border-none rounded-xl focus-visible:ring-1 focus-visible:ring-bgBlue"
+                            className="pl-10 h-11 bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border-none rounded-xl focus-visible:ring-1 focus-visible:ring-bgBlue"
                         />
                     </div>
                     <div className="flex items-center gap-3 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
@@ -293,7 +293,7 @@ export default function ReportHub() {
 
                         <Select value={selectedCreator} onValueChange={(v) => { setSelectedCreator(v); setCurrentPage(1); }}>
                             <SelectTrigger className="h-11 rounded-xl bg-navbarBg border border-border text-gray-600 dark:text-gray-400 gap-2 px-4 shadow-none min-w-[140px]">
-                                <SelectValue placeholder="All Creators" />  
+                                <SelectValue placeholder="All Creators" />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl bg-navbarBg border border-border">
                                 <SelectItem value="All Creators">All Creators</SelectItem>
@@ -467,7 +467,7 @@ export default function ReportHub() {
                         </tbody>
                     </table>
                     {filteredReports.length === 0 && activeTab === 'saved' && (
-                        <div className="p-12 text-center text-gray-400 flex flex-col items-center gap-2">
+                        <div className="p-12 text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
                             <FileText className="w-12 h-12 opacity-10" />
                             <p>No reports found matching your criteria</p>
                         </div>
@@ -493,7 +493,7 @@ export default function ReportHub() {
                                 <button
                                     key={p}
                                     onClick={() => setCurrentPage(p)}
-                                    className={cn("w-8 h-8 rounded-lg text-xs font-bold transition-all", currentPage === p ? "bg-blue-500 text-white" : "text-gray-500 hover:bg-gray-100")}
+                                    className={cn("w-8 h-8 rounded-lg text-xs font-bold transition-all", currentPage === p ? "bg-blue-500 text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700")}
                                 >
                                     {p}
                                 </button>
