@@ -199,7 +199,7 @@ const DeviceReportDashboard = () => {
                     borderRadius: '0.5rem'
                   }}
                   wrapperClassName="dark:[--tooltip-bg:#1f2937] dark:[--tooltip-border:#374151] [--tooltip-bg:#ffffff] [--tooltip-border:#e5e7eb]"
-                  formatter={(value: number) => [`${value.toFixed(2)}%`, 'Uptime']}
+                  formatter={(value: number | undefined) => value !== undefined ? [`${value.toFixed(2)}%`, 'Uptime'] : ['', '']}
                 />
                 <Line
                   type="monotone"
