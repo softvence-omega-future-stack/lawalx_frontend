@@ -1069,14 +1069,14 @@ const BillingDashboard = () => {
               <p className={`${theme.textSecondary} mt-1`}>Comprehensive financial analytics and subscription metrics</p>
             </div>
             <div className="flex items-center gap-3">
-            <Dropdown
-              value={timeRanges.find(t => t.value === timeRange)?.label || ''}
-              options={timeRanges.map(t => t.label)}
-              onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
-            />
-              <button className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors">
+              <Dropdown
+                value={timeRanges.find(t => t.value === timeRange)?.label || ''}
+                options={timeRanges.map(t => t.label)}
+                onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
+              />
+              <button className="flex items-center gap-2 px-4 py-1.5 border border-bgBlue text-bgBlue rounded-lg transition-colors shadow-customShadow">
                 <Download size={18} />
-                <span>Export Financial Report</span>
+                <span>Export Report</span>
               </button>
             </div>
           </div>
@@ -1144,9 +1144,9 @@ const BillingDashboard = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 shadow-customShadow${
+              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${
                 activeTab === tab.id
-                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-100 dark:ring-blue-800'
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 ring-1 ring-blue-100 dark:ring-blue-800 shadow-customShadow'
                   : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >

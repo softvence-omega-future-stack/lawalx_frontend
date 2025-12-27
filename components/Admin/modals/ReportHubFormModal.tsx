@@ -355,7 +355,7 @@ export default function ReportHubFormModal({
                                     initial={{ opacity: 0, x: 10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -10 }}
-                                    className="space-y-6 text-gray-500 dark:text-gray-400 bg-navbarBg"
+                                    className="space-y-6 text-gray-500 dark:text-gray-400"
                                 >
                                     <div className="space-y-2">
                                         <Label className="text-sm font-semibold">Report Name *</Label>
@@ -403,7 +403,7 @@ export default function ReportHubFormModal({
                                         <Label className="text-sm font-semibold">Select Columns *</Label>
                                         <p className="text-xs text-gray-400">Choose and order the data columns</p>
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200">
+                                            <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-hide">
                                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Available</p>
                                                 {availableColumns.map(col => {
                                                     const isSelected = formData.selectedColumnIds.includes(col.id);
@@ -422,7 +422,7 @@ export default function ReportHubFormModal({
                                                     );
                                                 })}
                                             </div>
-                                            <div className="space-y-2 border-l border-gray-100 dark:border-gray-800 pl-4 max-h-[250px] overflow-y-auto pr-2">
+                                            <div className="space-y-2 border-l border-gray-100 dark:border-gray-800 pl-4 max-h-[250px] overflow-y-auto pr-2 scrollbar-hide">
                                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
                                                     Selected ({formData.selectedColumnIds.length})
                                                 </p>
@@ -477,7 +477,7 @@ export default function ReportHubFormModal({
                                                             <SelectTrigger className="flex-1 h-11 bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 rounded-xl text-xs">
                                                                 <SelectValue />
                                                             </SelectTrigger>
-                                                            <SelectContent className="rounded-xl">
+                                                            <SelectContent className="rounded-xl bg-navbarBg">
                                                                 {selectedColumns.map(sc => (
                                                                     <SelectItem key={sc.id} value={sc.id}>{sc.label}</SelectItem>
                                                                 ))}

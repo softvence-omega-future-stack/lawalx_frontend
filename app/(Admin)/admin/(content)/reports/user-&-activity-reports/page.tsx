@@ -169,9 +169,9 @@ const UserActivityReports = () => {
               onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
             />
             
-            <button className="px-4 py-2 bg-bgBlue text-white rounded-lg shadow-customShadow flex items-center gap-2 hover:bg-blue-600 transition-colors text-sm cursor-pointer">
+            <button className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg shadow-customShadow flex items-center gap-2 transition-colors text-sm cursor-pointer">
               <Download className="w-4 h-4" />
-              Export Financial Report
+              Export Report
             </button>
           </div>
         </div>
@@ -225,14 +225,14 @@ const UserActivityReports = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex overflow-x-auto max-w-full">
+        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex gap-2 overflow-x-auto max-w-full">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 shadow-customShadow${
+              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0${
                 activeTab === tab.id
-                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-100 dark:ring-blue-800'
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-customShadow ring-1 ring-blue-100 dark:ring-blue-800'
                   : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
@@ -250,10 +250,10 @@ const UserActivityReports = () => {
                   <h2 className="text-lg font-semibold">User Activity Log / Audit Report</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Detailed records of all user actions with timestamps</p>
                 </div>
-                <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg flex items-center gap-2 text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
-                  <Download className="w-4 h-4" />
-                  Export
-                </button>
+                {/* <button className="flex items-center gap-2 px-4 py-1.5 border border-bgBlue text-bgBlue rounded-lg transition-colors shadow-customShadow">
+                  <Download size={18} />
+                  <span>Export Report</span>
+                </button> */}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -282,10 +282,10 @@ const UserActivityReports = () => {
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold">Recent Activity</h3>
-                  <button className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center gap-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700">
+                  {/* <button className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center gap-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700">
                     <Filter className="w-4 h-4" />
                     Filter
-                  </button>
+                  </button> */}
                 </div>
                 <div className="overflow-x-auto scrollbar-hide">
                   <table className="w-full">
@@ -397,10 +397,10 @@ const UserActivityReports = () => {
                   <h2 className="text-lg font-semibold">User Adoption & Engagement Report</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Track adoption, activity updates, and feature usage</p>
                 </div>
-                <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg flex items-center gap-2 text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
+                {/* <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg flex items-center gap-2 text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
                   <Download className="w-4 h-4" />
                   Export
-                </button>
+                </button> */}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
