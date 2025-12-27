@@ -191,7 +191,7 @@ body {
   --bg-black: #000000;
   --bg-background: #f9fafb;        /* Gray/50 */
   --bg-cardBackground: #FFFFFF;
-  --bg-cardBackgound2: rgba(10, 10, 10, 0.05);   /* Primary/50 light */
+  --bg-cardBackgound2: #F0FAFF;   /* Primary/50 light */
   --selected-background: rgba(10, 10, 10, 0.05);
   --bg-input: #f3f4f6;             /* Gray/100 */
   --hover-background: #f3f4f6;     /* Neutral/100 */
@@ -341,7 +341,6 @@ body {
 
 /* ============================================= */
 /*  FIGMA DESIGN SYSTEM → TAILWIND UTILITIES     */
-/*  Just copy-paste this into your globals.css   */
 /* ============================================= */
 
 @layer utilities {
@@ -369,6 +368,7 @@ body {
 
   /* Actions & States */
   .bg-primary-action        { background-color: var(--primary-action); }
+  .text-primary-action      { color: var(--primary-action); }
   .bg-secondary-action      { background-color: var(--secondary-action); }
   .bg-destructive           { background-color: var(--destructive); }
   .bg-destructive-bg        { background-color: var(--destructive-background); }
@@ -381,9 +381,9 @@ body {
   .text-info                { color: var(--info-text); }
 
   .bg-success               { background-color: var(--success); }
+  .text-success             { color: var(--success-text); }
   .bg-success-bg            { background-color: var(--success-background); }
   .border-success           { border-color: var(--success-outline); }
-  .text-success             { color: var(--success-text); }
 
   .bg-warning               { background-color: var(--warning); }
   .bg-warning-bg            { background-color: var(--warning-background); }
@@ -538,6 +538,32 @@ body {
   pointer-events: none;
 }
 
+.help-header-bg {
+  position: relative;
+  height: 220px;
+  width: 100%;
+  /* border-radius: 0.75rem; Tailwind rounded-xl */
+  overflow: hidden;
+  /* Gradient background */
+  border-bottom: 1px solid var(--Border, #D4D4D4);
+  background: linear-gradient(180deg, rgba(15, 166, 255, 0.10) -7.42%, rgba(236, 151, 207, 0.10) 100%), var(--Card-Background, #FAFAFA);
+}
+
+/* Top-left image (first image) */
+.help-header-bg::after {
+  content: '';
+  position: absolute;
+  top: 18%;      /* adjust vertical position */
+  left: 20px;      /* adjust horizontal position */
+  width: 22rem;
+  height: 22rem;
+  background-image: url('/userDashboard/img2.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: top left;
+  pointer-events: none;
+}
+
 /* Right-middle image (second image) */
 /* .dashboard-header-bg::before {
   content: '';
@@ -556,3 +582,11 @@ body {
 
 
 
+/* Hide scrollbar but keep scrolling functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}

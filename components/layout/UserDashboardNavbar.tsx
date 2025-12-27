@@ -378,9 +378,94 @@ export default function UserDashboardNavbar() {
                     </div>
                   </div>
 
-                  <div className="px-4">
-                    <div className="border-t border-gray-200 dark:border-gray-700" />
-                  </div>
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Bell,
+  HelpCircle,
+  Moon,
+  Sun,
+  User,
+  Menu,
+  X,
+  ChevronDown,
+  ScreenShareIcon,
+  FilePlus,
+  CalendarPlus,
+  FolderPlus,
+  VideoIcon,
+  UserRoundCogIcon,
+  LogOutIcon,
+  HelpCircleIcon,
+  SettingsIcon,
+  Monitor,
+  Headphones,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useTheme } from "next-themes"; // Import this
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/screens", label: "Screens" },
+  { href: "/content", label: "Content" },
+  { href: "/schedules", label: "Schedules" },
+  { href: "/devices", label: "Devices" },
+];
+
+const notifications = [
+  {
+    id: 1,
+    icon: Monitor,
+    title: "New Device Added",
+    description: 'Your "Office 1" device has been added to the server.',
+    time: "1 hour ago",
+  },
+  {
+    id: 2,
+    icon: Bell,
+    title: "Account Approved",
+    description: "Your account has been approved. You can now access all features.",
+    time: "1 hour ago",
+  },
+  {
+    id: 3,
+    icon: Bell,
+    title: "Account Approved",
+    description: "Your account has been approved. You can now access all features.",
+    time: "1 hour ago",
+  },
+  {
+    id: 4,
+    icon: Bell,
+    title: "Account Approved",
+    description: "Your account has been approved. You can now access all features.",
+    time: "1 hour ago",
+  },
+];
+
+export default function UserDashboardNavbar() {
+  const pathname = usePathname();
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [newOpen, setNewOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Dark Mode Setup
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
                   <div className="px-4 py-1">
                     <button className="flex items-center w-full text-left py-2 text-sm text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 px-2">
@@ -432,6 +517,50 @@ export default function UserDashboardNavbar() {
   );
 }
 
+        {/* Right section - Desktop Actions */}
+        <div className="hidden md:flex items-center gap-1 lg:gap-2">
+          {/* Help Button */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setHelpOpen(!helpOpen);
+                setProfileOpen(false);
+                setNewOpen(false);
+                setNotificationOpen(false);
+              }}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer"
+            >
+              <HelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <span className="text-sm text-gray-600 dark:text-gray-400 hidden lg:inline">
+                Help
+              </span>
+            </button>
+            {helpOpen && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setHelpOpen(false)} />
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden z-40 p-2">
+                  <Link href="/faqs">
+                    <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                      <HelpCircle className="w-4 h-4" />
+                      <span className="ml-2">FAQs</span>
+                    </button>
+                  </Link>
+                  <Link href="/video_tutorials">
+                    <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                      <VideoIcon className="w-4 h-4" />
+                      <span className="ml-2">Video Tutorials</span>
+                    </button>
+                  </Link>
+                  <Link href="/support">
+                    <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                      <Headphones className="w-4 h-4" />
+                      <span className="ml-2">Support</span>
+                    </button>
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
 
 
 
