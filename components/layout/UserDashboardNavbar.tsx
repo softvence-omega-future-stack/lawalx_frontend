@@ -368,13 +368,13 @@ export default function UserDashboardNavbar({ isCollapsed, setIsCollapsed }: Use
 
                   <div className="py-1 space-y-1">
                     <div className="px-4">
-                      <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <Link href="/profile" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <UserRoundCogIcon className="w-4 h-4 mr-2" />
                         Edit Profile
                       </Link>
                     </div>
                     <div className="px-4">
-                      <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <Link href="/settings" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <SettingsIcon className="w-4 h-4 mr-2" />
                         Settings
                       </Link>
