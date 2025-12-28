@@ -1224,6 +1224,7 @@ import {
   ScreenShare,
   WifiOff,
   TriangleAlertIcon,
+  Plus,
 } from "lucide-react";
 
 import ActionCardButton from "@/common/ActionCardButton";
@@ -1305,7 +1306,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-success-bg rounded-xl border border-border p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-success-bg rounded-xl shadow-sm border border-border p-6 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgGreen mr-2 bg-white dark:bg-gray-800">
               <Wifi className="w-7 h-7 text-bgGreen" />
@@ -1320,7 +1321,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-destructive-bg border border-border rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-destructive-bg shadow-sm border border-border rounded-xl p-6 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgRed mr-2 bg-white dark:bg-gray-800">
               <WifiOff className="w-7 h-7 text-bgRed" />
@@ -1335,7 +1336,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-card-bg border border-border dark:border-gray-700 rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-card-bg shadow-sm border border-border dark:border-gray-700 rounded-xl p-6 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-gray-600 dark:border-gray-500 mr-2 bg-white dark:bg-gray-800">
               <HardDrive className="w-7 h-7 text-gray-600 dark:text-gray-400" />

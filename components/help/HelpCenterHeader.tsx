@@ -25,8 +25,8 @@ const HelpCenterHeader: React.FC<HelpCenterHeaderProps> = ({
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
           
           {/* Left Content */}
-          <div className="w-full lg:w-1/2 ">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <div className="w-full lg:w-1/2 pt-8 lg:pt-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
               {title}
             </h1>
             <p className="text-gray-600 mb-8 max-w-lg">
@@ -54,7 +54,7 @@ const HelpCenterHeader: React.FC<HelpCenterHeaderProps> = ({
           </div>
 
           {/* Right Content - Image Placeholder */}
-          <div className="w-full lg:w-1/2 flex justify-center lg:justify-end relative">
+          <div className="w-full lg:w-1/2 hidden lg:flex justify-center lg:justify-end relative">
              <div className="md:mr-2 lg:mr-4 xl:mr-10 md:block hidden">
                        <Image
                          src="/userDashboard/img3.webp"

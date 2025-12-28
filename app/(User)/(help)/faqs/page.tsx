@@ -77,7 +77,7 @@ const FAQs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 pb-12">
+    <div className="min-h-screen bg-white dark:bg-gray-900 pb-12 w-full max-w-[1920px] mx-auto">
       <HelpCenterHeader
         title="Frequently Asked Questions"
         description="Find answers and inspiration on all things tape."
@@ -118,9 +118,8 @@ const FAQs = () => {
                           {item.question}
                         </span>
                         <ChevronRight
-                          className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 ${
-                            expandedQuestions.includes(item.id) ? 'rotate-90' : ''
-                          }`}
+                          className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 ${expandedQuestions.includes(item.id) ? 'rotate-90' : ''
+                            }`}
                         />
                       </button>
                       {expandedQuestions.includes(item.id) && (
