@@ -115,7 +115,7 @@ const VideoTutorials = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full max-w-[1920px] mx-auto pb-12">
 
       <HelpCenterHeader
         title="Video Tutorials"
@@ -151,7 +151,7 @@ const VideoTutorials = () => {
                 {/* Play button overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/80 rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                     <Play className="w-5 h-5 sm:w-6 sm:h-6 text-gray-900 ml-1 fill-current" />
+                    <Play className="w-5 h-5 sm:w-6 sm:h-6 text-gray-900 ml-1 fill-current" />
                   </div>
                 </div>
               </div>
