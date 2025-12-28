@@ -66,7 +66,12 @@ const notifications = [
   },
 ];
 
-export default function UserDashboardNavbar() {
+interface UserDashboardNavbarProps {
+  isCollapsed?: boolean;
+  setIsCollapsed?: (value: boolean) => void;
+}
+
+export default function UserDashboardNavbar({ isCollapsed, setIsCollapsed }: UserDashboardNavbarProps) {
   const pathname = usePathname();
   const [helpOpen, setHelpOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -94,6 +99,17 @@ export default function UserDashboardNavbar() {
       <div className="px-5 sm:px-8 py-4 sm:py-6 flex items-center justify-between">
         {/* Left section - Logo & Desktop Navigation */}
         <div className="flex items-center gap-4 lg:gap-8 flex-1">
+          {/* Sidebar Toggle Button (Desktop) */}
+          {/* {setIsCollapsed && (
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed!)}
+              className="hidden lg:flex p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+              aria-label="Toggle sidebar"
+            >
+              <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            </button>
+          )} */}
+
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center shrink-0">
             <Image
@@ -106,7 +122,7 @@ export default function UserDashboardNavbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden xl:flex items-center gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -130,90 +146,95 @@ export default function UserDashboardNavbar() {
             ))}
           </nav>
         </div>
-        {/* Right section - Desktop Actions */}
-        <div className="hidden md:flex items-center gap-1 lg:gap-2">
-          {/* Help Button */}
-          <div className="relative">
-            <button
-              onClick={() => {
-                setHelpOpen(!helpOpen);
-                setProfileOpen(false);
-                setNewOpen(false);
-                setNotificationOpen(false);
-              }}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer"
-            >
-              <HelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <span className="text-sm text-gray-600 dark:text-gray-400 hidden lg:inline">
-                Help
-              </span>
-            </button>
-            {helpOpen && (
-              <>
-                <div className="fixed inset-0 z-30" onClick={() => setHelpOpen(false)} />
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden z-40 p-2">
-                  <Link href="/faqs">
-                    <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
-                      <HelpCircle className="w-4 h-4" />
-                      <span className="ml-2">FAQs</span>
+
+        {/* Right section */}
+        <div className="flex items-center gap-1 xl:gap-2">
+          {/* Desktop Actions (Help, New) - Hidden on mobile */}
+          <div className="hidden xl:flex items-center gap-1 xl:gap-2">
+            {/* Help Button */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setHelpOpen(!helpOpen);
+                  setProfileOpen(false);
+                  setNewOpen(false);
+                  setNotificationOpen(false);
+                }}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <HelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <span className="text-sm text-gray-600 dark:text-gray-400 hidden lg:inline">
+                  Help
+                </span>
+              </button>
+              {helpOpen && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setHelpOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden z-40 p-2">
+                    <Link href="/faqs" onClick={() => setHelpOpen(false)}>
+                      <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                        <HelpCircle className="w-4 h-4" />
+                        <span className="ml-2">FAQs</span>
+                      </button>
+                    </Link>
+                    <Link href="/video_tutorials" onClick={() => setHelpOpen(false)}>
+                      <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                        <VideoIcon className="w-4 h-4" />
+                        <span className="ml-2">Video Tutorials</span>
+                      </button>
+                    </Link>
+                    <Link href="/support" onClick={() => setHelpOpen(false)}>
+                      <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                        <Headphones className="w-4 h-4" />
+                        <span className="ml-2">Support</span>
+                      </button>
+                    </Link>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* New Button */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setNewOpen(!newOpen);
+                  setHelpOpen(false);
+                  setProfileOpen(false);
+                  setNotificationOpen(false);
+                }}
+                className="px-3 lg:px-4 py-2 shadow-customShadow bg-bgBlue text-white rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-1.5 text-sm font-medium cursor-pointer"
+              >
+                <span>New</span>
+                <ChevronDown className="sm:pl-1 sm:border-l border-l-0 border-gray-300 w-4 h-4 hidden lg:inline" />
+              </button>
+              {newOpen && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setNewOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden z-40 p-2">
+                    <button onClick={() => setNewOpen(false)} className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                      <ScreenShareIcon className="w-4 h-4 inline-block mr-2" />
+                      Add Device
                     </button>
-                  </Link>
-                  <Link href="/video_tutorials">
-                    <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
-                      <VideoIcon className="w-4 h-4" />
-                      <span className="ml-2">Video Tutorials</span>
+                    <button onClick={() => setNewOpen(false)} className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                      <FilePlus className="w-4 h-4 inline-block mr-2" />
+                      Upload Content
                     </button>
-                  </Link>
-                  <Link href="/support">
-                    <button className="flex items-center w-full px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 rounded border-b border-gray-200 dark:border-gray-700 cursor-pointer">
-                      <Headphones className="w-4 h-4" />
-                      <span className="ml-2">Support</span>
+                    <button onClick={() => setNewOpen(false)} className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 cursor-pointer">
+                      <CalendarPlus className="w-4 h-4 inline-block mr-2" />
+                      Schedule
                     </button>
-                  </Link>
-                </div>
-              </>
-            )}
-          </div>
-          {/* New Button */}
-          <div className="relative">
-            <button
-              onClick={() => {
-                setNewOpen(!newOpen);
-                setHelpOpen(false);
-                setProfileOpen(false);
-                setNotificationOpen(false);
-              }}
-              className="px-3 lg:px-4 py-2 shadow-customShadow bg-bgBlue text-white rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-1.5 text-sm font-medium cursor-pointer"
-            >
-              <span>New</span>
-              <ChevronDown className="sm:pl-1 sm:border-l border-l-0 border-gray-300 w-4 h-4 hidden lg:inline" />
-            </button>
-            {newOpen && (
-              <>
-                <div className="fixed inset-0 z-30" onClick={() => setNewOpen(false)} />
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden z-40 p-2">
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
-                    <ScreenShareIcon className="w-4 h-4 inline-block mr-2" />
-                    Add Device
-                  </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 cursor-pointer">
-                    <FilePlus className="w-4 h-4 inline-block mr-2" />
-                    Upload Content
-                  </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 cursor-pointer">
-                    <CalendarPlus className="w-4 h-4 inline-block mr-2" />
-                    Schedule
-                  </button>
-                  <button className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                    <FolderPlus className="w-4 h-4 inline-block mr-2" />
-                    New Folder
-                  </button>
-                </div>
-              </>
-            )}
+                    <button onClick={() => setNewOpen(false)} className="block w-full text-left px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                      <FolderPlus className="w-4 h-4 inline-block mr-2" />
+                      New Folder
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Notifications */}
+          {/* Always Visible: Notifications */}
           <div className="relative">
             <button
               onClick={() => {
@@ -233,7 +254,7 @@ export default function UserDashboardNavbar() {
             {notificationOpen && (
               <>
                 <div className="fixed inset-0 z-30" onClick={() => setNotificationOpen(false)} />
-                <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden z-40">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden z-40">
                   <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       Notifications
@@ -281,7 +302,7 @@ export default function UserDashboardNavbar() {
             )}
           </div>
 
-          {/* Dark Mode Toggle - This is the working one */}
+          {/* Always Visible: Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-300 cursor-pointer group"
@@ -295,8 +316,9 @@ export default function UserDashboardNavbar() {
               <Moon className="w-5 h-5 text-gray-600 rotate-0 scale-100 transition-all duration-500 group-hover:-rotate-12" />
             )}
           </button>
-          {/* Profile */}
-          <div className="relative">
+
+          {/* Profile (Hidden on Mobile, moved to Mobile Menu) */}
+          <div className="relative hidden md:block">
             <button
               onClick={() => {
                 setProfileOpen(!profileOpen);
@@ -346,19 +368,19 @@ export default function UserDashboardNavbar() {
 
                   <div className="py-1 space-y-1">
                     <div className="px-4">
-                      <Link href="/profile-settings/general" onClick={() => setMobileMenuOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <UserRoundCogIcon className="w-4 h-4 mr-2" />
                         Edit Profile
                       </Link>
                     </div>
                     <div className="px-4">
-                      <Link href="" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <SettingsIcon className="w-4 h-4 mr-2" />
                         Settings
                       </Link>
                     </div>
                     <div className="px-4">
-                      <button className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <HelpCircleIcon className="w-4 h-4 mr-2" />
                         Support
                       </button>
@@ -369,7 +391,7 @@ export default function UserDashboardNavbar() {
                     <div className="border-t border-gray-200 dark:border-gray-700" />
                   </div>
                   <div className="px-4 py-1">
-                    <button className="flex items-center w-full text-left py-2 text-sm text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 px-2">
+                    <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 px-2">
                       <LogOutIcon className="w-4 h-4 mr-2" />
                       Sign Out
                     </button>
@@ -378,24 +400,24 @@ export default function UserDashboardNavbar() {
               </>
             )}
           </div>
-        </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-        >
-          {mobileMenuOpen ? (
-            <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-          ) : (
-            <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-          )}
-        </button>
+          {/* Mobile Menu Button - Visible on mobile */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="xl:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            ) : (
+              <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Expanded */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 max-h-[85vh] overflow-y-auto shadow-lg">
+        <div className="xl:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 max-h-screen overflow-y-auto scrollbar-hide">
           <nav className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <Link
@@ -502,6 +524,55 @@ export default function UserDashboardNavbar() {
             </div>
 
           </nav>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-3 space-y-3">
+            {/* Mobile Help/Support */}
+            <div className="space-y-1">
+              <p className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Support</p>
+              <Link href="/faqs" onClick={() => setMobileMenuOpen(false)} className="block px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded">FAQs</Link>
+              <Link href="/video_tutorials" onClick={() => setMobileMenuOpen(false)} className="block px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded">Video Tutorials</Link>
+              <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="block px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded">Help Center</Link>
+            </div>
+
+            {/* Mobile Quick Actions */}
+            <div className="space-y-1">
+              <p className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Quick Actions</p>
+              <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded flex items-center gap-2">
+                <ScreenShareIcon className="w-4 h-4" /> Add Device
+              </button>
+              <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded flex items-center gap-2">
+                <FilePlus className="w-4 h-4" /> Upload Content
+              </button>
+              <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded flex items-center gap-2">
+                <CalendarPlus className="w-4 h-4" /> Schedule
+              </button>
+              <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded flex items-center gap-2">
+                <FolderPlus className="w-4 h-4" /> New Folder
+              </button>
+            </div>
+
+            {/* Mobile Profile */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+              <div className="flex items-center px-2 mb-3">
+                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500 mr-3">JD</div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">James David</p>
+                  <p className="text-xs text-gray-500">James@gmail.com</p>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded flex items-center gap-2">
+                  <UserRoundCogIcon className="w-4 h-4" /> Edit Profile
+                </button>
+                <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded flex items-center gap-2">
+                  <SettingsIcon className="w-4 h-4" /> Settings
+                </button>
+                <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded flex items-center gap-2">
+                  <LogOutIcon className="w-4 h-4" /> Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </header>
