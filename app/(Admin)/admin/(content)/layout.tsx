@@ -20,11 +20,25 @@
 import { ThemeProvider } from '@/components/Admin/layout/ThemeProvider';
 import Navbar from '@/components/Admin/layout/AdminNavbar';
 import Sidebar from '@/components/Admin/layout/AdminSidebar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Wrapper from '@/components/layout/Wrapper';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <ThemeProvider>

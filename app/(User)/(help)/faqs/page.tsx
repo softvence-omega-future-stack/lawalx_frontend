@@ -1,15 +1,17 @@
-'use client';
+"use client";
 
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import HelpCenterHeader from '@/components/help/HelpCenterHeader';
+import CategoryTabs from '@/components/help/CategoryTabs';
 
 const FAQs = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [expandedQuestions, setExpandedQuestions] = useState<string[]>([]);
 
-  const faqData = useMemo<{ category: string; questions: { id: string; question: string; answer: string }[] }[]>(() => [
+  // FAQ Data Structure mirroring the design categories
+  const faqData = useMemo(() => [
     {
       category: 'Device Management',
       questions: [
@@ -28,10 +30,11 @@ const FAQs = () => {
       ]
     },
     {
-      category: 'Scheduling & Automation',
+      category: 'Schedule',
       questions: [
         { id: 'sa1', question: 'How do I schedule content to play at specific times?', answer: 'Use the scheduling feature in your playlist settings. Select the playlist, click "Schedule", and set your desired start and end times for automated playback.' },
-        { id: 'sa2', question: 'Can I schedule different content for different devices?', answer: 'Absolutely! You can create device-specific schedules by assigning different playlists to different devices with custom time slots.' }
+        { id: 'sa2', question: 'Can I schedule different content for different devices?', answer: 'Absolutely! You can create device-specific schedules by assigning different playlists to different devices with custom time slots.' },
+        { id: 'sa3', question: 'Can I add captions to my videos?', answer: 'Yes, you can upload SRT or VTT caption files when adding videos to your content library.' }
       ]
     },
     {
@@ -43,15 +46,17 @@ const FAQs = () => {
     }
   ], []);
 
-  const categories = ['All Categories', ...faqData.map(section => section.category)];
+  const categories = ['All', ...faqData.map(section => section.category)];
 
   const filteredFAQ = useMemo(() => {
     let filtered = faqData;
 
-    if (selectedCategory !== 'All Categories') {
+    // Filter by category
+    if (selectedCategory !== 'All') {
       filtered = faqData.filter(section => section.category === selectedCategory);
     }
 
+    // Filter by search query within the filtered categories
     if (searchQuery.trim()) {
       filtered = filtered.map(section => ({
         ...section,
@@ -63,7 +68,7 @@ const FAQs = () => {
     }
 
     return filtered;
-  }, [searchQuery, selectedCategory, faqData]); // fixed: added faqData
+  }, [searchQuery, selectedCategory, faqData]);
 
   const toggleQuestion = (id: string) => {
     setExpandedQuestions(prev =>
@@ -72,97 +77,54 @@ const FAQs = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-            Find answers and inspiration on all things tape.
-          </p>
-        </div>
+    <div className="min-h-screen bg-white dark:bg-gray-900 pb-12 w-full max-w-[1920px] mx-auto">
+      <HelpCenterHeader
+        title="Frequently Asked Questions"
+        description="Find answers and inspiration on all things tape."
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
 
-        {/* Search and Filter */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search Content"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-border bg-navbarBg rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-            />
-          </div>
-
-          <div className="relative w-full sm:w-56">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full px-4 py-2.5 sm:py-3 border border-border bg-navbarBg rounded-lg text-left flex items-center justify-between hover:border-border transition-colors text-sm sm:text-base"
-            >
-              <span className="text-gray-700 dark:text-gray-300 truncate">{selectedCategory}</span>
-              <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform shrink-0 ml-2 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {isDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-navbarBg border border-border rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setIsDropdownOpen(false);
-                    }}
-                    className={`w-full px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm sm:text-base ${
-                      selectedCategory === category 
-                        ? 'bg-blue-50 dark:bg-blue-900/30 text-bgBlue dark:text-blue-400' 
-                        : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="px-4 sm:px-6 lg:px-8 mb-8">
+        <CategoryTabs
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
 
         {/* FAQ Sections */}
-        <div className="space-y-8 sm:space-y-10">
+        <div className="space-y-12">
           {filteredFAQ.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg">No questions found matching your search.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-lg">No questions found matching your search.</p>
             </div>
           ) : (
             filteredFAQ.map((section) => (
               <div key={section.category}>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                   {section.category}
                 </h2>
-                <div className="space-y-3 sm:space-y-4">
+                <div className="divide-y divide-gray-200 dark:divide-gray-800 border-t border-b border-gray-200 dark:border-gray-800">
                   {section.questions.map((item) => (
                     <div
                       key={item.id}
-                      className="bg-navbarBg rounded-lg border border-border overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-shadow"
+                      className="group"
                     >
                       <button
                         onClick={() => toggleQuestion(item.id)}
-                        className="w-full px-4 sm:px-6 py-4 sm:py-5 flex items-start justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        className="w-full py-4 flex items-start justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors px-2"
                       >
-                        <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-white pr-4 leading-relaxed">
+                        <span className="text-base font-medium text-gray-900 dark:text-white pr-4">
                           {item.question}
                         </span>
                         <ChevronRight
-                          className={`w-5 h-5 text-gray-400 dark:text-gray-500 shrink-0 transition-transform mt-0.5 ${
-                            expandedQuestions.includes(item.id) ? 'rotate-90' : ''
-                          }`}
+                          className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 ${expandedQuestions.includes(item.id) ? 'rotate-90' : ''
+                            }`}
                         />
                       </button>
                       {expandedQuestions.includes(item.id) && (
-                        <div className="px-4 sm:px-6 pb-4 sm:pb-5 pt-0">
-                          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <div className="pb-4 px-2">
+                          <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                             {item.answer}
                           </p>
                         </div>

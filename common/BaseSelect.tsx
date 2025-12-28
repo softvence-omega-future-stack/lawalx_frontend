@@ -31,7 +31,7 @@ interface BaseSelectProps {
   showDescription?: boolean;
   showError?: boolean;
   className?: string;
-  icon?: ReactNode; // ✅ Optional icon for placeholder
+  icon?: ReactNode;
 }
 
 const BaseSelect = ({
@@ -56,7 +56,7 @@ const BaseSelect = ({
     <div className={cn("flex flex-col gap-2 w-full", className)}>
       {/* Label */}
       {showLabel && label && (
-        <Label className="text-sm font-medium text-gray-800">
+        <Label className="text-sm font-medium text-headings">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </Label>
@@ -66,23 +66,27 @@ const BaseSelect = ({
       <Select onValueChange={onChange} value={value} disabled={disabled}>
         <SelectTrigger
           className={cn(
-            "w-full bg-bgGray border border-borderGray rounded-lg px-4 py-2 flex items-center gap-2 focus:ring-2 focus:ring-offset-1 focus:ring-gray-200",
+            "w-full rounded-lg px-4 py-2 flex items-center gap-2",
+            "bg-input text-headings border border-borderGray", 
             hasError && "border-red-500 focus:ring-red-400",
-            disabled && "cursor-not-allowed opacity-60"
+            disabled && "cursor-not-allowed opacity-60",
+            // ✅ remove border
           )}
         >
-          {/* ✅ Show icon inside placeholder area */}
+          {/* Icon */}
           {icon && !value && <span className="text-gray-500">{icon}</span>}
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
-        <SelectContent>
+        <SelectContent className="bg-input text-headings">
           {options.map((opt, idx) => (
-            <SelectItem key={idx} value={opt.value}>
-              <div className="flex items-center gap-2 text-textGray">
-                {opt.icon && opt.icon}
-                <span>{opt.label}</span>
-              </div>
+            <SelectItem
+              key={idx}
+              value={opt.value}
+              className="hover:bg-blue-500 flex items-center gap-2"
+            >
+              {opt.icon && <span>{opt.icon}</span>}
+              <span>{opt.label}</span>
             </SelectItem>
           ))}
         </SelectContent>
@@ -93,7 +97,7 @@ const BaseSelect = ({
         <p className="text-sm text-textGray mt-1">{description}</p>
       )}
 
-      {/* Error Message */}
+      {/* Error */}
       {showError && hasError && (
         <p className="text-sm text-red-500 mt-1">{error}</p>
       )}
@@ -102,9 +106,6 @@ const BaseSelect = ({
 };
 
 export default BaseSelect;
-
-
-
 
 
 

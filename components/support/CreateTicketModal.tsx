@@ -1,6 +1,7 @@
 // components/support/CreateTicketModal.tsx
 import { X, Paperclip } from "lucide-react";
 import { useState, useRef } from "react";
+import Dropdown from "@/components/shared/Dropdown";
 
 interface CreateTicketModalProps {
   isOpen: boolean;
@@ -55,17 +56,12 @@ export default function CreateTicketModal({
             <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               Issue Type
             </label>
-            <select
+            <Dropdown
               value={issueType}
-              onChange={(e) => setIssueType(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 dark:text-white"
-            >
-              <option value="Device">Device</option>
-              <option value="Login">Login</option>
-              <option value="Content">Content</option>
-              <option value="Payment">Payment</option>
-              <option value="Other">Other</option>
-            </select>
+              options={["Device", "Login", "Content", "Payment", "Other"]}
+              onChange={setIssueType}
+              className="w-full"
+            />
           </div>
 
           {/* Subject */}

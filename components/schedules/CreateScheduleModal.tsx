@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Calendar,
 } from "lucide-react";
+import Dropdown from "@/components/shared/Dropdown";
 
 // Import the exact same ContentItem type used in SchedulesPage
 interface ContentItem {
@@ -266,16 +267,12 @@ export default function ScheduleModal({
                   onChange={(e) => setSearch(e.target.value)}
                   className="flex-1 px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg text-gray-900 dark:text-white"
                 />
-                <select
+                <Dropdown
                   value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  className="w-full sm:w-48 px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg text-gray-900 dark:text-white"
-                >
-                  <option value="All">All</option>
-                  <option value="Video">Videos</option>
-                  <option value="Image">Images</option>
-                  <option value="Playlist">Playlists</option>
-                </select>
+                  options={["All", "Video", "Image", "Playlist"]}
+                  onChange={setFilter}
+                  className="w-full sm:w-48"
+                />
               </div>
 
               <div className="border border-borderGray dark:border-gray-700 rounded-lg max-h-96 overflow-y-auto">
@@ -368,16 +365,12 @@ export default function ScheduleModal({
               {/* Repeat */}
               <div>
                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">Repeat</label>
-                <select
+                <Dropdown
                   value={form.repeat}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm({ ...form, repeat: e.target.value as Schedule['repeat'] })}
-                  className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
-                >
-                  <option value="once">Run Once</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                </select>
+                  options={["once", "daily", "weekly", "monthly"]}
+                  onChange={(val) => setForm({ ...form, repeat: val as any })}
+                  className="w-full"
+                />
               </div>
 
               {/* Weekly Days */}

@@ -2,12 +2,13 @@
 
 import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { CheckCircle, Clock, TrendingUp, ChevronDown, Download, Filter } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, ChevronDown, Download, Filter, Home, ArrowRight, ChevronRight } from 'lucide-react';
+import Dropdown from '@/components/shared/Dropdown';
 
 // Demo data generator
 const generateData = (days: number) => {
   const factor = days === 1 ? 0.8 : days === 7 ? 0.95 : days === 30 ? 1 : 1.1;
-  
+
   return {
     summary: {
       totalTickets: Math.round(256 * factor),
@@ -16,9 +17,9 @@ const generateData = (days: number) => {
       avgResolutionTime: '3.2 hrs'
     },
     ticketTrend: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-      month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-             days === 30 ? `Day ${i + 1}` : 
-             ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+      month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+        days === 30 ? `Day ${i + 1}` :
+          ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
       resolved: 80 + Math.random() * 40,
       total: 120 + Math.random() * 50
     })),
@@ -36,9 +37,9 @@ const generateData = (days: number) => {
       { name: 'Feature Request', value: Math.round(15 * factor), color: '#ef4444' }
     ],
     responseTrend: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-      month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-             days === 30 ? `Day ${i + 1}` : 
-             ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+      month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+        days === 30 ? `Day ${i + 1}` :
+          ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
       avgTime: 8 + Math.random() * 4
     }))
   };
@@ -46,7 +47,6 @@ const generateData = (days: number) => {
 
 const CustomerServiceReports = () => {
   const [timeRange, setTimeRange] = useState(30);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const data = useMemo(() => generateData(timeRange), [timeRange]);
 
@@ -58,7 +58,7 @@ const CustomerServiceReports = () => {
   ];
 
   const getPriorityColor = (priority: string) => {
-    switch(priority) {
+    switch (priority) {
       case 'High': return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400';
       case 'Medium': return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400';
       case 'Low': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400';
@@ -67,7 +67,7 @@ const CustomerServiceReports = () => {
   };
 
   const getStatusColor = (status: string) => {
-    switch(status) {
+    switch (status) {
       case 'Open': return 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400';
       case 'In Progress': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400';
       case 'Resolved': return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400';
@@ -82,42 +82,26 @@ const CustomerServiceReports = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold mb-1">Customer Service & Support Reports</h1>
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span><Home className="w-4 h-4 text-gray-400" /></span>
+              <span><ChevronRight className="w-4 h-4 text-gray-400" /></span>
+              <span>Reports & Analytics</span>
+              <span><ChevronRight className="w-4 h-4 text-gray-400" /></span>
+              <span className='text-bgBlue'>Customer Service & Support Reports</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold mb-1">Customer Service & Support Reports</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Ticket, support operations, and customer satisfaction
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="px-4 py-2 rounded-lg bg-navbarBg border border-border flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm cursor-pointer"
-              >
-                <span>{timeRanges.find(t => t.value === timeRange)?.label}</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-lg bg-navbarBg border border-border shadow-lg z-10">
-                  {timeRanges.map(range => (
-                    <button
-                      key={range.value}
-                      onClick={() => {
-                        setTimeRange(range.value);
-                        setDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg cursor-pointer${
-                        timeRange === range.value ? 'bg-bgBlue text-black dark:text-white hover:bg-blue-600 dark:hover:bg-blue-600' : ''
-                      }`}
-                    >
-                      {range.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            
+            <Dropdown
+              value={timeRanges.find(t => t.value === timeRange)?.label || ''}
+              options={timeRanges.map(t => t.label)}
+              onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
+            />
+
             <button className="px-4 py-2 bg-bgBlue text-white rounded-lg flex items-center gap-2 hover:bg-blue-600 transition-colors text-sm cursor-pointer">
               <Download className="w-4 h-4" />
               Export Financial Report
@@ -158,19 +142,19 @@ const CustomerServiceReports = () => {
             <AreaChart data={data.ticketTrend}>
               <defs>
                 <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.1} />
                 </linearGradient>
                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-              <XAxis 
-                dataKey="month" 
-                className="fill-gray-600 dark:fill-gray-400" 
-                tick={{ fontSize: 12 }} 
+              <XAxis
+                dataKey="month"
+                className="fill-gray-600 dark:fill-gray-400"
+                tick={{ fontSize: 12 }}
                 interval={timeRange === 30 ? 4 : 0}
               />
               <YAxis className="fill-gray-600 dark:fill-gray-400" tick={{ fontSize: 12 }} />
@@ -198,7 +182,7 @@ const CustomerServiceReports = () => {
               Filter
             </button>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -280,14 +264,14 @@ const CustomerServiceReports = () => {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={data.responseTrend}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-                <XAxis 
-                  dataKey="month" 
-                  className="fill-gray-600 dark:fill-gray-400" 
+                <XAxis
+                  dataKey="month"
+                  className="fill-gray-600 dark:fill-gray-400"
                   tick={{ fontSize: 12 }}
                   interval={timeRange === 30 ? 4 : 0}
                 />
-                <YAxis 
-                  className="fill-gray-600 dark:fill-gray-400" 
+                <YAxis
+                  className="fill-gray-600 dark:fill-gray-400"
                   tick={{ fontSize: 12 }}
                   label={{ value: 'Minutes', angle: -90, position: 'insideLeft' }}
                 />
@@ -298,12 +282,12 @@ const CustomerServiceReports = () => {
                     borderRadius: '0.5rem'
                   }}
                   wrapperClassName="dark:[--tooltip-bg:#1f2937] dark:[--tooltip-border:#374151] [--tooltip-bg:#ffffff] [--tooltip-border:#e5e7eb]"
-                  formatter={(value: number) => [`${value.toFixed(1)} min`, 'Avg Response (min)']}
+                  formatter={(value: number | undefined) => value !== undefined ? [`${value.toFixed(1)} min`, 'Avg Response (min)'] : ['', '']}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="avgTime" 
-                  stroke="#10b981" 
+                <Line
+                  type="monotone"
+                  dataKey="avgTime"
+                  stroke="#10b981"
                   strokeWidth={2}
                   dot={{ fill: '#10b981', r: 4 }}
                   name="Avg Response (min)"

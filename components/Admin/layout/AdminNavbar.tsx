@@ -34,7 +34,7 @@ export default function AdminNavbar({ isCollapsed, setIsCollapsed }: AdminNavbar
   {/* Hamburger Menu – Always visible, moves left on tiny screens */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+            className="hidden lg:flex p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
             aria-label="Toggle sidebar"
           >
             <Image src="/admin/navbar/navbarmenu.svg" alt="Menu" width={22} height={22} className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
