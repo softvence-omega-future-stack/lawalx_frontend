@@ -3,9 +3,8 @@
 import React, { useState } from "react";
 import BaseDialog from "@/common/BaseDialog";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import BaseSelect from "@/common/BaseSelect";
-import { Gift, Sparkles, Calendar } from "lucide-react";
+import { Sparkles, Calendar, Gift } from "lucide-react";
 
 interface CreateCouponDialogProps {
     open: boolean;
@@ -14,16 +13,26 @@ interface CreateCouponDialogProps {
     initialData?: any;
 }
 
-const CreateCouponDialog = ({ open, setOpen, editMode, initialData }: CreateCouponDialogProps) => {
+const CreateCouponDialog = ({
+    open,
+    setOpen,
+    editMode,
+    initialData,
+}: CreateCouponDialogProps) => {
     const [name, setName] = useState(initialData?.name || "");
     const [code, setCode] = useState(initialData?.code || "");
     const [discountType, setDiscountType] = useState("percentage");
-    const [discountValue, setDiscountValue] = useState(initialData?.discount?.replace("%", "") || "15");
-    const [useLimit, setUseLimit] = useState(initialData?.usage?.total || 100);
+    const [discountValue, setDiscountValue] =
+        useState(initialData?.discount?.replace("%", "") || "15");
+    const [useLimit, setUseLimit] =
+        useState<number>(initialData?.usage?.total || 100);
     const [expiryDate, setExpiryDate] = useState("");
     const [couponCycle, setCouponCycle] = useState("once");
     const [cycleType, setCycleType] = useState("month");
     const [totalCycles, setTotalCycles] = useState("6");
+
+    const inputClass =
+        "w-full bg-input border border-border rounded-lg px-3 py-3 h-12 text-headings focus:outline-none focus:ring-1 focus:ring-bgBlue";
 
     const generateCode = () => {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -40,116 +49,139 @@ const CreateCouponDialog = ({ open, setOpen, editMode, initialData }: CreateCoup
             setOpen={setOpen}
             title={editMode ? "Edit Coupon" : "Create a Coupon"}
             description="Generate a new promotional code with custom discount settings and usage restrictions."
-            maxWidth="lg"
+            maxWidth="2xl"
         >
-            <div className="space-y-6">
-                {/* Icon Header */}
-                <div className="flex items-center justify-center -mt-6 mb-4">
-                    <div className="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center text-purple-600 border border-purple-100">
-                        <Gift className="w-6 h-6" />
-                    </div>
-                </div>
-
-                {/* Name & Code Row */}
+            <div className="space-y-4 md:space-y-6 px-1">
+                {/* Name & Code */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-headings font-medium">Name</Label>
-                        <Input
+                        <Label className="text-headings font-medium">
+                            Name
+                        </Label>
+                        <input
                             placeholder="AEION"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="bg-input border-border h-12"
+                            className={inputClass}
                         />
                     </div>
+
                     <div className="space-y-2">
-                        <Label className="text-headings font-medium">Coupon Code</Label>
+                        <Label className="text-headings font-medium">
+                            Coupon Code
+                        </Label>
                         <div className="flex gap-2">
-                            <Input
+                            <input
                                 placeholder="AEION"
                                 value={code}
                                 onChange={(e) => setCode(e.target.value)}
-                                className="bg-input border-border h-12 flex-1"
+                                className={`${inputClass} flex-1`}
                             />
                             <button
+                                type="button"
                                 onClick={generateCode}
-                                className="bg-bgBlue text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm font-medium whitespace-nowrap h-12"
+                                className="h-12 px-4 rounded-lg bg-bgBlue text-white font-medium flex items-center gap-2 hover:bg-bgBlue/90 transition cursor-pointer shadow-customShadow"
                             >
-                                <Sparkles className="w-4 h-4" /> Generate
+                                <Sparkles className="w-4 h-4" />
+                                Generate
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Discount Row */}
+                {/* Discount */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-headings font-medium">Discount Type</Label>
+                        <Label className="text-headings font-medium">
+                            Discount Type
+                        </Label>
                         <BaseSelect
-                            options={[{ label: "Percentage %", value: "percentage" }, { label: "Fixed Amount", value: "fixed" }]}
+                            options={[
+                                { label: "Percentage %", value: "percentage" },
+                                { label: "Fixed Amount", value: "fixed" },
+                            ]}
                             value={discountType}
                             onChange={setDiscountType}
-                            placeholder="Select Type"
                             showLabel={false}
                         />
                     </div>
+
                     <div className="space-y-2">
-                        <Label className="text-headings font-medium">Percentage %</Label>
-                        <Input
+                        <Label className="text-headings font-medium">
+                            {discountType === "percentage"
+                                ? "Percentage %"
+                                : "Amount"}
+                        </Label>
+                        <input
                             type="number"
                             value={discountValue}
-                            onChange={(e) => setDiscountValue(e.target.value)}
-                            className="bg-input border-border h-12"
+                            onChange={(e) =>
+                                setDiscountValue(e.target.value)
+                            }
+                            className={inputClass}
                         />
                     </div>
                 </div>
 
-                {/* Limit & Expiry Row */}
+                {/* Usage & Expiry */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-headings font-medium">Use Limit</Label>
-                        <Input
+                        <Label className="text-headings font-medium">
+                            Use Limit
+                        </Label>
+                        <input
                             type="number"
                             value={useLimit}
-                            onChange={(e) => setUseLimit(Number(e.target.value))}
-                            className="bg-input border-border h-12"
+                            onChange={(e) =>
+                                setUseLimit(Number(e.target.value))
+                            }
+                            className={inputClass}
                         />
                     </div>
+
                     <div className="space-y-2">
-                        <Label className="text-headings font-medium">Expiry Date</Label>
+                        <Label className="text-headings font-medium">
+                            Expiry Date
+                        </Label>
                         <div className="relative">
-                            <Input
+                            <input
                                 type="text"
                                 placeholder="MM/DD/YYYY"
                                 value={expiryDate}
-                                onChange={(e) => setExpiryDate(e.target.value)}
-                                className="bg-input border-border h-12 pr-10"
+                                onChange={(e) =>
+                                    setExpiryDate(e.target.value)
+                                }
+                                className={`${inputClass} pr-10`}
                             />
                             <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                         </div>
                     </div>
                 </div>
 
-                {/* Cycle Row */}
+                {/* Coupon Cycle */}
                 <div className="space-y-2">
-                    <Label className="text-headings font-medium">Coupon Cycle</Label>
+                    <Label className="text-headings font-medium">
+                        Coupon Cycle
+                    </Label>
                     <BaseSelect
                         options={[
                             { label: "Once", value: "once" },
-                            { label: "Multiple Months", value: "multiple" },
+                            { label: "Multiple", value: "multiple" },
                             { label: "Forever", value: "forever" },
                         ]}
                         value={couponCycle}
                         onChange={setCouponCycle}
-                        placeholder="Select Cycle"
                         showLabel={false}
                     />
                 </div>
 
-                {/* Conditional Cycle Details */}
+                {/* Conditional Cycle */}
                 {couponCycle === "multiple" && (
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-headings font-medium">Coupon Cycle</Label>
+                            <Label className="text-headings font-medium">
+                                Cycle Type
+                            </Label>
                             <BaseSelect
                                 options={[
                                     { label: "Month", value: "month" },
@@ -160,13 +192,21 @@ const CreateCouponDialog = ({ open, setOpen, editMode, initialData }: CreateCoup
                                 showLabel={false}
                             />
                         </div>
+
                         <div className="space-y-2">
-                            <Label className="text-headings font-medium">Total {cycleType === "month" ? "Months" : "Years"}</Label>
-                            <Input
+                            <Label className="text-headings font-medium">
+                                Total{" "}
+                                {cycleType === "month"
+                                    ? "Months"
+                                    : "Years"}
+                            </Label>
+                            <input
                                 type="number"
                                 value={totalCycles}
-                                onChange={(e) => setTotalCycles(e.target.value)}
-                                className="bg-input border-border h-12"
+                                onChange={(e) =>
+                                    setTotalCycles(e.target.value)
+                                }
+                                className={inputClass}
                             />
                         </div>
                     </div>
@@ -175,16 +215,20 @@ const CreateCouponDialog = ({ open, setOpen, editMode, initialData }: CreateCoup
                 {/* Actions */}
                 <div className="flex justify-end gap-3 pt-4 border-t border-border">
                     <button
+                        type="button"
                         onClick={() => setOpen(false)}
-                        className="px-8 py-3 border border-borderGray rounded-lg font-medium text-headings hover:bg-gray-50 transition-colors"
+                        className="px-3 py-2 md:px-4 md:py-3 border border-border rounded-lg font-medium shadow-customShadow cursor-pointer hover:bg-gray-100 hover:text-bgBlue text-headings transition-all duration-300 ease-in-out"
                     >
                         Cancel
                     </button>
+
                     <button
+                        type="button"
                         onClick={() => setOpen(false)}
-                        className="px-8 py-3 bg-bgBlue text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-2"
+                        className="px-3 py-2 md:px-4 md:py-3 bg-bgBlue text-white rounded-lg font-medium hover:bg-bgBlue/90 transition flex items-center gap-2 shadow-customShadow cursor-pointer"
                     >
-                        <Gift className="w-5 h-5" /> {editMode ? "Save Changes" : "Create Coupon"}
+                        <Gift className="w-5 h-5" />
+                        {editMode ? "Save Changes" : "Create Coupon"}
                     </button>
                 </div>
             </div>

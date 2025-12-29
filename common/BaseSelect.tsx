@@ -67,7 +67,7 @@ const BaseSelect = ({
         <SelectTrigger
           className={cn(
             "w-full rounded-lg px-4 py-2 flex items-center gap-2",
-            "bg-input text-headings border border-borderGray", 
+            "bg-input text-headings border border-borderGray",
             hasError && "border-red-500 focus:ring-red-400",
             disabled && "cursor-not-allowed opacity-60",
             // ✅ remove border
