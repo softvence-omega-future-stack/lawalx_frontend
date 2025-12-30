@@ -61,7 +61,7 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
 
       <div className="flex">
         {!isMobile && (
-          <SidebarComponent items={customItems} isCollapsed={isCollapsed} />
+          <SidebarComponent items={customItems} isCollapsed={isCollapsed} className="top-24" />
         )}
 
         {/* Main content - push right on desktop */}

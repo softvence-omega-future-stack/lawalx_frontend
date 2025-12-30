@@ -44,7 +44,7 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
       <UserDashboardNavbar />
 
       <div className="flex">
-        <SidebarComponent items={customItems} />
+        <SidebarComponent items={customItems} className="top-24" />
 
         {/* Main content - push right on desktop */}
         <main className="flex-1 lg:ml-64 p-4 md:p-6">
