@@ -10,8 +10,8 @@ import type { APITypes } from "plyr-react";
 const Plyr = dynamic(() => import("plyr-react"), { ssr: false });
 
 interface VideoPlayerProps {
-  src: string;         // Video URL or YouTube link
-  poster?: string;     // Thumbnail image
+  src: string;
+  poster?: string;
   autoPlay?: boolean;
   rounded?: string;
 }

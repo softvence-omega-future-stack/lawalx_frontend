@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import clsx from "clsx";
 
 type DialogSize = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
 type DialogHeight = "sm" | "md" | "lg" | "xl";
@@ -18,13 +19,20 @@ interface BaseDialogProps {
   title: string;
   description: string;
   children: React.ReactNode;
-  /** Predefined width sizes (sm–5xl) */
+
+  /** Preset width */
   maxWidth?: DialogSize;
-  /** Predefined height sizes */
+
+  /** Preset height */
   maxHeight?: DialogHeight;
+
+  /** Extra Tailwind classes */
+  className?: string;
+
+  /** Full width modal */
+  fullWidth?: boolean;
 }
 
-/** Map size keys to Tailwind classes */
 const widthMap: Record<DialogSize, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
@@ -51,23 +59,31 @@ const BaseDialog = ({
   children,
   maxWidth = "2xl",
   maxHeight = "lg",
+  className,
+  fullWidth = false,
 }: BaseDialogProps) => {
-  const widthClass = widthMap[maxWidth];
-  const heightClass = heightMap[maxHeight];
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className={`${widthClass} ${heightClass} flex flex-col`}>
-        <DialogHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-          <div className="flex-1">
-            <DialogTitle className="text-xl font-bold text-headings">{title}</DialogTitle>
-            <DialogDescription className="text-sm text-muted mt-1">
-              {description}
-            </DialogDescription>
-          </div>
+      <DialogContent
+        className={clsx(
+          "flex flex-col overflow-hidden",
+          heightMap[maxHeight],
+          fullWidth ? "w-full max-w-none" : widthMap[maxWidth],
+          className
+        )}
+      >
+        {/* Header */}
+        <DialogHeader className="pb-4">
+          <DialogTitle className="text-xl font-bold text-headings">
+            {title}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted mt-1">
+            {description}
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto pr-2 py-2">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto pr-2">
           <div className="space-y-4">{children}</div>
         </div>
       </DialogContent>

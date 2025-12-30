@@ -21,14 +21,14 @@ for (let i = demoSubscribers.length; i < 20; i++) {
   });
 }
 
-const SubscribersTab: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
+const SubscribersTab: React.FC<{ darkMode: boolean }> = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const totalPages = Math.ceil(demoSubscribers.length / itemsPerPage);
   const currentData = demoSubscribers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
+    <div className="bg-navbarBg p-4 rounded shadow">
       <h2 className="text-xl font-semibold mb-4">All Users (1112)</h2>
       <input type="text" placeholder="Search by name, email, or user ID..." className="w-full p-2 mb-4 border dark:border-gray-600 dark:bg-gray-700" />
       <table className="w-full mb-4">

@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useTheme } from "next-themes"; // Import this
+import { useTheme } from "next-themes";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -66,12 +66,12 @@ const notifications = [
   },
 ];
 
-interface UserDashboardNavbarProps {
-  isCollapsed?: boolean;
-  setIsCollapsed?: (value: boolean) => void;
-}
+// interface UserDashboardNavbarProps {
+//   isCollapsed?: boolean;
+//   setIsCollapsed?: (value: boolean) => void;
+// }
 
-export default function UserDashboardNavbar({ isCollapsed, setIsCollapsed }: UserDashboardNavbarProps) {
+export default function UserDashboardNavbar() {
   const pathname = usePathname();
   const [helpOpen, setHelpOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);

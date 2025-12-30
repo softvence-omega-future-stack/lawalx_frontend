@@ -19,7 +19,7 @@ const containerStyle = {
     height: '450px'
 };
 
-const GoogleMapModal: React.FC<GoogleMapModalProps> = ({ isOpen, onClose, lat, lng, label, device }) => {
+const GoogleMapModal: React.FC<GoogleMapModalProps> = ({ isOpen, onClose, lat, lng, device }) => {
     const [showInfoWindow, setShowInfoWindow] = useState(false);
     const GoogleApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
     const { isLoaded } = useJsApiLoader({
@@ -39,7 +39,7 @@ const GoogleMapModal: React.FC<GoogleMapModalProps> = ({ isOpen, onClose, lat, l
     };
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
             <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden border border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
                 <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">

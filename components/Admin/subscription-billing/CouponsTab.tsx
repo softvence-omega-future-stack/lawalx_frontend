@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // components/CouponsTab.tsx
 import React, { useState } from 'react';
 import Pagination from './Pagination';
@@ -19,7 +20,7 @@ for (let i = demoCoupons.length; i < 20; i++) {
   });
 }
 
-const CouponsTab: React.FC<{ darkMode: boolean; onCreate: () => void; onEdit: (coupon: any) => void; onStop: (coupon: any) => void }> = ({ darkMode, onCreate, onEdit, onStop }) => {
+const CouponsTab: React.FC<{ onCreate: () => void; onEdit: (coupon: any) => void; onStop: (coupon: any) => void }> = ({ onCreate, onEdit, onStop }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const totalPages = Math.ceil(demoCoupons.length / itemsPerPage);

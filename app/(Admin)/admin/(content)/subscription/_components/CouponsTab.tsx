@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { coupons } from "../_data";
 import {
     Table,
@@ -17,7 +17,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Search, Edit, Ban, Gift } from "lucide-react";
+import { MoreVertical, Search, Edit, Ban } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import CreateCouponDialog from "./CreateCouponDialog";
 
@@ -143,7 +143,7 @@ const CouponsTab = () => {
                                 <TableCell>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <button className="h-8 w-8 text-muted hover:bg-gray-100 rounded-lg flex items-center justify-center transition-colors">
+                                            <button className="h-8 w-8 text-muted hover:bg-gray-100 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
                                                 <MoreVertical className="h-4 w-4" />
                                             </button>
                                         </DropdownMenuTrigger>

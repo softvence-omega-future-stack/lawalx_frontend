@@ -71,11 +71,11 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
 
   return (
     <div className="min-h-screen bg-White">
-      <UserDashboardNavbar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      <UserDashboardNavbar />
 
       <div className="flex">
         {!isMobile && (
-          <SidebarComponent items={customItems} isCollapsed={isCollapsed} />
+          <SidebarComponent items={customItems} />
         )}
 
         {/* Main content - push right on desktop */}
