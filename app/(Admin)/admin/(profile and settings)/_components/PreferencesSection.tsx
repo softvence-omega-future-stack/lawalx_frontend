@@ -27,7 +27,7 @@ export default function PreferencesSection() {
         <div className="space-y-6">
             {/* Notifications */}
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-border bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">Notifications</h2>
                 </div>
                 <div className="p-6 space-y-6">
@@ -50,7 +50,7 @@ export default function PreferencesSection() {
 
             {/* Format */}
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-border bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">Format</h2>
                 </div>
                 <div className="p-6 space-y-6">

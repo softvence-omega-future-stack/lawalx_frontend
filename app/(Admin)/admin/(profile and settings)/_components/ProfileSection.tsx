@@ -11,7 +11,7 @@ export default function ProfileSection() {
         <div className="space-y-6">
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">Personal Information</h2>
                     <button className="bg-bgBlue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer">
                         Save

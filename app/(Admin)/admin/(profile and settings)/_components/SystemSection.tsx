@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 
 export default function SystemSection() {
     const sysInfo = [
@@ -13,7 +12,7 @@ export default function SystemSection() {
     return (
         <div className="space-y-6">
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-border bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">System Information</h2>
                 </div>
                 <div className="p-8">
