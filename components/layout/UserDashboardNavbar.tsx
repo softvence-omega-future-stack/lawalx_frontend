@@ -368,22 +368,22 @@ export default function UserDashboardNavbar() {
 
                   <div className="py-1 space-y-1">
                     <div className="px-4">
-                      <Link href="/profile" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <Link href="/profile-settings/general" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <UserRoundCogIcon className="w-4 h-4 mr-2" />
                         Edit Profile
                       </Link>
                     </div>
                     <div className="px-4">
-                      <Link href="/settings" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <Link href="/profile-settings/general" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <SettingsIcon className="w-4 h-4 mr-2" />
                         Settings
                       </Link>
                     </div>
                     <div className="px-4">
-                      <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
+                      <Link href="/support" className="flex items-center w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-2">
                         <HelpCircleIcon className="w-4 h-4 mr-2" />
                         Support
-                      </button>
+                      </Link>
                     </div>
                   </div>
 
@@ -391,10 +391,10 @@ export default function UserDashboardNavbar() {
                     <div className="border-t border-gray-200 dark:border-gray-700" />
                   </div>
                   <div className="px-4 py-1">
-                    <button onClick={() => setProfileOpen(false)} className="flex items-center w-full text-left py-2 text-sm text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 px-2">
+                    <Link href="/signin" className="flex items-center w-full text-left py-2 text-sm text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 px-2">
                       <LogOutIcon className="w-4 h-4 mr-2" />
                       Sign Out
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </>
