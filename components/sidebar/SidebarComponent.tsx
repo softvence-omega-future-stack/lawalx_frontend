@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SidebarItem {
   icon: React.ReactNode;
@@ -15,11 +16,13 @@ interface SidebarItem {
 
 interface SidebarComponentProps {
   items?: SidebarItem[];
+  className?: string;
 }
 
 const SidebarComponent: React.FC<SidebarComponentProps & { isCollapsed?: boolean }> = ({
   items = [],
-  isCollapsed = false
+  isCollapsed = false,
+  className
 }) => {
   const pathname = usePathname();
 
@@ -28,19 +31,11 @@ const SidebarComponent: React.FC<SidebarComponentProps & { isCollapsed?: boolean
   return (
     <>
       <aside
-        className={`
-          fixed 
-          left-0
-          top-16
-          bottom-0
-          bg-navbarBg 
-          border-r border-border 
-          shadow-lg
-          transition-all duration-300 ease-in-out
-          z-20
-          overflow-y-auto scrollbar-hide
-          ${isCollapsed ? "w-16" : "w-64"}
-        `}
+        className={cn(
+          "fixed left-0 top-16 bottom-0 bg-navbarBg border-r border-border shadow-lg transition-all duration-300 ease-in-out z-20 overflow-y-auto scrollbar-hide",
+          isCollapsed ? "w-16" : "w-64",
+          className
+        )}
       >
         <div className={`py-6 space-y-1 ${isCollapsed ? "px-2" : "px-4"}`}>
           {items.map((item, index) => (
