@@ -72,7 +72,7 @@ export default function ReportHub() {
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     const stats = [
         { label: 'Total Custom Reports', value: '8', subtext: 'Saved report templates', icon: FileText },
@@ -90,9 +90,9 @@ export default function ReportHub() {
     ]);
 
     const [runHistory, setRunHistory] = useState([
-        { id: 1, name: 'Q4 Offline Enterprise Devices', date: 'Jan 26, 2025, 10:30 AM', trigger: 'Manual', status: 'Compiled', recipients: 'sarah@gmail.com' },
-        { id: 2, name: 'Monthly Revenue by Plan', date: 'Jan 25, 2025, 09:00 AM', trigger: 'Scheduled', status: 'Compiled', recipients: 'john@gmail.com' },
-        { id: 3, name: 'Daily User Engagement', date: 'Jan 25, 2025, 08:00 AM', trigger: 'Scheduled', status: 'Failed', recipients: 'sarah@gmail.com' },
+        { id: 1, name: 'Q4 Offline Enterprise Devices', date: 'Jan 26, 2025, 10:30 AM', trigger: 'Manual', status: 'Compiled', recipients: 'sarah@gmail.com', creator: 'Sarah Wilson', schedule: 'Weekly', dataSource: 'Device Data' },
+        { id: 2, name: 'Monthly Revenue by Plan', date: 'Jan 25, 2025, 09:00 AM', trigger: 'Scheduled', status: 'Compiled', recipients: 'john@gmail.com', creator: 'John Doe', schedule: 'Monthly', dataSource: 'Financial Data' },
+        { id: 3, name: 'Daily User Engagement', date: 'Jan 25, 2025, 08:00 AM', trigger: 'Scheduled', status: 'Failed', recipients: 'sarah@gmail.com', creator: 'Sarah Wilson', schedule: 'Daily', dataSource: 'User Activity' },
     ]);
 
     // Derived filtered data
@@ -109,11 +109,16 @@ export default function ReportHub() {
     }, [savedReports, searchQuery, selectedDataSource, selectedCreator, selectedSchedule]);
 
     const filteredHistory = useMemo(() => {
-        return runHistory.filter(run =>
-            run.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            run.recipients.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [runHistory, searchQuery]);
+        return runHistory.filter(run => {
+            const matchesSearch = run.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                run.recipients.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesDS = selectedDataSource === 'All Data Sources' || run.dataSource === selectedDataSource;
+            const matchesCreator = selectedCreator === 'All Creators' || run.creator === selectedCreator;
+            const matchesSchedule = selectedSchedule === 'All Schedules' || run.schedule === selectedSchedule;
+
+            return matchesSearch && matchesDS && matchesCreator && matchesSchedule;
+        });
+    }, [runHistory, searchQuery, selectedDataSource, selectedCreator, selectedSchedule]);
 
     // Pagination logic
     const reportsTotalPages = Math.ceil(filteredReports.length / itemsPerPage);
@@ -141,7 +146,10 @@ export default function ReportHub() {
                 date: new Date().toLocaleString(),
                 trigger: 'Manual',
                 status: 'Compiled',
-                recipients: report.email || 'Admin Only'
+                recipients: report.email || 'Admin Only',
+                creator: report.creator,
+                schedule: report.schedule,
+                dataSource: report.dataSource
             };
             setRunHistory(prev => [newRun, ...prev]);
         }, 2000);

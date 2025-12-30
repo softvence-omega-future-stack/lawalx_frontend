@@ -1,54 +1,152 @@
-import { X } from "lucide-react";
-import { useState } from "react";
+import { X, Paperclip } from "lucide-react";
+import { useState, useRef } from "react";
+import Dropdown from "@/components/shared/Dropdown";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   deviceName: string;
+  onSubmit?: (data: {
+    issueType: string;
+    subject: string;
+    message: string;
+    file?: File | null;
+  }) => void;
 }
 
-export default function ReportDeviceModal({ isOpen, onClose, deviceName }: Props) {
+export default function ReportDeviceModal({ isOpen, onClose, deviceName, onSubmit }: Props) {
+  const [issueType, setIssueType] = useState("Device");
+  const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
+  const handleSubmit = () => {
+    if (!subject.trim() || !message.trim()) return;
+    onSubmit?.({ issueType, subject, message, file: attachedFile });
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md p-6 border border-gray-200 dark:border-gray-700">
-        <div className="flex justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Report Issue</h2>
-          <button onClick={onClose}>
-            <X className="w-6 h-6 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 dark:bg-black/60 backdrop-blur-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-lg w-full border border-gray-200 dark:border-gray-700">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Report a Problem
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Device: <strong className="text-gray-900 dark:text-white">{deviceName}</strong>
-        </p>
+        {/* Body */}
+        <div className="px-6 py-5 space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Reporting issue for device: <strong className="text-gray-900 dark:text-white">{deviceName}</strong>
+          </p>
 
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Describe the problem..."
-          rows={6}
-          className="w-full p-4 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-        />
+          {/* Issue Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+              Issue Type
+            </label>
+            <Dropdown
+              value={issueType}
+              options={["Device", "Login", "Content", "Payment", "Other"]}
+              onChange={setIssueType}
+              className="w-full"
+            />
+          </div>
 
-        <div className="flex justify-end gap-3 mt-6">
+          {/* Subject */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+              Subject
+            </label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Enter subject"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+            />
+          </div>
+
+          {/* Message */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+              Message
+            </label>
+
+            <div className="relative">
+              {/* Textarea */}
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Describe your issue in detail..."
+                rows={4}
+                className="w-full px-4 pt-3 pb-12 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 pr-12"
+              />
+
+              {/* Attachment Button - Bottom Left Inside */}
+              <div className="absolute bottom-2 left-2 flex items-center gap-2 w-full pr-4">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={(e) =>
+                    e.target.files?.[0] && setAttachedFile(e.target.files[0])
+                  }
+                  className="hidden"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  title="Attach file"
+                >
+                  <Paperclip className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                </button>
+
+                {/* Attached File Preview */}
+                {attachedFile && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-lg text-xs max-w-[200px]">
+                    <Paperclip className="w-3.5 h-3.5 text-blue-700 dark:text-blue-400 shrink-0" />
+                    <span className="truncate text-blue-700 dark:text-blue-400">
+                      {attachedFile.name}
+                    </span>
+                    <button
+                      onClick={() => setAttachedFile(null)}
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 shadow-customShadow rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors font-medium"
+            className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
           >
             Cancel
           </button>
           <button
-            onClick={() => {
-              alert("Report sent! Thank you.");
-              onClose();
-            }}
-            className="px-6 py-2.5 bg-bgRed hover:bg-red-600 shadow-customShadow text-white rounded-xl transition-colors font-medium"
+            onClick={handleSubmit}
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
           >
-            Send Report
+            Submit
           </button>
         </div>
       </div>

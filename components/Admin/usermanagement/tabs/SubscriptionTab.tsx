@@ -1,7 +1,9 @@
 // src/components/Admin/tabs/SubscriptionTab.tsx
 "use client";
 
-import { Shuffle, Download, Eye, MoreVertical } from "lucide-react";
+import { useState } from "react";
+import { Shuffle, Download, Eye, MoreVertical, Edit2 } from "lucide-react";
+import TablePagination from "@/components/shared/TablePagination";
 
 const paymentHistory = [
   {
@@ -53,6 +55,15 @@ export default function SubscriptionTab({
 }: {
   onOpenChangePlan: () => void;
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  const totalPages = Math.ceil(paymentHistory.length / ITEMS_PER_PAGE);
+  const currentHistory = paymentHistory.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
     <div className="space-y-8">
       {/* Current Plan */}
@@ -167,7 +178,7 @@ export default function SubscriptionTab({
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {paymentHistory.map((p, i) => (
+              {currentHistory.map((p, i) => (
                 <tr
                   key={i}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
@@ -184,11 +195,10 @@ export default function SubscriptionTab({
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-xs font-medium border inline-block ${
-                        p.status === "Paid"
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
-                          : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                      }`}
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-medium border inline-block ${p.status === "Paid"
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+                        : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+                        }`}
                     >
                       {p.status}
                     </span>
@@ -206,26 +216,14 @@ export default function SubscriptionTab({
             </tbody>
           </table>
         </div>
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={paymentHistory.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );
-}
-
-function Edit2({ className }: { className?: string }) {
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={className}
-        >
-            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-        </svg>
-    );
 }
