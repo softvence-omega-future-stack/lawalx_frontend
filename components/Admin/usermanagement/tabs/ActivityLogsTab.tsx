@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { Monitor, FileText, MapPin, Search, Calendar, X } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import TablePagination from "@/components/shared/TablePagination";
 
 // --- Types ---
 
@@ -109,21 +110,24 @@ const ActivityIcon = ({ type }: { type: ActivityIconType }) => {
   );
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export default function ActivityLogsTab() {
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredData = useMemo(() => {
     return activityData.filter((activity) => {
       // Search matching
-      const matchesSearch = 
+      const matchesSearch =
         activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.subtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.ipAddress.includes(searchTerm) ||
         activity.deviceName.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       // Date range matching
       let matchesDate = true;
       if (startDate && endDate) {
@@ -137,10 +141,16 @@ export default function ActivityLogsTab() {
         const start = new Date(startDate).setHours(0, 0, 0, 0);
         matchesDate = logTime >= start;
       }
-      
+
       return matchesSearch && matchesDate;
     });
   }, [searchTerm, startDate, endDate]);
+
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+  const currentItems = filteredData.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const clearDateRange = () => {
     setStartDate(null);
@@ -185,7 +195,7 @@ export default function ActivityLogsTab() {
                 className="bg-transparent border-none text-sm text-gray-700 dark:text-gray-300 outline-none cursor-pointer w-full"
               />
               {(startDate || endDate) && (
-                <button 
+                <button
                   onClick={clearDateRange}
                   className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors"
                 >
@@ -210,8 +220,8 @@ export default function ActivityLogsTab() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredData.length > 0 ? (
-                filteredData.map((log) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((log) => (
                   <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group">
                     {/* Activity Column */}
                     <td className="px-6 py-5">
@@ -258,6 +268,13 @@ export default function ActivityLogsTab() {
             </tbody>
           </table>
         </div>
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredData.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

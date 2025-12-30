@@ -6,6 +6,9 @@ import Link from "next/link";
 import AddDeviceModal from "@/components/dashboard/AddDeviceModal";
 import PreviewDeviceModal from "@/components/devices/modals/PreviewDeviceModal";
 import GoogleMapModal from "@/components/shared/modals/GoogleMapModal";
+import RenameDeviceModal from "@/components/devices/modals/RenameDeviceModal";
+import RemoveDeviceModal from "@/components/devices/modals/RemoveDeviceModal";
+import ReportDeviceModal from "@/components/devices/modals/ReportDeviceModal";
 
 // Local types to match admin page logic
 type Device = {
@@ -92,8 +95,8 @@ const Dropdown = ({ value, options, onChange, icon: Icon }: any) => {
 const ActionMenu = ({ device, onAction, isLastRows, isFirstRows }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const actions = [
-    { label: 'View Details', icon: Monitor, color: 'text-blue-600 dark:text-blue-400' },
-    { label: 'Edit', icon: Edit, color: 'text-gray-600 dark:text-gray-400' },
+    { label: 'Preview', icon: Monitor, color: 'text-blue-600 dark:text-blue-400' },
+    { label: 'Rename', icon: Edit, color: 'text-gray-600 dark:text-gray-400' },
     { label: 'Report Issue', icon: UserCheck, color: 'text-orange-600 dark:text-orange-400' },
     { label: 'Remove Device', icon: Trash2, color: 'text-red-600 dark:text-red-400' },
   ];
@@ -137,6 +140,9 @@ export default function DevicesPage() {
 
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<Device | null>(null);
+  const [renameDevice, setRenameDevice] = useState<Device | null>(null);
+  const [removeDevice, setRemoveDevice] = useState<Device | null>(null);
+  const [reportDevice, setReportDevice] = useState<Device | null>(null);
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; label: string; device: Device | null }>({ lat: 0, lng: 0, label: '', device: null });
 
@@ -164,8 +170,10 @@ export default function DevicesPage() {
   const offline = allDevices.filter(d => d.status === "Offline").length;
 
   const handleAction = (action: string, device: Device) => {
-    if (action === 'View Details') setPreviewDevice(device);
-    // Add logic for other actions if needed
+    if (action === 'Preview') setPreviewDevice(device);
+    if (action === 'Rename') setRenameDevice(device);
+    if (action === 'Remove Device') setRemoveDevice(device);
+    if (action === 'Report Issue') setReportDevice(device);
   };
 
   const statusStyles: any = {
@@ -180,7 +188,7 @@ export default function DevicesPage() {
       <div className="mb-6 flex items-center gap-2 justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl sm:text-3xl font-bold text-Heading dark:text-white mb-1">My Devices</h1>
-        <p className="text-sm text-Heading dark:text-gray-400">Screencasts when and where your content should play</p>
+          <p className="text-sm text-Heading dark:text-gray-400">Screencasts when and where your content should play</p>
         </div>
         <button
           onClick={() => setIsAddOpen(true)}
@@ -342,6 +350,33 @@ export default function DevicesPage() {
       {/* Modals */}
       <AddDeviceModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} />
       <PreviewDeviceModal isOpen={!!previewDevice} onClose={() => setPreviewDevice(null)} device={previewDevice as any} />
+      <RenameDeviceModal
+        isOpen={!!renameDevice}
+        onClose={() => setRenameDevice(null)}
+        deviceName={renameDevice?.device || ''}
+        onRename={(newName) => {
+          console.log(`Renaming ${renameDevice?.device} to ${newName}`);
+          // Update device name in state if needed
+        }}
+      />
+      <RemoveDeviceModal
+        isOpen={!!removeDevice}
+        onClose={() => setRemoveDevice(null)}
+        deviceName={removeDevice?.device || ''}
+        onConfirm={() => {
+          console.log(`Removing device: ${removeDevice?.device}`);
+          // Remove device from state if needed
+        }}
+      />
+      <ReportDeviceModal
+        isOpen={!!reportDevice}
+        onClose={() => setReportDevice(null)}
+        deviceName={reportDevice?.device || ''}
+        onSubmit={(data) => {
+          console.log('Report submitted:', data);
+          alert('Issue reported successfully!');
+        }}
+      />
       <GoogleMapModal
         isOpen={mapModalOpen}
         onClose={() => setMapModalOpen(false)}

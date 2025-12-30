@@ -68,6 +68,7 @@
 
 import Image from "next/image";
 import React from "react";
+import { CircleHelp, Plus } from "lucide-react";
 import { cn } from "@/lib/utils"; // remove if not using shadcn
 
 interface ActionCardButtonProps {
@@ -152,6 +153,13 @@ const ActionCardButton: React.FC<ActionCardButtonProps> = ({
           </span>
         )}
       </div>
+
+      <CircleHelp
+        className={cn(
+          "w-5 h-5 ml-auto transition-colors duration-300",
+          active ? "text-white" : "text-gray-400"
+        )}
+      />
     </button>
   );
 };

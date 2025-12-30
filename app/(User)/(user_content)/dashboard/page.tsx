@@ -1225,6 +1225,7 @@ import {
   WifiOff,
   TriangleAlertIcon,
   Plus,
+  CloudUpload,
 } from "lucide-react";
 
 import ActionCardButton from "@/common/ActionCardButton";
@@ -1273,7 +1274,7 @@ export default function Dashboard() {
           <p className="text-sm text-gray-200">
             Create your first screen and start displaying your content in minutes.
           </p>
-          <button className="bg-bgBlue shadow-customShadow px-4 py-2 rounded-lg text-white mt-4 hover:bg-gray-400 transition-colors text-sm font-medium cursor-pointer">
+          <button className="bg-bgBlue shadow-customShadow px-4 py-2 rounded-lg text-white mt-4 hover:bg-gray-400 transition-colors text-sm font-medium cursor-pointer flex items-center gap-2">
             Upload Content
           </button>
         </div>
@@ -1283,14 +1284,14 @@ export default function Dashboard() {
             alt="Dashboard Header"
             height={165}
             width={165}
-            style={{ transform: "scale(1.05)" }}
+            style={{ transform: "scale(1.25)" }}
           />
         </div>
       </div>
 
       {/* Stats Cards - Same colors in light, dark-adapted */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-info-bg border border-border rounded-xl shadow-sm p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-info-bg border border-border rounded-xl shadow-sm p-4 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgBlue mr-2 bg-white dark:bg-gray-800">
               <Monitor className="w-7 h-7 text-bgBlue" />
@@ -1306,7 +1307,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-success-bg rounded-xl shadow-sm border border-border p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-success-bg rounded-xl shadow-sm border border-border p-4 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgGreen mr-2 bg-white dark:bg-gray-800">
               <Wifi className="w-7 h-7 text-bgGreen" />
@@ -1321,7 +1322,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-destructive-bg shadow-sm border border-border rounded-xl p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-destructive-bg shadow-sm border border-border rounded-xl p-4 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-bgRed mr-2 bg-white dark:bg-gray-800">
               <WifiOff className="w-7 h-7 text-bgRed" />
@@ -1336,7 +1337,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-card-bg shadow-sm border border-border dark:border-gray-700 rounded-xl p-6 flex flex-col gap-6 justify-between">
+        <div className="bg-card-bg shadow-sm border border-border dark:border-gray-700 rounded-xl p-4 flex flex-col gap-6 justify-between">
           <div className="flex items-center mb-2">
             <span className="mt-0.5 p-2.5 border rounded-full border-gray-600 dark:border-gray-500 mr-2 bg-white dark:bg-gray-800">
               <HardDrive className="w-7 h-7 text-gray-600 dark:text-gray-400" />
@@ -1360,41 +1361,44 @@ export default function Dashboard() {
             onClick={() => setIsModalOpen(true)}
             icon={<ScreenShare className="text-white w-4 h-4" />}
             title="Create Screen"
-            subtitle="Create a new screen to play on your devices"
+            // subtitle="Create a new screen to play on your devices"
             active
           />
           <button
             onClick={() => setIsAddDeviceModalOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md"
+            className="flex items-center gap-2 px-3 sm:px-4 py-3 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md"
           >
             <Tv className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">Add Device</div>
-              <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
+              {/* <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
                 Add New Device
-              </div>
+              </div> */}
             </div>
+            <span className="ml-auto bg-gray-50 p-2 rounded-full"><Plus className="w-4 h-4 text-bgBlue" /></span>
           </button>
-          <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md">
+          <button className="flex items-center gap-2 px-3 sm:px-4 py-3 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md">
             <Video className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">Upload Content</div>
-              <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
+              {/* <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
                 Add new content
-              </div>
+              </div> */}
             </div>
+            <span className="ml-auto bg-gray-50 p-2 rounded-full"><CloudUpload className="w-4 h-4 text-bgBlue" /></span>
           </button>
           <button
             onClick={() => setIsScheduleModalOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md"
+            className="flex items-center gap-2 px-3 sm:px-4 py-3 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md"
           >
             <Calendar className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">Schedule</div>
-              <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
+              {/* <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
                 Schedule new content
-              </div>
+              </div> */}
             </div>
+            <span className="ml-auto bg-gray-50 p-2 rounded-full"><Plus className="w-4 h-4 text-bgBlue" /></span>
           </button>
         </div>
       </div>
@@ -1427,11 +1431,10 @@ export default function Dashboard() {
                       {device.name}
                     </span>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-md border flex items-center gap-1 ${
-                        device.online
+                      className={`text-xs px-2 py-0.5 rounded-md border flex items-center gap-1 ${device.online
                           ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
                           : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
-                      }`}
+                        }`}
                     >
                       {device.online ? (
                         <>
@@ -1500,7 +1503,7 @@ export default function Dashboard() {
       {/* Modals */}
       <CreateScreenModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <AddDeviceModal isOpen={isAddDeviceModalOpen} onClose={() => setIsAddDeviceModalOpen(false)} />
-      <ScheduleModal 
+      <ScheduleModal
         isOpen={isScheduleModalOpen}
         onClose={() => setIsScheduleModalOpen(false)}
         onSave={handleSaveSchedule}

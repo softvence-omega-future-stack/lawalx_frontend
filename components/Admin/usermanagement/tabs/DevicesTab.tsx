@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Monitor, Wifi, WifiOff, Clock, Search, Download, ChevronDown, MoreVertical, X, Trash2, Edit, UserCheck } from 'lucide-react';
 import PreviewDeviceModal from '@/components/devices/modals/PreviewDeviceModal';
 import Dropdown from '@/components/shared/Dropdown';
+import TablePagination from '@/components/shared/TablePagination';
 
 // --- Types & Helpers ---
 
@@ -122,10 +123,9 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ device, onAction, isLastRows, i
       {isOpen && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className={`absolute right-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 ${
-            isFirstRows ? 'right-full mr-2' :
+          <div className={`absolute right-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 ${isFirstRows ? 'right-full mr-2' :
             isLastRows ? 'bottom-full mb-2' : 'top-full mt-2'
-          }`}>
+            }`}>
             {actions.map((action) => (
               <button
                 key={action.label}
@@ -152,6 +152,8 @@ export default function DevicesTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<{ title: string; device: Device | null; action: string }>({ title: '', device: null, action: '' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // All devices data
   const allDevices = useMemo(() => generateDevicesData(), []);
@@ -162,27 +164,33 @@ export default function DevicesTab() {
     const online = allDevices.filter(d => d.status === 'Online').length;
     const offline = allDevices.filter(d => d.status === 'Offline').length;
     const uptimes = allDevices.map(d => parseFloat(d.uptime.replace('%', '')));
-    const avgUptime = uptimes.length > 0 
+    const avgUptime = uptimes.length > 0
       ? (uptimes.reduce((a, b) => a + b, 0) / uptimes.length).toFixed(1) + '%'
       : '0%';
-    
+
     return { total, online, offline, avgUptime };
   }, [allDevices]);
 
   // Filter devices by search and status/type filters
   const filteredDevices = useMemo(() => {
     return allDevices.filter(device => {
-      const matchesSearch = 
+      const matchesSearch =
         device.device.toLowerCase().includes(searchQuery.toLowerCase()) ||
         device.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
         device.model.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesStatus = statusFilter === 'All Status' || device.status === statusFilter;
       const matchesType = typeFilter === 'All Types' || device.type === typeFilter;
-      
+
       return matchesSearch && matchesStatus && matchesType;
     });
   }, [allDevices, searchQuery, statusFilter, typeFilter]);
+
+  const totalPages = Math.ceil(filteredDevices.length / ITEMS_PER_PAGE);
+  const currentDevices = filteredDevices.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const handleAction = (action: string, device: Device): void => {
     setModalContent({ title: action, device, action });
@@ -191,9 +199,9 @@ export default function DevicesTab() {
 
   const getStatusBadge = (status: Device['status']): string => {
     const styles: Record<string, string> = {
-        Online: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-        Offline: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-        Syncing: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+      Online: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+      Offline: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+      Syncing: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
     };
     return styles[status] ?? '';
   };
@@ -209,7 +217,7 @@ export default function DevicesTab() {
             <PreviewDeviceModal isOpen={modalOpen} device={modalContent.device as any} onClose={() => setModalOpen(false)} />
           </>
         );
-      
+
       case 'Edit':
         return (
           <div className="space-y-4">
@@ -241,7 +249,7 @@ export default function DevicesTab() {
             </div>
           </div>
         );
-      
+
       case 'Suspend Account':
         return (
           <div className="space-y-4">
@@ -264,7 +272,7 @@ export default function DevicesTab() {
             </div>
           </div>
         );
-      
+
       case 'Delete Client':
         return (
           <div className="space-y-4">
@@ -287,7 +295,7 @@ export default function DevicesTab() {
             </div>
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -296,35 +304,35 @@ export default function DevicesTab() {
   return (
     <div className="space-y-6">
 
-        <div className="p-4 border border-border rounded-xl bg-navbarBg">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search devices..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-navbarBg text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <Dropdown
-              value={statusFilter}
-              options={['All Status', 'Online', 'Offline', 'Syncing']}
-              onChange={setStatusFilter}
-            />
-            <Dropdown
-              value={typeFilter}
-              options={['All Types', 'Android TV', 'Fire TV', 'Samsung Tizen', 'LG webOS']}
-              onChange={setTypeFilter}
+      <div className="p-4 border border-border rounded-xl bg-navbarBg">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search devices..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-navbarBg text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
+          <Dropdown
+            value={statusFilter}
+            options={['All Status', 'Online', 'Offline', 'Syncing']}
+            onChange={setStatusFilter}
+          />
+          <Dropdown
+            value={typeFilter}
+            options={['All Types', 'Android TV', 'Fire TV', 'Samsung Tizen', 'LG webOS']}
+            onChange={setTypeFilter}
+          />
         </div>
+      </div>
       {/* Device Management */}
       <div className="bg-navbarBg border border-border rounded-xl">
 
         {/* Table */}
-        <div className="overflow-x-auto scrollbar-hide rounded-xl">
+        <div className="overflow-x-auto scrollbar-hide rounded-t-xl">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-800/50 border-b border-border">
               <tr>
@@ -340,9 +348,9 @@ export default function DevicesTab() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredDevices.length > 0 ? (
-                filteredDevices.map((device, index) => {
-                  const isLastRows = index >= filteredDevices.length - 2;
+              {currentDevices.length > 0 ? (
+                currentDevices.map((device, index) => {
+                  const isLastRows = index >= currentDevices.length - 2;
                   const isFirstRows = index < 2;
                   return (
                     <tr key={device.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -382,6 +390,13 @@ export default function DevicesTab() {
             </tbody>
           </table>
         </div>
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredDevices.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {/* Modal */}
