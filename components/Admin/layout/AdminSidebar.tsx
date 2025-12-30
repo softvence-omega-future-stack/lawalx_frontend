@@ -84,7 +84,7 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
     // { icon: Monitor, href: '/admin/screen&content', label: 'Screen & Content' },
     { icon: Ticket, href: '/admin/support/support-tickets', label: 'Support Tickets' },
     { icon: MessageCircle, href: '/admin/support/enterprise-requests', label: 'Enterprise Requests' },
-    { icon: MessageCircle, href: '/admin/support/knowledge-base', label: 'Knowledge Base' },  
+    { icon: MessageCircle, href: '/admin/support/knowledge-base', label: 'Knowledge Base' },
     { icon: BarChart3, href: '/admin/reports/financial-reports', label: 'Financial Reports' },
     { icon: BarChart3, href: '/admin/reports/subscription-&-billing-report', label: 'Subscription & Billing Report' },
     { icon: BarChart3, href: '/admin/reports/device-report', label: 'Device Report' },
@@ -121,11 +121,10 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
         {item.href ? (
           <Link
             href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group relative ${
-              isActive(item.href)
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group relative ${isActive(item.href)
                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-            } ${isCollapsed ? 'justify-center' : ''}`}
+              } ${isCollapsed ? 'justify-center' : ''}`}
             title={isCollapsed ? item.label : ''}
           >
             <item.icon className="w-5 h-5 shrink-0" />
@@ -134,11 +133,10 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
         ) : (
           <button
             onClick={() => toggleExpand(item.id)}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all ${
-              isParentActive || isExpanded
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all ${isParentActive || isExpanded
                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-            } ${isCollapsed ? 'justify-center' : ''}`}
+              } ${isCollapsed ? 'justify-center' : ''}`}
           >
             <div className="flex items-center gap-3">
               <item.icon className="w-5 h-5 shrink-0" />
@@ -156,11 +154,10 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
               <Link
                 key={child.id}
                 href={child.href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
-                  isActive(child.href)
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${isActive(child.href)
                     ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                     : 'text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
+                  }`}
               >
                 <child.icon className="w-4 h-4" />
                 {child.label}
@@ -175,7 +172,7 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
   return (
     <aside className={`fixed top-16 left-0 bottom-0 bg-navbarBg border-r border-border transition-all duration-300 z-20 ${isCollapsed ? 'w-16' : 'w-64'}`}>
       <div className="h-full py-4 flex flex-col justify-between">
-        <div className="px-3 space-y-6">
+        <div className="px-3 space-y-6 flex-1 overflow-y-auto scrollbar-hide">
           {isCollapsed ? (
             // Collapsed: Only child icons + tooltips
             <div className="space-y-1">
@@ -183,11 +180,10 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
                 <Link
                   key={idx}
                   href={item.href}
-                  className={`flex justify-center p-3 rounded-lg transition-all group relative ${
-                    isActive(item.href)
+                  className={`flex justify-center p-3 rounded-lg transition-all group relative ${isActive(item.href)
                       ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
+                    }`}
                   title={item.label}
                 >
                   <item.icon className="w-5 h-5" />

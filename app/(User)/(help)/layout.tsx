@@ -1,3 +1,6 @@
+// app/dashboard/layout.tsx
+// import UserDashboardNavbar from "@/components/layout/UserDashboardNavbar";
+// import Wrapper from "@/components/layout/Wrapper";
 
 // export default function DashboardLayout({
 //   children,
@@ -16,6 +19,7 @@
 "use client";
 
 import UserDashboardNavbar from "@/components/layout/UserDashboardNavbar";
+import Wrapper from "@/components/layout/Wrapper";
 import SidebarComponent from "@/components/sidebar/SidebarComponent";
 import { HelpCircle, Video, Headphones } from 'lucide-react';
 import { useState, useEffect } from "react";
@@ -75,7 +79,7 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
 
       <div className="flex">
         {!isMobile && (
-          <SidebarComponent items={customItems} />
+          <SidebarComponent items={customItems} isCollapsed={isCollapsed} />
         )}
 
         {/* Main content - push right on desktop */}
@@ -89,4 +93,3 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
     </div>
   );
 }
-
