@@ -135,8 +135,8 @@ const CalendarView: React.FC = () => {
                     <div className="flex items-center gap-2">
                         <button onClick={setToday} className="px-3 py-1 text-sm font-medium border border-border rounded-lg hover:bg-gray-50 transition shadow-sm">Today</button>
                         <div className="flex items-center gap-1 ml-2">
-                            <button onClick={navigatePrev} className="p-1.5 hover:bg-gray-100 rounded-lg"><ChevronLeft className="w-5 h-5" /></button>
-                            <button onClick={navigateNext} className="p-1.5 hover:bg-gray-100 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
+                            <button onClick={navigatePrev} className="p-1.5 hover:bg-gray-100 cursor-pointer rounded-lg"><ChevronLeft className="w-5 h-5" /></button>
+                            <button onClick={navigateNext} className="p-1.5 hover:bg-gray-100 cursor-pointer rounded-lg"><ChevronRight className="w-5 h-5" /></button>
                         </div>
                         <span className="text-sm font-semibold text-headings dark:text-white ml-2 min-w-[120px]">{getHeaderLabel()}</span>
                     </div>
@@ -148,7 +148,7 @@ const CalendarView: React.FC = () => {
                             key={type}
                             onClick={() => setViewType(type as any)}
                             className={cn(
-                                "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                                "px-4 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer",
                                 viewType === type ? "bg-white dark:bg-gray-700 text-bgBlue shadow-sm" : "text-gray-500"
                             )}
                         >

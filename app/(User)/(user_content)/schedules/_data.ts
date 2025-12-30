@@ -1,7 +1,7 @@
 export interface ContentItem {
     id: string;
     name: string;
-    type: "video" | "image";
+    type: "video" | "image" | "audio";
     thumbnail: string;
     size?: string;
     duration?: string;
@@ -34,6 +34,8 @@ export interface Schedule {
     }[];
     active: boolean;
     createdAt: string;
+    video?: string;
+    thumbnail?: string;
 }
 
 export const mockContent: ContentItem[] = [
@@ -52,6 +54,44 @@ export const mockContent: ContentItem[] = [
         thumbnail: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=200",
         size: "25 MB",
         duration: "00:15",
+    },
+    {
+        id: "img1",
+        name: "Background Image",
+        type: "image",
+        thumbnail: "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&q=80&w=200",
+        size: "2.5 MB",
+    },
+    {
+        id: "img2",
+        name: "Promo Banner",
+        type: "image",
+        thumbnail: "https://images.unsplash.com/photo-1618556450994-a6a128ef0d9d?auto=format&fit=crop&q=80&w=200",
+        size: "1.8 MB",
+    },
+    {
+        id: "a1",
+        name: "Audio",
+        type: "audio",
+        thumbnail: "",
+        size: "40 MB",
+        duration: "03:45",
+    },
+    {
+        id: "a2",
+        name: "Audio",
+        type: "audio",
+        thumbnail: "",
+        size: "40 MB",
+        duration: "02:30",
+    },
+    {
+        id: "a3",
+        name: "Audio",
+        type: "audio",
+        thumbnail: "",
+        size: "40 MB",
+        duration: "05:15",
     }
 ];
 
@@ -79,7 +119,9 @@ export const mockSchedules: Schedule[] = [
             }
         ],
         active: true,
-        createdAt: "2025-12-28T10:00:00Z"
+        createdAt: "2025-12-28T10:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0"
     },
     {
         id: "2",
@@ -99,7 +141,9 @@ export const mockSchedules: Schedule[] = [
             }
         ],
         active: false,
-        createdAt: "2025-12-27T15:00:00Z"
+        createdAt: "2025-12-27T15:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/sYHSGbo-hE4?si=l7MVWGfMu8l6Pk0j"
     },
     {
         id: "3",
@@ -112,7 +156,9 @@ export const mockSchedules: Schedule[] = [
         playTime: "12:00 PM",
         assignedScreens: [{ groupId: "g2", groupName: "Cafeteria(3)", screens: [mockScreens[2]] }],
         active: true,
-        createdAt: "2025-12-26T12:00:00Z"
+        createdAt: "2025-12-26T12:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/wZqEqoR6Vpk?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "4",
@@ -126,7 +172,9 @@ export const mockSchedules: Schedule[] = [
         days: ["Sat", "Sun"],
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[0], mockScreens[1]] }],
         active: true,
-        createdAt: "2025-12-25T10:00:00Z"
+        createdAt: "2025-12-25T10:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "5",
@@ -139,7 +187,9 @@ export const mockSchedules: Schedule[] = [
         playTime: "11:00 PM",
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[1]] }],
         active: false,
-        createdAt: "2025-12-24T23:00:00Z"
+        createdAt: "2025-12-24T23:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "6",
@@ -152,7 +202,9 @@ export const mockSchedules: Schedule[] = [
         playTime: "02:00 PM",
         assignedScreens: [{ groupId: "g3", groupName: "Window Displays(2)", screens: [mockScreens[0]] }],
         active: true,
-        createdAt: "2025-12-23T14:00:00Z"
+        createdAt: "2025-12-23T14:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "7",
@@ -165,7 +217,9 @@ export const mockSchedules: Schedule[] = [
         playTime: "08:00 AM",
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[0], mockScreens[1], mockScreens[2]] }],
         active: true,
-        createdAt: "2025-12-22T08:00:00Z"
+        createdAt: "2025-12-22T08:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "8",
@@ -179,7 +233,9 @@ export const mockSchedules: Schedule[] = [
         days: ["Wed"],
         assignedScreens: [{ groupId: "g4", groupName: "Staff Room(1)", screens: [mockScreens[2]] }],
         active: false,
-        createdAt: "2025-12-21T15:00:00Z"
+        createdAt: "2025-12-21T15:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "9",
@@ -192,7 +248,9 @@ export const mockSchedules: Schedule[] = [
         playTime: "11:00 AM",
         assignedScreens: [{ groupId: "g3", groupName: "Window Displays(2)", screens: [mockScreens[0], mockScreens[1]] }],
         active: true,
-        createdAt: "2025-12-20T11:00:00Z"
+        createdAt: "2025-12-20T11:00:00Z",
+        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "10",
@@ -205,7 +263,8 @@ export const mockSchedules: Schedule[] = [
         playTime: "07:00 AM",
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[0], mockScreens[1], mockScreens[2]] }],
         active: true,
-        createdAt: "2025-12-19T07:00:00Z"
+        createdAt: "2025-12-19T07:00:00Z",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "11",
@@ -219,7 +278,8 @@ export const mockSchedules: Schedule[] = [
         days: ["Tue", "Thu"],
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[0]] }],
         active: true,
-        createdAt: "2025-12-18T13:00:00Z"
+        createdAt: "2025-12-18T13:00:00Z",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "12",
@@ -233,7 +293,8 @@ export const mockSchedules: Schedule[] = [
         days: ["Fri"],
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[1]] }],
         active: true,
-        createdAt: "2025-12-17T16:00:00Z"
+        createdAt: "2025-12-17T16:00:00Z",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "13",
@@ -246,7 +307,8 @@ export const mockSchedules: Schedule[] = [
         playTime: "10:00 AM",
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[0], mockScreens[1]] }],
         active: false,
-        createdAt: "2025-12-16T10:00:00Z"
+        createdAt: "2025-12-16T10:00:00Z",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     },
     {
         id: "14",
@@ -259,6 +321,7 @@ export const mockSchedules: Schedule[] = [
         playTime: "06:00 AM",
         assignedScreens: [{ groupId: "g1", groupName: "Main Lobby Display(5)", screens: [mockScreens[0], mockScreens[1], mockScreens[2]] }],
         active: true,
-        createdAt: "2025-12-15T06:00:00Z"
+        createdAt: "2025-12-15T06:00:00Z",
+        video: "https://youtu.be/6pWZG6XpQ4o?si=4TC1bFZhjK2TQQ9F"
     }
 ];
