@@ -31,15 +31,13 @@ const SidebarComponent: React.FC<SidebarComponentProps & { isCollapsed?: boolean
         className={`
           fixed 
           left-0
-          top-0            
-          pt-20            
-          lg:pt-24         
-          h-screen 
+          top-16
+          bottom-0
           bg-navbarBg 
           border-r border-border 
           shadow-lg
           transition-all duration-300 ease-in-out
-          z-40
+          z-20
           overflow-y-auto scrollbar-hide
           ${isCollapsed ? "w-16" : "w-64"}
         `}
