@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, Search, Calendar, MoreVertical, Shield, MoreHorizontal, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Search, Calendar, MoreVertical, Shield, MoreHorizontal, Check, Users, ListTodo, Settings2 } from 'lucide-react';
 import Tabs from '@/common/Tabs';
 import BaseSelect from '@/common/BaseSelect';
 import BaseDialog from '@/common/BaseDialog';
@@ -16,9 +16,9 @@ export default function UsersRolesSection() {
     const [createRoleOpen, setCreateRoleOpen] = useState(false);
 
     const tabs = [
-        { label: 'Employees' as UsersRolesTab, icon: Shield },
-        { label: 'Activity Logs' as UsersRolesTab, icon: Shield },
-        { label: 'Roles' as UsersRolesTab, icon: Shield },
+        { label: 'Employees' as UsersRolesTab, icon: Users },
+        { label: 'Activity Logs' as UsersRolesTab, icon: ListTodo },
+        { label: 'Roles' as UsersRolesTab, icon: Settings2 },
     ];
 
     const employees = [
