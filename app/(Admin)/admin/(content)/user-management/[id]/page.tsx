@@ -3,21 +3,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
   Building2,
   User,
-  ChevronDown,
-  TrendingUp,
-  DollarSign,
   Maximize2,
   HardDrive,
-  CheckCircle,
   MoreVertical,
-  X,
   RotateCcw,
   Edit2,
   Shuffle,
@@ -25,12 +15,14 @@ import {
   UserX,
   Home,
   ChevronRight,
+  Activity,
 } from "lucide-react";
 import EditUserModal from "@/components/Admin/modals/EditUserModal";
 import ResetPasswordModal from "@/components/Admin/modals/ResetPasswordModal";
 import ChangePlanModal from "@/components/Admin/modals/ChangePlanModal";
 import DeleteUserModal from "@/components/Admin/modals/DeleteUserModal";
 import SuspendUserModal from "@/components/Admin/modals/SuspendUserModal";
+import DetailsTab from "@/components/Admin/usermanagement/tabs/DetailsTab";
 import MonitoringTab from "@/components/Admin/usermanagement/tabs/MonitoringTab";
 import SubscriptionTab from "@/components/Admin/usermanagement/tabs/SubscriptionTab";
 import ContentTab from "@/components/Admin/usermanagement/tabs/ContentTab";
@@ -38,7 +30,7 @@ import DevicesTab from "@/components/Admin/usermanagement/tabs/DevicesTab";
 import ActivityLogsTab from "@/components/Admin/usermanagement/tabs/ActivityLogsTab";
 
 type TabType =
-  | "Monitoring"
+  | "Details"
   | "Subscription & Billing"
   | "Content"
   | "Devices"
@@ -64,7 +56,7 @@ export default function UserProfilePage() {
   const userId = params.id as string;
 
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>("Monitoring");
+  const [activeTab, setActiveTab] = useState<TabType>("Details");
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -236,8 +228,8 @@ export default function UserProfilePage() {
     }
   };
 
-  const handleChangePlan = () => {
-    console.log("Plan changed to:", selectedPlan);
+  const handleChangePlan = (data: any) => {
+    console.log("Plan updated:", data);
     setIsChangePlanOpen(false);
   };
 
@@ -263,7 +255,7 @@ export default function UserProfilePage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-6 border-b border-border pb-4">
         {/* <button
           onClick={() => router.push("/user-management")}
           className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
@@ -271,7 +263,7 @@ export default function UserProfilePage() {
           <ArrowLeft className="w-5 h-5" />
         </button> */}
 
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
           <Home className="w-4 h-4" />
           <ChevronRight className="w-4 h-4" />
           <span
@@ -280,7 +272,7 @@ export default function UserProfilePage() {
           >
             User Management
           </span>
-          <span className="text-gray-400 dark:text-gray-500">&gt;</span>
+          <ChevronRight className="w-4 h-4" />
           <span className="text-gray-900 dark:text-white">{user.name}</span>
         </div>
 
@@ -300,26 +292,28 @@ export default function UserProfilePage() {
           </div>
 
           <div className="flex gap-3">
-            <button
+            {/* <button
               onClick={() => setIsEditModalOpen(true)}
               className="cursor-pointer px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
             >
               <Edit2 className="w-4 h-4" />
               Edit User
-            </button>
-            <button className="cursor-pointer px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
+            </button> */}
+            <button className="cursor-pointer px-6 py-2 bg-primary-action text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-customShadow">
               <User className="w-4 h-4" />
               Login as user
             </button>
             <div className="relative">
               <button
                 onClick={() => setIsActionMenuOpen(!isActionMenuOpen)}
-                className="p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="p-2 border-none bg-transparent rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
               >
                 <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               </button>
               {isActionMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsActionMenuOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                   <button
                     onClick={() => {
                       setIsResetPasswordOpen(true);
@@ -357,215 +351,76 @@ export default function UserProfilePage() {
                     <Trash2 className="w-4 h-4" /> Delete User
                   </button>
                 </div>
-              )}
+              </>
+            )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* User Info Cards Row 1 */}
-      <div className="grid grid-cols-6 gap-4 mb-4">
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <Mail className="w-3 h-3" />
-            <span>Email</span>
-          </div>
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
-            {user.email}
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <Phone className="w-3 h-3" />
-            <span>Phone</span>
-          </div>
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
-            {user.phone}
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <MapPin className="w-3 h-3" />
-            <span>Location</span>
-          </div>
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
-            {user.location}
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <Calendar className="w-3 h-3" />
-            <span>Join Date</span>
-          </div>
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
-            {user.joinDate}
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <Building2 className="w-3 h-3" />
-            <span>Organization</span>
-          </div>
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
-            {user.organization}
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <User className="w-3 h-3" />
-            <span>Role</span>
-          </div>
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
-            {user.role}
-          </div>
-        </div>
-      </div>
-
-      {/* User Info Cards Row 2 */}
-      <div className="grid grid-cols-6 gap-4 mb-6">
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <span>Plan</span>
-          </div>
-          <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-xs font-medium">
-            {user.plan}
-          </span>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs mb-2">
-            <span>Status</span>
-          </div>
-          <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium flex items-center gap-1 w-fit">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 dark:bg-green-400" />
-            {user.status}
-          </span>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Active Screens
-            </span>
-            <Maximize2 className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-          </div>
-          <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-            {user.activeScreens.used}/{user.activeScreens.total}
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            83% utilization
-          </div>
-          <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gray-900 dark:bg-gray-300"
-              style={{ width: `${user.activeScreens.percentage}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Storage Usage
-            </span>
-            <HardDrive className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-          </div>
-          <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-            {user.storage.used}
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            of {user.storage.total}
-          </div>
-          <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gray-900 dark:bg-gray-300"
-              style={{ width: `${user.storage.percentage}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Uptime
-            </span>
-            <TrendingUp className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-          </div>
-          <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-            {user.uptime}
-          </div>
-          <div className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-            <CheckCircle className="w-3 h-3" />
-            {user.uptimeInfo}
-          </div>
-        </div>
-
-        <div className="bg-navbarBg p-4 rounded-lg border border-border">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Monthly Revenue
-            </span>
-            <DollarSign className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-          </div>
-          <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-            {user.revenue}
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            {user.revenueInfo}
-          </div>
-        </div>
-      </div>
-
       {/* Tabs */}
-      <div className="bg-navbarBg rounded-lg border border-border">
-        <div className="border-b border-border">
-          <div className="flex gap-8 px-6">
-            {[
-              "Monitoring",
-              "Subscription & Billing",
-              "Content",
-              "Devices",
-              "Activity Logs",
-            ].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab as TabType)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                }`}
-              >
-                {tab === "Monitoring" && "Monitoring "}
-                {tab === "Subscription & Billing" && "Subscription & Billing "}
-                {tab === "Content" && "Content "}
-                {tab === "Devices" && "Devices "}
-                {tab === "Activity Logs" && "Activity Logs "}
+      <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex overflow-x-auto max-w-full">
+        {([
+          "Details",
+          "Subscription & Billing",
+          "Content",
+          "Devices",
+          "Activity Logs",
+        ] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 text-sm rounded-full mr-2 font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${
+              activeTab === tab
+                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-customShadow"
+                : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            {tab === "Details" && (
+              <span className="flex items-center gap-2">
+                <Activity className="w-4 h-4 ml-0.5" />
+                Details
+              </span>
+            )}
+            {tab === "Subscription & Billing" && (
+              <span className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 ml-0.5" />
                 {tab}
-              </button>
-            ))}
-          </div>
-        </div>
-        {/* Tab Content */}
-        <div className="p-6">
-          {activeTab === "Monitoring" && <MonitoringTab />}
-          {activeTab === "Subscription & Billing" && (
-            <SubscriptionTab
-              onOpenChangePlan={() => setIsChangePlanOpen(true)}
-            />
-          )}
-          {activeTab === "Content" && <ContentTab />}
-          {activeTab === "Devices" && <DevicesTab />}
-          {activeTab === "Activity Logs" && <ActivityLogsTab />}
-        </div>
+              </span>
+            )}
+            {tab === "Content" && (
+              <span className="flex items-center gap-2">
+                <HardDrive className="w-4 h-4 ml-0.5" />
+                {tab}
+              </span>
+            )}
+            {tab === "Devices" && (
+              <span className="flex items-center gap-2">
+                <Maximize2 className="w-4 h-4 ml-0.5" />
+                {tab}
+              </span>
+            )}
+            {tab === "Activity Logs" && (
+              <span className="flex items-center gap-2">
+                <RotateCcw className="w-4 h-4 ml-0.5" />
+                {tab}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <div className="">
+        {activeTab === "Details" && (
+          <DetailsTab user={user} onEdit={() => setIsEditModalOpen(true)} />
+        )}
+        {activeTab === "Subscription & Billing" && (
+          <SubscriptionTab onOpenChangePlan={() => setIsChangePlanOpen(true)} />
+        )}
+        {activeTab === "Content" && <ContentTab />}
+        {activeTab === "Devices" && <DevicesTab />}
+        {activeTab === "Activity Logs" && <ActivityLogsTab />}
       </div>
 
       <EditUserModal
@@ -578,7 +433,7 @@ export default function UserProfilePage() {
         isOpen={isChangePlanOpen}
         onClose={() => setIsChangePlanOpen(false)}
         currentPlan={user.plan}
-        onConfirm={() => {}}
+        onConfirm={handleChangePlan}
       />
       <SuspendUserModal
         isOpen={isSuspendOpen}

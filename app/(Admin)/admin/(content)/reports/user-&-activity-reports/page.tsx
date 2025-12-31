@@ -2,12 +2,13 @@
 
 import React, { useState, useMemo } from 'react';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Users, Activity, LogIn, Clock, AlertTriangle, ChevronDown, Download, Filter, CheckCircle, AlertCircle, Shield, TrendingUp } from 'lucide-react';
+import { Users, Activity, LogIn, Clock, AlertTriangle, ChevronDown, Download, Filter, CheckCircle, AlertCircle, Shield, TrendingUp, Home } from 'lucide-react';
+import Dropdown from '@/components/shared/Dropdown';
 
 // Demo data generator
 const generateData = (days: number) => {
   const factor = days === 1 ? 0.8 : days === 7 ? 0.95 : days === 30 ? 1 : 1.1;
-  
+
   return {
     summary: {
       totalUsers: Math.round(456 * factor),
@@ -42,9 +43,9 @@ const generateData = (days: number) => {
       avgSessionDuration: '38 min',
       growthRate: '+18.7%',
       adoptionTrend: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-               days === 30 ? `Day ${i + 1}` : 
-               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+          days === 30 ? `Day ${i + 1}` :
+            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
         activeUsers: 200 + i * 50 + Math.random() * 100,
         newUsers: 40 + i * 5 + Math.random() * 20
       })),
@@ -62,9 +63,9 @@ const generateData = (days: number) => {
         { level: 'Low Engagement', users: 95, description: 'Monthly logins, <2 sessions' }
       ],
       sessionDuration: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-               days === 30 ? `Day ${i + 1}` : 
-               ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+          days === 30 ? `Day ${i + 1}` :
+            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
         duration: 15 + i * 2 + Math.random() * 5
       }))
     },
@@ -105,9 +106,9 @@ const generateData = (days: number) => {
         { id: 'AUTH-2025-005', timestamp: '2025-01-27 14:10:33', user: 'admin@qupe.com', action: '2FA Verification', status: 'Success', ip: '192.168.1.100', location: 'New York, USA', device: 'Chrome on Windows' }
       ],
       loginActivity: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        time: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] : 
-              days === 30 ? `Day ${i + 1}` : 
-              ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+        time: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
+          days === 30 ? `Day ${i + 1}` :
+            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
         successful: 60 + Math.random() * 40,
         failed: 2 + Math.random() * 5
       })),
@@ -123,7 +124,6 @@ const generateData = (days: number) => {
 const UserActivityReports = () => {
   const [activeTab, setActiveTab] = useState('activity');
   const [timeRange, setTimeRange] = useState(30);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const data = useMemo(() => generateData(timeRange), [timeRange]);
 
@@ -141,7 +141,7 @@ const UserActivityReports = () => {
     { id: 'authentication', label: 'Authentication' }
   ];
 
-//   const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
+  //   const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
 
   return (
     <div className="min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200">
@@ -149,45 +149,29 @@ const UserActivityReports = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
+              <span><Home className="w-4 h-4 text-gray-400" /></span>
+              <span>›</span>
+              <span>Reports & Analytics</span>
+              <span>›</span>
+              <span>User & Activity Reports</span>
+            </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-1">User & Activity Reports</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               User behavior, system access, and accountability tracking
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="px-4 py-2 rounded-lg bg-navbarBg border border-border flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm cursor-pointer" 
-              >
-                <span>{timeRanges.find(t => t.value === timeRange)?.label}</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-lg bg-navbarBg border border-border shadow-lg z-10">
-                  {timeRanges.map(range => (
-                    <button
-                      key={range.value}
-                      onClick={() => {
-                        setTimeRange(range.value);
-                        setDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg cursor-pointer${
-                        timeRange === range.value ? 'bg-bgBlue text-black dark:text-white hover:bg-blue-600 dark:hover:bg-blue-600' : ''
-                      }`}
-                    >
-                      {range.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <button className="px-4 py-2 bg-bgBlue text-white rounded-lg shadow-customShadow flex items-center gap-2 hover:bg-blue-600 transition-colors text-sm cursor-pointer">
+            <Dropdown
+              value={timeRanges.find(t => t.value === timeRange)?.label || ''}
+              options={timeRanges.map(t => t.label)}
+              onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
+            />
+
+            <button className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg shadow-customShadow flex items-center gap-2 transition-colors text-sm cursor-pointer">
               <Download className="w-4 h-4" />
-              Export Financial Report
+              Export Report
             </button>
           </div>
         </div>
@@ -241,22 +225,19 @@ const UserActivityReports = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-navbarBg rounded-lg border border-border mb-6">
-          <div className="flex overflow-x-auto">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors cursor-pointer${
-                  activeTab === tab.id
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+        <div className="bg-navbarBg rounded-full border border-border p-1.5 mb-6 inline-flex gap-2 overflow-x-auto max-w-full">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0${activeTab === tab.id
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-customShadow ring-1 ring-blue-100 dark:ring-blue-800'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* Activity Log Tab */}
@@ -268,10 +249,10 @@ const UserActivityReports = () => {
                   <h2 className="text-lg font-semibold">User Activity Log / Audit Report</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Detailed records of all user actions with timestamps</p>
                 </div>
-                <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg flex items-center gap-2 text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
-                  <Download className="w-4 h-4" />
-                  Export
-                </button>
+                {/* <button className="flex items-center gap-2 px-4 py-1.5 border border-bgBlue text-bgBlue rounded-lg transition-colors shadow-customShadow">
+                  <Download size={18} />
+                  <span>Export Report</span>
+                </button> */}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -300,10 +281,10 @@ const UserActivityReports = () => {
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold">Recent Activity</h3>
-                  <button className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center gap-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700">
+                  {/* <button className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center gap-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700">
                     <Filter className="w-4 h-4" />
                     Filter
-                  </button>
+                  </button> */}
                 </div>
                 <div className="overflow-x-auto scrollbar-hide">
                   <table className="w-full">
@@ -333,11 +314,10 @@ const UserActivityReports = () => {
                           <td className="py-3 px-4 text-sm">{activity.resource}</td>
                           <td className="py-3 px-4 text-sm">{activity.ip}</td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              activity.status === 'Success' 
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                            <span className={`px-2 py-1 rounded-full text-xs ${activity.status === 'Success'
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                 : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                            }`}>
+                              }`}>
                               {activity.status}
                             </span>
                           </td>
@@ -415,10 +395,10 @@ const UserActivityReports = () => {
                   <h2 className="text-lg font-semibold">User Adoption & Engagement Report</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Track adoption, activity updates, and feature usage</p>
                 </div>
-                <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg flex items-center gap-2 text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
+                {/* <button className="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg flex items-center gap-2 text-sm hover:bg-gray-800 dark:hover:bg-gray-600 cursor-pointer">
                   <Download className="w-4 h-4" />
                   Export
-                </button>
+                </button> */}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -467,19 +447,19 @@ const UserActivityReports = () => {
                   <AreaChart data={data.userAdoption.adoptionTrend}>
                     <defs>
                       <linearGradient id="activeUsers" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1} />
                       </linearGradient>
                       <linearGradient id="newUsers" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.1} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-                    <XAxis 
-                      dataKey="month" 
-                      className="fill-gray-600 dark:fill-gray-400" 
-                      tick={{ fontSize: 12 }} 
+                    <XAxis
+                      dataKey="month"
+                      className="fill-gray-600 dark:fill-gray-400"
+                      tick={{ fontSize: 12 }}
                       interval={timeRange === 30 ? 4 : 0}
                     />
                     <YAxis className="fill-gray-600 dark:fill-gray-400" tick={{ fontSize: 12 }} />
@@ -530,28 +510,24 @@ const UserActivityReports = () => {
                 <h3 className="font-semibold mb-4">Engagement Levels</h3>
                 <div className="space-y-3">
                   {data.userAdoption.engagementLevels.map((level, idx) => (
-                    <div key={idx} className={`p-4 rounded-lg ${
-                      idx === 0 ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
-                      idx === 1 ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
-                      'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
-                    }`}>
+                    <div key={idx} className={`p-4 rounded-lg ${idx === 0 ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
+                        idx === 1 ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
+                          'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
+                      }`}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className={`font-medium ${
-                          idx === 0 ? 'text-green-700 dark:text-green-400' :
-                          idx === 1 ? 'text-blue-700 dark:text-blue-400' :
-                          'text-yellow-700 dark:text-yellow-400'
-                        }`}>{level.level}</span>
-                        <span className={`text-lg font-bold ${
-                          idx === 0 ? 'text-green-700 dark:text-green-400' :
-                          idx === 1 ? 'text-blue-700 dark:text-blue-400' :
-                          'text-yellow-700 dark:text-yellow-400'
-                        }`}>{level.users} users</span>
+                        <span className={`font-medium ${idx === 0 ? 'text-green-700 dark:text-green-400' :
+                            idx === 1 ? 'text-blue-700 dark:text-blue-400' :
+                              'text-yellow-700 dark:text-yellow-400'
+                          }`}>{level.level}</span>
+                        <span className={`text-lg font-bold ${idx === 0 ? 'text-green-700 dark:text-green-400' :
+                            idx === 1 ? 'text-blue-700 dark:text-blue-400' :
+                              'text-yellow-700 dark:text-yellow-400'
+                          }`}>{level.users} users</span>
                       </div>
-                      <div className={`text-xs ${
-                        idx === 0 ? 'text-green-600 dark:text-green-500' :
-                        idx === 1 ? 'text-blue-600 dark:text-blue-500' :
-                        'text-yellow-600 dark:text-yellow-500'
-                      }`}>{level.description}</div>
+                      <div className={`text-xs ${idx === 0 ? 'text-green-600 dark:text-green-500' :
+                          idx === 1 ? 'text-blue-600 dark:text-blue-500' :
+                            'text-yellow-600 dark:text-yellow-500'
+                        }`}>{level.description}</div>
                     </div>
                   ))}
                 </div>
@@ -562,10 +538,10 @@ const UserActivityReports = () => {
                 <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={data.userAdoption.sessionDuration}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-                    <XAxis 
-                      dataKey="month" 
-                      className="fill-gray-600 dark:fill-gray-400" 
-                      tick={{ fontSize: 12 }} 
+                    <XAxis
+                      dataKey="month"
+                      className="fill-gray-600 dark:fill-gray-400"
+                      tick={{ fontSize: 12 }}
                       interval={timeRange === 30 ? 4 : 0}
                     />
                     <YAxis className="fill-gray-600 dark:fill-gray-400" tick={{ fontSize: 12 }} label={{ value: 'Minutes', angle: -90, position: 'insideLeft' }} />
@@ -576,7 +552,7 @@ const UserActivityReports = () => {
                         borderRadius: '0.5rem'
                       }}
                       wrapperClassName="dark:[--tooltip-bg:#1f2937] dark:[--tooltip-border:#374151] [--tooltip-bg:#ffffff] [--tooltip-border:#e5e7eb]"
-                      formatter={(value: number) => [`${value.toFixed(1)} min`, 'Avg Session']}
+                      formatter={(value: number | undefined) => [`${(value ?? 0).toFixed(1)} min`, 'Avg Session']}
                     />
                     <Line type="monotone" dataKey="duration" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 4 }} />
                   </LineChart>
@@ -668,22 +644,20 @@ const UserActivityReports = () => {
                           <td className="py-3 px-4 text-sm font-medium">{user.name}</td>
                           <td className="py-3 px-4 text-sm">{user.email}</td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              user.role === 'Super Admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
-                              user.role === 'Admin' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                              user.role === 'Editor' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
-                              'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
-                            }`}>
+                            <span className={`px-2 py-1 rounded-full text-xs ${user.role === 'Super Admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
+                                user.role === 'Admin' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                  user.role === 'Editor' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                                    'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
+                              }`}>
                               {user.role}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-sm">{user.org}</td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              user.status === 'Active' 
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                            <span className={`px-2 py-1 rounded-full text-xs ${user.status === 'Active'
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
-                            }`}>
+                              }`}>
                               {user.status}
                             </span>
                           </td>
@@ -820,18 +794,17 @@ const UserActivityReports = () => {
                           <td className="py-3 px-4 text-sm">{event.user}</td>
                           <td className="py-3 px-4 text-sm">
                             <span className="inline-flex items-center gap-1.5">
-                              {event.action === 'Login' ? <LogIn className="w-3.5 h-3.5 text-blue-500" /> : 
-                               event.action === '2FA Verification' ? <Shield className="w-3.5 h-3.5 text-purple-500" /> : 
-                               <AlertCircle className="w-3.5 h-3.5 text-red-500" />}
+                              {event.action === 'Login' ? <LogIn className="w-3.5 h-3.5 text-blue-500" /> :
+                                event.action === '2FA Verification' ? <Shield className="w-3.5 h-3.5 text-purple-500" /> :
+                                  <AlertCircle className="w-3.5 h-3.5 text-red-500" />}
                               {event.action}
                             </span>
                           </td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              event.status === 'Success' 
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                            <span className={`px-2 py-1 rounded-full text-xs ${event.status === 'Success'
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                 : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                            }`}>
+                              }`}>
                               {event.status}
                             </span>
                           </td>
@@ -878,32 +851,28 @@ const UserActivityReports = () => {
                 <h3 className="font-semibold mb-4">Security Alerts</h3>
                 <div className="space-y-3">
                   {data.authentication.securityAlerts.map((alert, idx) => (
-                    <div key={idx} className={`rounded-lg p-4 border ${
-                      alert.type === 'error' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' :
-                      alert.type === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' :
-                      'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                    }`}>
+                    <div key={idx} className={`rounded-lg p-4 border ${alert.type === 'error' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' :
+                        alert.type === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' :
+                          'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                      }`}>
                       <div className="flex items-start gap-3">
                         {alert.type === 'error' ? <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" /> :
-                         alert.type === 'warning' ? <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" /> :
-                         <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />}
+                          alert.type === 'warning' ? <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" /> :
+                            <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />}
                         <div className="flex-1">
-                          <div className={`font-medium ${
-                            alert.type === 'error' ? 'text-red-700 dark:text-red-400' :
-                            alert.type === 'warning' ? 'text-yellow-700 dark:text-yellow-400' :
-                            'text-green-700 dark:text-green-400'
-                          }`}>{alert.title}</div>
-                          <div className={`text-sm mt-1 ${
-                            alert.type === 'error' ? 'text-red-600 dark:text-red-500' :
-                            alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-500' :
-                            'text-green-600 dark:text-green-500'
-                          }`}>{alert.description}</div>
+                          <div className={`font-medium ${alert.type === 'error' ? 'text-red-700 dark:text-red-400' :
+                              alert.type === 'warning' ? 'text-yellow-700 dark:text-yellow-400' :
+                                'text-green-700 dark:text-green-400'
+                            }`}>{alert.title}</div>
+                          <div className={`text-sm mt-1 ${alert.type === 'error' ? 'text-red-600 dark:text-red-500' :
+                              alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-500' :
+                                'text-green-600 dark:text-green-500'
+                            }`}>{alert.description}</div>
                           {alert.time && (
-                            <div className={`text-xs mt-2 ${
-                              alert.type === 'error' ? 'text-red-500 dark:text-red-600' :
-                              alert.type === 'warning' ? 'text-yellow-500 dark:text-yellow-600' :
-                              'text-green-500 dark:text-green-600'
-                            }`}>{alert.time}</div>
+                            <div className={`text-xs mt-2 ${alert.type === 'error' ? 'text-red-500 dark:text-red-600' :
+                                alert.type === 'warning' ? 'text-yellow-500 dark:text-yellow-600' :
+                                  'text-green-500 dark:text-green-600'
+                              }`}>{alert.time}</div>
                           )}
                         </div>
                       </div>
@@ -919,8 +888,8 @@ const UserActivityReports = () => {
                 <div>
                   <div className="font-medium text-blue-700 dark:text-blue-400 mb-2">Security Monitoring</div>
                   <p className="text-sm text-blue-600 dark:text-blue-500">
-                    Users are logged with IP addresses, timestamps, and device information. Failed login attempts trigger automatic alerts. 
-                    Consider enabling 2FA for all users to enhance security. Review suspicious IP regularly to safeguard your account from 
+                    Users are logged with IP addresses, timestamps, and device information. Failed login attempts trigger automatic alerts.
+                    Consider enabling 2FA for all users to enhance security. Review suspicious IP regularly to safeguard your account from
                     unauthorized access.
                   </p>
                 </div>

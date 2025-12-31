@@ -379,9 +379,7 @@ const SubscriptionDistribution: React.FC<{ dateRange: DateRange }> = ({ dateRang
       </div>
 
      <div className="flex justify-end">
-  <button className="mt-5 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-customShadow dark:text-gray-300 bg-white dark:bg-gray-800 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-    View Details
-  </button>
+  <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
 </div>
 
     </div>
@@ -526,9 +524,7 @@ const ContentUsageBreakdown: React.FC<{ title: string; subtitle: string; type: '
       </ResponsiveContainer>
 
       <div className="flex justify-end">
-  <button className="mt-5 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-customShadow dark:text-gray-300 bg-white dark:bg-gray-800 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-    View Details
-  </button>
+  <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
 </div>
 
     </div>
@@ -562,12 +558,12 @@ const RecentCriticalActivity: React.FC = () => {
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
         <div>
           <h3 className="text-xs font-semibold text-gray-900 dark:text-white">Recent Critical Activity</h3>
           <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Showing 3 high-impact changes</p>
         </div>
-        <button className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">View All</button>
+        <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View All</button>
       </div>
 
       <div className="space-y-3">
@@ -624,12 +620,12 @@ const RecentSupportTickets: React.FC = () => {
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
         <div>
           <h3 className="text-xs font-semibold text-gray-900 dark:text-white">Recent Support Tickets</h3>
           <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Priority tickets needing attention</p>
         </div>
-        <button className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">View All</button>
+        <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View All</button>
       </div>
 
       <div className="space-y-2">
