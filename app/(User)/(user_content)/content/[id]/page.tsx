@@ -52,7 +52,7 @@ export const mockContentData: ContentItem[] = [
         duration: "1:30",
         thumbnail:
           "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        video: "./detailsVideo.mp4",
+        video: "/detailsVideo.mp4",
         fileExtension: "mp4",
         updatedAt: "2 days ago",
         assignedTo: ["Main Lobby Display"],
@@ -80,7 +80,7 @@ export const mockContentData: ContentItem[] = [
         id: "f1-3",
         title: "Background Music Pack",
         type: "playlist",
-        audio: "./audio.mp3",
+        audio: "/audio.mp3",
         size: "8 Items",
         duration: "12:00",
         fileExtension: "mp3",
@@ -103,7 +103,7 @@ export const mockContentData: ContentItem[] = [
     duration: "4:20",
     thumbnail:
       "https://images.unsplash.com/photo-1726409724841-016b6f4f8b1b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    video: "./detailsVideo.mp4",
+    video: "/detailsVideo.mp4",
     fileExtension: "mp4",
     assignedTo: ["Training Room Screen"],
     assignedDevices: ["Training Room Screen"],
@@ -120,7 +120,7 @@ export const mockContentData: ContentItem[] = [
     duration: "6:10",
     thumbnail:
       "https://images.unsplash.com/photo-1637592156141-d41fb6234e71?q=80&w=1253&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    video: "./iceVideo.mp4",
+    video: "/iceVideo.mp4",
     fileExtension: "mp4",
     uploadedDate: "1 week ago",
     updatedAt: "4 days ago",
@@ -137,7 +137,7 @@ export const mockContentData: ContentItem[] = [
     type: "playlist",
     size: "20 Items",
     duration: "1:20:00",
-    audio: "./audio.mp3",
+    audio: "/audio.mp3",
     fileExtension: "mp3",
     assignedTo: ["Main Lobby Display"],
     assignedDevices: ["Main Lobby Display"],
@@ -152,7 +152,7 @@ export const mockContentData: ContentItem[] = [
     type: "playlist",
     size: "10 Items",
     duration: "35:00",
-    audio: "./audio.mp3",
+    audio: "/audio.mp3",
     fileExtension: "mp3",
     uploadedDate: "5 days ago",
     assignedTo: ["Main Gate Entry"],
@@ -199,7 +199,7 @@ export const mockContentData: ContentItem[] = [
         title: "Ad Jingles",
         type: "playlist",
         size: "6 Items",
-        audio: "./audio.mp3",
+        audio: "/audio.mp3",
         fileExtension: "mp3",
         duration: "4:00",
         updatedAt: "2 days ago",
@@ -253,7 +253,7 @@ export const mockContentData: ContentItem[] = [
     duration: "0:30",
     thumbnail:
       "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=300&fit=crop",
-    video: "./detailsVideo.mp4",
+    video: "/detailsVideo.mp4",
     fileExtension: "mp4",
     assignedTo: ["Reception Screen"],
     assignedDevices: ["Reception Screen"],
@@ -270,7 +270,7 @@ export const mockContentData: ContentItem[] = [
     type: "playlist",
     size: "15 Items",
     duration: "45:00",
-    audio: "./audio.mp3",
+    audio: "/audio.mp3",
     fileExtension: "mp3",
     assignedTo: ["Event Hall Screen"],
     assignedDevices: ["Event Hall Screen"],
@@ -282,9 +282,9 @@ export const mockContentData: ContentItem[] = [
 ];
 
 interface ContentDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // Recursive function to find content by ID (searches nested children too)
@@ -306,9 +306,10 @@ const findContentById = (items: ContentItem[], id: string): ContentItem | null =
   return null;
 };
 
-const ContentDetailsPage = ({ params }: ContentDetailsPageProps) => {
+const ContentDetailsPage = async ({ params }: ContentDetailsPageProps) => {
+  const { id } = await params;
   // Find the content item by ID (searches nested items too)
-  const content = findContentById(mockContentData, params.id);
+  const content = findContentById(mockContentData, id);
 
   // If content not found, show error
   if (!content) {

@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import BaseDialog from "@/common/BaseDialog";
+import React, { useState, useEffect } from "react";
 import StepIndicator from "./StepIndicator";
 import Step1NameDescription from "./Step1NameDescription";
 import Step2ContentSelection from "./Step2ContentSelection";
@@ -9,7 +8,7 @@ import Step2LowerThird from "./Step2LowerThird";
 import Step3ScreenSelection from "./Step3ScreenSelection";
 import Step4ScheduleSettings from "./Step4ScheduleSettings";
 import { ContentItem } from "../../_data";
-import { FileText, Settings, TvMinimal, Video } from "lucide-react";
+import { FileText, Settings, TvMinimal, Video, X } from "lucide-react";
 
 interface CreateScheduleDialogProps {
     open: boolean;
@@ -46,6 +45,8 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
             position: "bottom",
             textColor: "#FFFFFF",
             fontSize: "24",
+            fontFamily: "Inter",
+            loop: true,
             message: "This is a demo text"
         }
     });
@@ -98,14 +99,35 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
     };
 
     const handleSubmit = () => {
-        console.log("Form submitted:", {
-            step1Data,
-            step2Data,
-            lowerThirdData,
-            step3Data,
-            step4Data
-        });
-        // TODO: Handle form submission
+        // Determine active content
+        const activeContent = showLowerThird ? lowerThirdData.selectedContent : step2Data.selectedContent;
+
+        // Construct the final complete object
+        const finalData = {
+            metadata: {
+                step1_general: step1Data,
+                step2_content_config: showLowerThird ? lowerThirdData : step2Data,
+                step3_screens: step3Data,
+                step4_schedule: step4Data,
+            },
+            // Include media info explicitly in the log for "all data" visibility
+            media_file: activeContent ? {
+                id: activeContent.id,
+                name: activeContent.name,
+                type: activeContent.type,
+                url: activeContent.url || null,
+                thumbnail: activeContent.thumbnail
+            } : null
+        };
+
+        console.log("=== FINAL FORM SUBMISSION DATA ===");
+        console.log(finalData);
+
+        // Also log as JSON string if they need to copy-paste it
+        console.log("=== JSON STRING ===");
+        console.log(JSON.stringify(finalData, null, 2));
+
+        // Close dialog
         handleCancel();
     };
 
@@ -117,77 +139,124 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
         return false;
     };
 
+    // Prevent background scrolling when dialog is open
+    useEffect(() => {
+        if (open) {
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+            document.documentElement.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+            document.documentElement.style.overflow = "unset";
+        };
+    }, [open]);
+
+    if (!open) return null;
+
     return (
-        <BaseDialog
-            open={open}
-            setOpen={setOpen}
-            title="Create New Schedule"
-            description="Schedule when and where your content should play"
-            maxWidth="4xl"
-            maxHeight="xl"
-        >
-            {/* Step Indicator */}
-            <StepIndicator currentStep={showLowerThird ? 2 : currentStep} steps={STEPS} />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Darker full-screen backdrop - Click to close */}
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" onClick={handleCancel} />
 
-            {/* Step Content */}
-            <div className="min-h-[400px]">
-                {currentStep === 1 && (
-                    <Step1NameDescription data={step1Data} onChange={setStep1Data} />
-                )}
-
-                {currentStep === 2 && !showLowerThird && (
-                    <Step2ContentSelection
-                        data={step2Data}
-                        onChange={setStep2Data}
-                        onContentSelect={handleContentSelect}
-                    />
-                )}
-
-                {showLowerThird && lowerThirdData.selectedContent && (
-                    <Step2LowerThird
-                        data={lowerThirdData as any}
-                        onChange={setLowerThirdData}
-                    />
-                )}
-
-                {currentStep === 3 && !showLowerThird && (
-                    <Step3ScreenSelection data={step3Data} onChange={setStep3Data} />
-                )}
-
-                {currentStep === 4 && (
-                    <Step4ScheduleSettings data={step4Data} onChange={setStep4Data} />
-                )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-6 border-t border-borderGray mt-6">
-                <button
-                    onClick={handleCancel}
-                    className="px-6 py-2 rounded-lg border border-borderGray text-headings hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                >
-                    Cancel
-                </button>
-
-                <div className="flex items-center gap-3">
-                    {(currentStep > 1 || showLowerThird) && (
-                        <button
-                            onClick={handleBack}
-                            className="px-6 py-2 rounded-lg border border-borderGray text-headings hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                        >
-                            Back
-                        </button>
-                    )}
-
+            {/* Modal Content container - Adjusted max-height and centering */}
+            <div className="relative w-full max-w-4xl max-h-[85vh] bg-navbarBg border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+                {/* Header */}
+                <div className="p-6 border-b border-border flex items-center justify-between bg-navbarBg">
+                    <div>
+                        <h2 className="text-2xl font-bold text-headings">Create New Schedule</h2>
+                        <p className="text-sm text-muted mt-1">
+                            Schedule when and where your content should play
+                        </p>
+                    </div>
                     <button
-                        onClick={handleNext}
-                        disabled={isNextDisabled()}
-                        className="px-6 py-2 rounded-lg bg-bgBlue text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        onClick={handleCancel}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all cursor-pointer text-muted hover:text-red-500"
                     >
-                        {currentStep === 4 ? "Create Schedule" : "Next"}
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
+
+                {/* Body - Scrollable */}
+                <div className="flex-1 overflow-y-auto p-6">
+                    <div className="space-y-6">
+                        {/* Step Indicator */}
+                        <StepIndicator currentStep={showLowerThird ? 2 : currentStep} steps={STEPS} />
+
+                        {/* Step Content */}
+                        <div className="min-h-[400px]">
+                            {currentStep === 1 && (
+                                <Step1NameDescription data={step1Data} onChange={setStep1Data} />
+                            )}
+
+                            {currentStep === 2 && !showLowerThird && (
+                                <Step2ContentSelection
+                                    data={step2Data}
+                                    onChange={setStep2Data}
+                                    onContentSelect={handleContentSelect}
+                                />
+                            )}
+
+                            {showLowerThird && lowerThirdData.selectedContent && (
+                                <Step2LowerThird
+                                    data={lowerThirdData as any}
+                                    onChange={setLowerThirdData}
+                                />
+                            )}
+
+                            {currentStep === 3 && !showLowerThird && (
+                                <Step3ScreenSelection data={step3Data} onChange={setStep3Data} />
+                            )}
+
+                            {currentStep === 4 && (
+                                <Step4ScheduleSettings data={step4Data} onChange={setStep4Data} />
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer - Sticky at bottom */}
+                <div className="p-6 border-t border-border flex items-center justify-between bg-navbarBg/80 backdrop-blur-md">
+                    <button
+                        onClick={handleCancel}
+                        className="px-6 py-2.5 rounded-xl border border-border text-headings font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer shadow-customShadow"
+                    >
+                        Cancel
+                    </button>
+
+                    <div className="flex items-center gap-3">
+                        {(currentStep > 1 || showLowerThird) && (
+                            <button
+                                onClick={handleBack}
+                                className="px-6 py-2.5 rounded-xl border border-border text-headings font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-all cursor-pointer shadow-customShadow"
+                            >
+                                Back
+                            </button>
+                        )}
+
+                        <button
+                            onClick={handleNext}
+                            disabled={isNextDisabled()}
+                            className="px-8 py-2.5 rounded-xl bg-bgBlue text-white font-semibold hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-customShadow transition-all cursor-pointer"
+                        >
+                            {currentStep === 4 ? "Create Schedule" : "Next"}
+                        </button>
+                    </div>
+                </div>
+
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                    /* Ensure Select and other portals appear on top */
+                    [data-radix-portal],
+                    [data-slot="select-content"],
+                    [data-radix-popper-content-wrapper] {
+                        z-index: 9999 !important;
+                    }
+                ` }} />
             </div>
-        </BaseDialog>
+        </div>
     );
 };
 

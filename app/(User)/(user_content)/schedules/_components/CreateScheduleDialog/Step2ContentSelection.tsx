@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Image as ImageIcon, Video, Music } from "lucide-react";
+import { Search, Image as ImageIcon, Video, AudioLines, FilePlay, ArrowRight, Play } from "lucide-react";
 import BaseSelect from "@/common/BaseSelect";
 import { mockContent, ContentItem } from "../../_data";
 import { Input } from "@/components/ui/input";
@@ -19,8 +19,8 @@ const Step2ContentSelection: React.FC<Step2Props> = ({ data, onChange, onContent
     const [searchQuery, setSearchQuery] = useState("");
 
     const contentTypeOptions = [
-        { label: "Image or Video", value: "image-video", icon: <Video className="w-4 h-4" /> },
-        { label: "Audio", value: "audio", icon: <Music className="w-4 h-4" /> }
+        { label: "Image or Video", value: "image-video", icon: <FilePlay className="w-5 h-5 text-body" /> },
+        { label: "Audio", value: "audio", icon: <AudioLines className="w-5 h-5 text-body" /> }
     ];
 
     // Filter content based on selected type and search query
@@ -70,12 +70,12 @@ const Step2ContentSelection: React.FC<Step2Props> = ({ data, onChange, onContent
                         <div
                             key={item.id}
                             onClick={() => onContentSelect(item)}
-                            className="flex items-center gap-3 p-3 rounded-lg border border-borderGray bg-input hover:border-bgBlue hover:bg-blue-50 dark:hover:bg-blue-950/20 cursor-pointer transition-all group"
+                            className="flex items-center gap-3 p-3 rounded-lg border border-border bg-input hover:border-bgBlue hover:bg-blue-50 dark:hover:bg-blue-950/20 cursor-pointer transition-all group"
                         >
                             {/* Thumbnail or Icon */}
-                            <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer">
                                 {item.type === "audio" ? (
-                                    <Music className="w-6 h-6 text-bgBlue" />
+                                    <AudioLines className="w-6 h-6 text-bgBlue" />
                                 ) : item.type === "video" ? (
                                     item.thumbnail ? (
                                         <img src={item.thumbnail} alt={item.name} className="w-full h-full object-cover" />
@@ -103,10 +103,12 @@ const Step2ContentSelection: React.FC<Step2Props> = ({ data, onChange, onContent
                             </div>
 
                             {/* Action Icon */}
-                            <div className="w-8 h-8 rounded-full bg-bgBlue text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-bgBlue text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-customShadow">
+                                {item.type === "video" ? (
+                                    <Play className="w-5 h-5" />
+                                ) : (
+                                    <ArrowRight className="w-5 h-5" />
+                                )}
                             </div>
                         </div>
                     ))

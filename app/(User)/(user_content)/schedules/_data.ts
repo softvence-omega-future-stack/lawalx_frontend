@@ -46,6 +46,7 @@ export const mockContent: ContentItem[] = [
         thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200",
         size: "40 MB",
         duration: "00:30",
+        url: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0"
     },
     {
         id: "v2",
@@ -54,6 +55,7 @@ export const mockContent: ContentItem[] = [
         thumbnail: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&q=80&w=200",
         size: "25 MB",
         duration: "00:15",
+        url: "https://youtu.be/sYHSGbo-hE4?si=l7MVWGfMu8l6Pk0j"
     },
     {
         id: "img1",

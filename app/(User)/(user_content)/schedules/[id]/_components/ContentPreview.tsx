@@ -18,7 +18,7 @@ const ContentPreview: React.FC<ContentPreviewProps> = ({
   video,
   thumbnail,
 }) => {
-  // ✅ Correct logging
+  // Correct logging
   console.log("Preview video:", video);
 
   return (

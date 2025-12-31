@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import AuthInput from "./AuthInput";
-import { HelpCircle, Link } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 
 const passwordSchema = z.object({
     password: z.string().min(8, "Password must be at least 8 characters"),
@@ -23,6 +24,7 @@ interface SetPasswordFormProps {
 
 const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ onNext }) => {
     const [strength, setStrength] = useState(0);
+    const router = useRouter();
 
     const {
         register,
@@ -47,7 +49,9 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ onNext }) => {
 
     const onSubmit = (data: PasswordFormData) => {
         console.log("Step 3 Data (Password):", data);
-        onNext(data);
+        // onNext(data);
+        // Navigate to dashboard after successful validation
+        router.push("/dashboard");
     };
 
     const getStrengthText = () => {
@@ -105,22 +109,14 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ onNext }) => {
                     {...register("confirmPassword")}
                     error={errors.confirmPassword?.message}
                 />
-
-                <Link href="/dashboard">
-                    <button
-                        type="submit"
-                        className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer"
-                    >
-                        Confirm
-                    </button>
-                </Link>
-
-                {/* <button
+                <button
                     type="submit"
                     className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer"
                 >
                     Confirm
-                </button> */}
+                </button>
+
+
             </form>
         </div>
     );
