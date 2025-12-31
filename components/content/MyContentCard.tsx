@@ -61,6 +61,9 @@ const MyContentCard = ({
     }
   };
 
+  console.log("item", item.id);
+  
+
   const getThumbnailIcon = () => {
     if (item.thumbnail) {
       return (
@@ -109,16 +112,16 @@ const MyContentCard = ({
   const dropdownOptions =
     viewMode === "list"
       ? [
-          { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
-          { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
-          { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
-        ]
+        { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
+        { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
+        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+      ]
       : [
-          { label: "Assign", value: "assign", icon: <Plus className="w-5 h-5" />, onClick: () => onAssignClick?.(item.id) },
-          { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
-          { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
-          { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
-        ];
+        { label: "Assign", value: "assign", icon: <Plus className="w-5 h-5" />, onClick: () => onAssignClick?.(item.id) },
+        { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
+        { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
+        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+      ];
 
   return (
     <>
@@ -185,7 +188,7 @@ const MyContentCard = ({
 
               <div className="flex items-center gap-2 w-full md:w-[15%] justify-end">
                 {!isAssigned && (
-                  <ActionButton title="Assign" icon={<TvMinimal className="w-4 h-4" />} onClick={() => onAssignClick?.(item.id)}/>
+                  <ActionButton title="Assign" icon={<TvMinimal className="w-4 h-4" />} onClick={() => onAssignClick?.(item.id)} />
                 )}
                 {isAssigned && (
                   <button

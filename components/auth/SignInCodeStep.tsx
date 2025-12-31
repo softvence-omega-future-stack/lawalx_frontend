@@ -7,6 +7,7 @@ import * as z from "zod";
 import AuthInput from "./AuthInput";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const codeSchema = z.object({
     code: z.string().min(4, "Code is required"),
@@ -21,6 +22,7 @@ interface SignInCodeStepProps {
 }
 
 const SignInCodeStep: React.FC<SignInCodeStepProps> = ({ email, onLogin, onResend }) => {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -31,7 +33,8 @@ const SignInCodeStep: React.FC<SignInCodeStepProps> = ({ email, onLogin, onResen
 
     const onSubmit = (data: CodeFormData) => {
         console.log("Code login:", data);
-        onLogin(data);
+        // onLogin(data);
+        router.push("/dashboard");
     };
 
     return (
