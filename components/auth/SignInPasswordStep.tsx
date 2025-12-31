@@ -8,6 +8,7 @@ import AuthInput from "./AuthInput";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const passwordSchema = z.object({
     password: z.string().min(1, "Password is required"),
@@ -23,6 +24,7 @@ interface SignInPasswordStepProps {
 
 const SignInPasswordStep: React.FC<SignInPasswordStepProps> = ({ email, onLogin, onSwitchToCode }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -33,7 +35,8 @@ const SignInPasswordStep: React.FC<SignInPasswordStepProps> = ({ email, onLogin,
 
     const onSubmit = (data: PasswordFormData) => {
         console.log("Password login:", data);
-        onLogin(data);
+        // onLogin(data);
+        router.push("/dashboard");
     };
 
     return (
