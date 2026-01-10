@@ -7,8 +7,9 @@ import {
   Power,
   FilePlay,
   TvMinimal,
+  Loader2,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { ScreenData } from "../../page";
 import { useRouter } from "next/navigation";
@@ -20,9 +21,11 @@ interface ScreenCardProps {
 
 
 const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
+  const [loading, setLoading] = useState(false);
   const navigate = useRouter();
 
   const handleOnClick = () => {
+    setLoading(true);
     navigate.push(`/programs/${screen.id}`);
   }
 
@@ -79,9 +82,22 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ screen }) => {
         {/* Action Buttons */}
         <div className="flex items-center gap-3 sm:gap-6">
           {/* Manage Button */}
-          <button onClick={handleOnClick} className="w-full shadow-customShadow bg-bgBlue hover:bg-blue-500 text-white font-medium py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer">
-            <Settings2 className="w-4 h-4 sm:w-5 sm:h-5" />
-            Manage
+          <button
+            onClick={handleOnClick}
+            disabled={loading}
+            className="w-full shadow-customShadow bg-bgBlue hover:bg-blue-500 text-white font-medium py-2.5 sm:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                Managing...
+              </>
+            ) : (
+              <>
+                <Settings2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                Manage
+              </>
+            )}
           </button>
 
           {/* Power Button */}
