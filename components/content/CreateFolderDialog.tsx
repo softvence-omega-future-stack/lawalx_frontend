@@ -1,148 +1,86 @@
 "use client";
 
-import BaseDialog from "@/common/BaseDialog";
 import React, { useState } from "react";
-import { Checkbox } from "../ui/checkbox";
-import Image from "next/image";
-
-interface Video {
-    id: string;
-    name: string;
-    size: string;
-    thumbnail: string;
-}
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 interface CreateFolderDialogProps {
     open: boolean;
     setOpen: (open: boolean) => void;
 }
 
-const videoList: Video[] = [
-    {
-        id: "1",
-        name: "Video 1",
-        size: "40 MB",
-        thumbnail: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&h=150&fit=crop",
-    },
-    {
-        id: "2",
-        name: "Video 2",
-        size: "50 MB",
-        thumbnail: "https://images.unsplash.com/photo-1593642634315-48f5414c3ad9?w=200&h=150&fit=crop",
-    },
-    {
-        id: "3",
-        name: "Video 3",
-        size: "60 MB",
-        thumbnail: "https://images.unsplash.com/photo-1602524813231-68b35b7d5ab3?w=200&h=150&fit=crop",
-    },
-];
-
 const CreateFolderDialog = ({ open, setOpen }: CreateFolderDialogProps) => {
     const [folderName, setFolderName] = useState("");
-    const [selectedVideos, setSelectedVideos] = useState<string[]>([]);
-
-    const handleCheckboxChange = (videoId: string) => {
-        setSelectedVideos((prev) =>
-            prev.includes(videoId)
-                ? prev.filter((id) => id !== videoId)
-                : [...prev, videoId]
-        );
-    };
 
     const handleCancel = () => {
         setOpen(false);
+        setFolderName("");
     };
 
     const handleCreateFolder = () => {
-        const data = {
-            folderName,
-            selectedVideos: videoList.filter((video) =>
-                selectedVideos.includes(video.id)
-            ),
-            selectedVideoIds: selectedVideos,
-        };
-        console.log("Create Folder Data:", data);
+        console.log("Creating folder:", folderName);
+        // Add your folder creation logic here
         handleCancel();
     };
 
     return (
-        <BaseDialog
-            open={open}
-            setOpen={setOpen}
-            title="Create a folder"
-            description=""
-            maxWidth="2xl"
-            maxHeight="lg"
-        >
-            <div className="space-y-4">
-                {/* Folder Name Input */}
-                <div>
-                    <label className="block text-base font-medium text-gray-900 mb-2">
-                        Folder Name
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter folder name"
-                        value={folderName}
-                        onChange={(e) => setFolderName(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base"
-                    />
-                </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px] p-0 gap-0 rounded-2xl overflow-hidden border-none bg-navbarBg">
+                <DialogHeader className="p-6 pb-4">
+                    <DialogTitle className="text-2xl font-bold text-headings">
+                        Create Folder
+                    </DialogTitle>
+                    <DialogDescription className="text-base text-body mt-1">
+                        Create a new folder to organize your content
+                    </DialogDescription>
+                </DialogHeader>
 
-                {/* Video Selection List */}
-                <div className="border border-borderGray rounded-xl max-h-[300px] overflow-y-auto scroll-auto">
-                    {videoList.map((video) => (
-                        <div
-                            key={video.id}
-                            className="flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors border-b border-borderGray last:border-b-0"
+                <div className="px-6 py-6 border-t border-b border-border">
+                    <div className="space-y-2">
+                        <Label
+                            htmlFor="folder-name"
+                            className="text-base font-semibold text-body"
                         >
-                            {/* Checkbox */}
-                            <Checkbox
-                                checked={selectedVideos.includes(video.id)}
-                                onCheckedChange={() => handleCheckboxChange(video.id)}
-                                className="w-5 h-5 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                            />
-
-                            {/* Thumbnail */}
-                            <div className="shrink-0 rounded-lg overflow-hidden bg-gray-200">
-                                <Image
-                                    src={video.thumbnail}
-                                    alt={video.name}
-                                    width={80}
-                                    height={60}
-                                    className="object-cover rounded-lg"
-                                />
-                            </div>
-
-                            {/* Video Info */}
-                            <div className="flex-1">
-                                <div className="font-medium text-gray-900 text-base">
-                                    {video.name}
-                                </div>
-                                <div className="text-sm text-gray-500">{video.size}</div>
-                            </div>
-                        </div>
-                    ))}
+                            Name
+                        </Label>
+                        <Input
+                            id="folder-name"
+                            placeholder="Set Menu"
+                            value={folderName}
+                            onChange={(e) => setFolderName(e.target.value)}
+                            className="h-12 border-border rounded-lg text-base px-4 focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-inputFocus"
+                        />
+                    </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex justify-between gap-4 pt-2">
-                    <button
+                <DialogFooter className="p-6 flex flex-row gap-4 sm:justify-between sm:space-x-0">
+                    <Button
+                        type="button"
+                        variant="outline"
                         onClick={handleCancel}
-                        className="flex-1 px-4 py-3 border border-bgBlue text-gray-900 rounded-lg font-semibold hover:bg-blue-50 text-base cursor-pointer"
+                        className="flex-1 h-12 rounded-lg text-base font-bold text-body border-border shadow-customShadow hover:bg-gray-50"
                     >
                         Cancel
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                        type="button"
                         onClick={handleCreateFolder}
-                        className="flex-1 px-6 py-3 bg-bgBlue text-white rounded-lg font-semibold hover:bg-blue-500 transition-colors text-base cursor-pointer"
+                        className="flex-1 h-12 rounded-lg text-base font-bold bg-bgBlue hover:bg-[#0095FF] text-white transition-colors shadow-customShadow"
                     >
                         Create Folder
-                    </button>
-                </div>
-            </div>
-        </BaseDialog>
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 

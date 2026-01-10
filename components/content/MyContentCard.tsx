@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Play,
   ChevronRight,
@@ -11,6 +11,10 @@ import {
   Pencil,
   FolderOpen,
   Trash2,
+  ScreenShare,
+  CalendarClock,
+  Folder,
+  Eye,
 } from "lucide-react";
 import { ContentItem } from "./MyContent";
 import { Checkbox } from "../ui/checkbox";
@@ -117,10 +121,12 @@ const MyContentCard = ({
         { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
       ]
       : [
-        { label: "Assign", value: "assign", icon: <Plus className="w-5 h-5" />, onClick: () => onAssignClick?.(item.id) },
+        { label: "Assign to Program", value: "assign", icon: <ScreenShare className="w-5 h-5 text-headings" />, onClick: () => onAssignClick?.(item.id) },
+        { label: "Schedule", value: "schedule", icon: <CalendarClock className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "schedule") },
         { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
-        { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
+        { label: "Move to Folder", value: "move", icon: <Folder className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "move") },
         { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+        { label: "View Details", value: "view", icon: <Eye className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "view") },
       ];
 
   return (
@@ -260,7 +266,7 @@ const MyContentCard = ({
                   {item.title}
                 </h3>
               </Link>
-              <MenuDropdown triggerIcon={<MoreVertical className="w-6 h-6 text-gray-500 dark:text-gray-400" />} options={dropdownOptions} />
+              <MenuDropdown triggerIcon={<MoreVertical className="w-6 h-6 text-muted" />} options={dropdownOptions} />
             </div>
 
             <div className="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400 mb-3 gap-2">
