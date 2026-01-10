@@ -32,7 +32,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "2 videos, 1 content",
     devices: 4,
     lastUpdated: "2h ago",
-    video: "./detailsVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -43,7 +43,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "3 videos, 2 content",
     devices: 2,
     lastUpdated: "1h ago",
-    video: "./iceVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1726409724841-016b6f4f8b1b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -54,7 +54,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "1 video, 1 content",
     devices: 3,
     lastUpdated: "3h ago",
-    video: "./detailsVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1637592156141-d41fb6234e71?q=80&w=1253&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -65,7 +65,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "2 videos, 2 content",
     devices: 1,
     lastUpdated: "30m ago",
-    video: "./iceVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -76,7 +76,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "3 videos, 1 content",
     devices: 2,
     lastUpdated: "4h ago",
-    video: "./detailsVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1726409724841-016b6f4f8b1b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -87,7 +87,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "1 video, 2 content",
     devices: 1,
     lastUpdated: "15m ago",
-    video: "./iceVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
 ];

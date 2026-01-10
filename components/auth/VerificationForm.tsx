@@ -63,7 +63,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({ email, onNext, onRe
                     <button
                         type="button"
                         onClick={onResend}
-                        className="text-bgBlue font-medium hover:underline cursor-pointer shadow-customShadow"
+                        className="text-bgBlue font-medium hover:underline cursor-pointer"
                     >
                         Resend code
                     </button>

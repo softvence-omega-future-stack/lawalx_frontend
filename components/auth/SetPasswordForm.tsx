@@ -51,7 +51,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ onNext }) => {
         console.log("Step 3 Data (Password):", data);
         // onNext(data);
         // Navigate to dashboard after successful validation
-        router.push("/dashboard");
+        router.push("/signin");
     };
 
     const getStrengthText = () => {
