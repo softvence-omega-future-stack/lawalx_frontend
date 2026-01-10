@@ -1,10 +1,10 @@
-import ContentCard from "@/components/content/ContentCard";
+// import ContentCard from "@/components/content/ContentCard";
 import MyContent from "@/components/content/MyContent";
 
 const UserContent = () => {
   return (
     <div>
-      <ContentCard/>
+      {/* <ContentCard/> */}
       <MyContent/>
     </div>
   )

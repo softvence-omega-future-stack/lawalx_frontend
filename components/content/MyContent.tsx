@@ -9,6 +9,7 @@ import {
   Search,
   FolderPlus,
   ListMusic,
+  Folder,
 } from "lucide-react";
 
 import DashboardHeading from "@/common/DashboardHeading";
@@ -17,7 +18,6 @@ import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
 import ActionButton from "../ActionButton";
-import BlueSelect from "@/common/BlueSelect";
 
 // ============================================
 // TYPES
@@ -293,7 +293,7 @@ const MyContent = () => {
   };
 
   return (
-    <div className="mt-6 md:mt-10 space-y-6 md:space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-6">
         <DashboardHeading title="My Content" />
@@ -310,7 +310,7 @@ const MyContent = () => {
           </div>
 
           {/* Blue Select — Create New */}
-          <div className="w-full sm:w-[200px]">
+          {/* <div className="w-full sm:w-[200px]">
             <BlueSelect
               value={createOption}
               onChange={handleCreateChange}
@@ -319,7 +319,15 @@ const MyContent = () => {
               placeholderIcon={<Plus className="w-5 h-5 text-black font-bold" />}
               showLabel={false}
             />
-          </div>
+          </div> */}
+
+          <button
+            onClick={() => setOpen(true)}
+            className="border border-bgBlue text-bgBlue px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base font-semibold cursor-pointer hover:bg-bgBlue hover:text-white transition-all duration-300 ease-in-out"
+          >
+            <Folder className="w-5 h-5" /> create Folder
+          </button>
+
         </div>
       </div>
 
