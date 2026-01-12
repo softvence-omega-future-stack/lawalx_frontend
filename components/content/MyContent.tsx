@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   CloudUpload,
   Grid2X2,
@@ -17,7 +17,6 @@ import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
-import ActionButton from "../ActionButton";
 
 // ============================================
 // TYPES
@@ -292,8 +291,32 @@ const MyContent = () => {
     }
   };
 
+  // UPLOAD HANDLER
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      console.log("Selected files:", files);
+      // Here you would typically handle the upload logic (e.g., send to server)
+    }
+  };
+
   return (
     <div className="space-y-6 md:space-y-8">
+      {/* Hidden File Input for Upload */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        multiple // Allow selecting multiple files
+      />
+
       {/* Header */}
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-6">
         <div>
@@ -304,6 +327,7 @@ const MyContent = () => {
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
           {/* UPLOAD BUTTON */}
           <button
+            onClick={handleUploadClick}
             className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow"
           >
             <CloudUpload className="w-5 h-5" /> Upload Content

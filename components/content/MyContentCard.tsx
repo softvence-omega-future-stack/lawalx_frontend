@@ -295,7 +295,7 @@ const MyContentCard = ({
             ) : (
               <div className="relative flex flex-col items-center gap-3">
                 <AudioLines className="w-20 h-20 text-bgBlue stroke-[1.5]" />
-                <button className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 mt-4 hover:bg-white dark:hover:bg-gray-900 transition-colors" onClick={() => setOpenAudio(true)}>
+                <button className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 mt-4 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer" onClick={() => setOpenAudio(true)}>
                   <Play className="w-8 h-8 text-gray-400 dark:text-gray-300 fill-[rgba(255,255,255,0.7)]" />
                 </button>
               </div>
@@ -305,7 +305,7 @@ const MyContentCard = ({
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
                   onClick={() => setOpen(true)}
-                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors"
+                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
                 >
                   <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
                 </button>

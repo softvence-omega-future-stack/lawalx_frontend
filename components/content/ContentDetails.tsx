@@ -23,6 +23,7 @@ import BaseVideoPlayer from "@/common/BaseVideoPlayer";
 import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import RenameDialog from "./RenameDialog";
+import AssignToDialog from "./AssignToDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +63,7 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
   const [contentFilter, setContentFilter] = useState("all-content");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [openRename, setOpenRename] = useState(false);
+  const [openAssign, setOpenAssign] = useState(false);
 
   const isFolder = content.type === "folder";
 
@@ -99,10 +101,6 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
     }
   };
 
-  // const onRename = () => setOpenRename(true);
-  // const onAssign = () => console.log("Assign:", content.id);
-  // const onDelete = () => console.log("Delete:", content.id);
-
   return (
     <div className="">
       {openRename && (
@@ -112,6 +110,14 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
           itemName={content.title}
           itemType={content.type}
           onRename={(newName) => console.log("Rename:", newName)}
+        />
+      )}
+
+      {openAssign && (
+        <AssignToDialog
+          open={openAssign}
+          setOpen={setOpenAssign}
+          onAssign={(ids) => console.log("Assigned to screens:", ids)}
         />
       )}
 
@@ -172,7 +178,7 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
         )}
 
         {!isFolder && (
-          <button onClick={() => setOpenRename(true)} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-border rounded-lg text-sm sm:text-base font-medium text-headings cursor-pointer shadow-customShadow">
+          <button onClick={() => setOpenAssign(true)} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-border rounded-lg text-sm sm:text-base font-medium text-headings cursor-pointer shadow-customShadow">
             <Plus className="w-5 h-5 text-headings" /> Assign To
           </button>
         )}

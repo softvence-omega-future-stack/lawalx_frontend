@@ -101,7 +101,7 @@ const TemplateCard = ({ item }: TemplateCardProps) => {
 
 
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-shadow">
-                <div className="relative bg-[#F0FAFF] dark:bg-gray-800 h-48 flex items-center justify-center group cursor-pointer"
+                <div className="relative bg-[#F0FAFF] dark:bg-gray-800 h-48 flex items-center justify-center group"
                     onClick={() => item.type === "video" && setOpenVideo(true)}
                 >
                     {item.thumbnail ? (
@@ -115,7 +115,7 @@ const TemplateCard = ({ item }: TemplateCardProps) => {
                                     e.stopPropagation();
                                     setOpenVideo(true);
                                 }}
-                                className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors"
+                                className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
                             >
                                 <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
                             </button>
