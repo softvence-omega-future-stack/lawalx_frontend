@@ -77,7 +77,7 @@ export default function BannerPreview({ data }: BannerPreviewProps) {
                   </button>
 
                   {data.enableSecondaryButton && (
-                    <button className="secondary-btn px-6 py-2.5 bg-blue-800/30 text-white border border-blue-400/30 rounded-lg font-medium hover:bg-blue-800/50 transition-colors backdrop-blur-sm flex items-center justify-center gap-2">
+                    <button className="secondary-btn px-6 py-2.5 bg-blue-800/30 text-white border border-blue-400/30 rounded-lg font-medium hover:bg-blue-800/50 transition-colors backdrop-blur-sm flex items-center justify-center gap-2 shadow-customShadow">
                       {data.secondaryButtonLabel || 'Learn More'}
                       {SecondaryIcon && <SecondaryIcon className="w-4 h-4" />}
                     </button>
