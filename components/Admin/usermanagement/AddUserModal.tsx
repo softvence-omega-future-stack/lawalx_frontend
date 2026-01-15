@@ -181,11 +181,11 @@ export default function AddUserModal({ isOpen, onClose, onAddUser }: AddUserModa
                   <div className="w-24">
                     <Dropdown
                       value={formData.countryCode}
-                      options={["USA", "UK", "BD"]}
+                      options={["USA", "UK", "BD", "NG"]}
                       onChange={(val) => {
-                        const prefixes: Record<string, string> = { USA: "+1", UK: "+44", BD: "+880" };
-                        setFormData({ 
-                          ...formData, 
+                        const prefixes: Record<string, string> = { USA: "+1", UK: "+44", BD: "+880", NG: "+234" };
+                        setFormData({
+                          ...formData,
                           countryCode: val,
                           phoneNumber: prefixes[val] || formData.phoneNumber
                         });
@@ -315,7 +315,7 @@ export default function AddUserModal({ isOpen, onClose, onAddUser }: AddUserModa
                         <Dropdown
                           value={item.format}
                           options={item.label === "Image" ? ["JPG, PNG, WEBP"] : item.label === "Video" ? ["MP4, MKV"] : ["MP3"]}
-                          onChange={() => {}}
+                          onChange={() => { }}
                           className="w-full h-[38px]"
                         />
                       </div>

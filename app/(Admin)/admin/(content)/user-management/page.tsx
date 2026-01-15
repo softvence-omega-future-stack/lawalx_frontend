@@ -40,6 +40,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Dropdown from "@/components/shared/Dropdown";
+import Link from "next/link";
 
 type Plan = "Starter" | "Professional" | "Business" | "Trial" | "Enterprise";
 type Status = "Active" | "Suspended" | "Disabled";
@@ -218,7 +219,9 @@ export default function UserManagementPage() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
-          <Home className="w-4 h-4" />
+          <Link href="/admin/dashboard">
+            <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+          </Link>
           <ChevronRight className="w-4 h-4" />
           <span className="text-blue-500 dark:text-blue-400">
             User Management

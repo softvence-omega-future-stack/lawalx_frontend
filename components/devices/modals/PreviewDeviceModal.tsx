@@ -354,7 +354,7 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                   </div>
                 </div>
 
-                <button className="w-full flex items-center justify-center shadow-customShadow cursor-pointer gap-2 py-3 px-4 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-sm font-medium text-gray-700 dark:text-gray-300">
+                {/* <button className="w-full flex items-center justify-center shadow-customShadow cursor-pointer gap-2 py-3 px-4 bg-white dark:bg-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-sm font-medium text-gray-700 dark:text-gray-300">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -369,7 +369,7 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                     />
                   </svg>
                   Clear Space
-                </button>
+                </button> */}
 
                 <hr className="border-gray-100 dark:border-gray-700" />
 

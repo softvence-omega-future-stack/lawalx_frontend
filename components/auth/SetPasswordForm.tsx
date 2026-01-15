@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import AuthInput from "./AuthInput";
 import { HelpCircle } from "lucide-react";
+import Link from "next/link";
 
 const passwordSchema = z.object({
     password: z.string().min(8, "Password must be at least 8 characters"),
@@ -109,14 +110,22 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ onNext }) => {
                     {...register("confirmPassword")}
                     error={errors.confirmPassword?.message}
                 />
-                <button
+
+                <Link href="/dashboard">
+                    <button
+                        type="submit"
+                        className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer"
+                    >
+                        Confirm
+                    </button>
+                </Link>
+
+                {/* <button
                     type="submit"
                     className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer"
                 >
                     Confirm
-                </button>
-
-
+                </button> */}
             </form>
         </div>
     );

@@ -732,3 +732,17 @@ body {
   display: none;
   /* Chrome, Safari, Opera */
 }
+
+
+
+.banner-container {
+  position: relative;
+  min-height: 220px;
+  height: auto;
+  width: 100%;
+  border-radius: 0.75rem;
+  /* Tailwind rounded-xl */
+  overflow: hidden;
+  /* Gradient background */
+  background: linear-gradient(180deg, #0FA6FF -7.42%, #002940 65.92%);
+}

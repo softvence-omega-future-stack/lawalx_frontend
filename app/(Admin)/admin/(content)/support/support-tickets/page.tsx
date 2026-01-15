@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Plus, Eye, MoreVertical, X, Settings } from 'lucide-react';
+import { Search, Plus, Eye, MoreVertical, X, Settings, ChevronRight, Home } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
     Select,
@@ -163,6 +163,14 @@ export default function SupportTickets() {
 
     return (
         <div className="min-h-screen">
+
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
+                <Home className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" />
+                <span>Customer Supports</span>
+                <ChevronRight className="w-4 h-4" />
+                <span className="text-bgBlue font-medium">Support Tickets</span>
+            </div>
             {/* Header */}
             <div className="border-b border-border pb-6">
                 <div className="flex items-center justify-between mb-4">
