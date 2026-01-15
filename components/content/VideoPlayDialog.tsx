@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import BaseVideoPlayer from "@/common/BaseVideoPlayer";
 import { ContentItem } from "./MyContent";
@@ -57,12 +56,12 @@ const VideoPlayDialog = ({ item, open, setOpen }: VideoPlayDialogProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with video name and close button */}
-            <div className="bg-black px-4 py-4 flex items-center justify-between">
+            <div className="bg-gray-900 px-4 py-4 flex items-center justify-between">
               <h3 className="text-white text-sm md:text-base font-medium truncate pr-8">
                 {item.video ? getVideoFileName(item.video) : 'Video'}
               </h3>
               <button
-                className="absolute top-3 right-3 text-white bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer hover:bg-red-500"
+                className="absolute top-3 right-3 text-white rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer hover:bg-red-500"
                 onClick={() => setOpen(false)}
               >
                 <X/>

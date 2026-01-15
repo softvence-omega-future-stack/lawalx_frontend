@@ -117,8 +117,9 @@ const ScreenCardDetails = () => {
       </div>
       <div className="mx-auto w-full">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-9 gap-4">
-          <div className="mt-3">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 border border-t-0 border-r-0 border-l-0 border-border py-6 md:py-8 rounded-t-xl bg-navbarBg">
+          <div className="mt-0">
               <h1 className="text-lg sm:text-2xl md:text-[30px] font-semibold text-headings">
                 {screen.title}
               </h1>
@@ -126,7 +127,11 @@ const ScreenCardDetails = () => {
                 {screen.description}
               </p>
           </div>
-          <ActionButton title="Update Changes" bgColor="#0FA6FF" hoverColor="#00A4FF" icon={<Save className="w-5 h-5" />}/>
+          <button
+            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow"
+          >
+            Save Changes
+          </button>
         </div>
 
    {/* Tabs */}

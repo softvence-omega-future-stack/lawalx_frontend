@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Dropdown from "@/common/Dropdown";
 import Image from "next/image";
+import QRCodeDialog from "./QRCodeDialog";
 
 interface CreateScreenModalProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ export default function CreateScreenModal({
 }: CreateScreenModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedType, setSelectedType] = useState("video");
+  const [showQr, setShowQr] = useState(false);
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
@@ -115,19 +117,17 @@ export default function CreateScreenModal({
           {/* Step 1 */}
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                currentStep >= 1
-                  ? "bg-blue-50 dark:bg-blue-900/20 border border-bgBlue dark:border-blue-700"
-                  : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
-              } ${currentStep > 1 ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-900/20" : ""}`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep >= 1
+                ? "bg-blue-50 dark:bg-blue-900/20 border border-bgBlue dark:border-blue-700"
+                : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
+                } ${currentStep > 1 ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-900/20" : ""}`}
             >
               {currentStep > 1 ? (
                 <CircleCheckBigIcon className="w-6 h-6 text-bgGreen" />
               ) : (
                 <FileText
-                  className={`w-6 h-6 ${
-                    currentStep >= 1 ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
-                  }`}
+                  className={`w-6 h-6 ${currentStep >= 1 ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
+                    }`}
                 />
               )}
             </div>
@@ -144,19 +144,17 @@ export default function CreateScreenModal({
           {/* Step 2 */}
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                currentStep >= 2
-                  ? "bg-blue-50 dark:bg-blue-900/20 border border-bgBlue dark:border-blue-700"
-                  : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
-              } ${currentStep > 2 ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-900/20" : ""}`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep >= 2
+                ? "bg-blue-50 dark:bg-blue-900/20 border border-bgBlue dark:border-blue-700"
+                : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
+                } ${currentStep > 2 ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-900/20" : ""}`}
             >
               {currentStep > 2 ? (
                 <CircleCheckBigIcon className="w-6 h-6 text-bgGreen" />
               ) : (
                 <Video
-                  className={`w-6 h-6 ${
-                    currentStep >= 2 ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
-                  }`}
+                  className={`w-6 h-6 ${currentStep >= 2 ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
+                    }`}
                 />
               )}
             </div>
@@ -173,16 +171,14 @@ export default function CreateScreenModal({
           {/* Step 3 */}
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                currentStep >= 3
-                  ? "bg-blue-50 dark:bg-blue-900/20 border border-bgBlue dark:border-blue-700"
-                  : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
-              }`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep >= 3
+                ? "bg-blue-50 dark:bg-blue-900/20 border border-bgBlue dark:border-blue-700"
+                : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
+                }`}
             >
               <Monitor
-                className={`w-6 h-6 ${
-                  currentStep >= 3 ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
-                }`}
+                className={`w-6 h-6 ${currentStep >= 3 ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
+                  }`}
               />
             </div>
             <div>
@@ -266,7 +262,8 @@ export default function CreateScreenModal({
                       type="checkbox"
                       checked={formData.selectedVideos.includes(video.id)}
                       onChange={() => toggleVideoSelection(video.id)}
-                      className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500"
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500 cursor-pointer"
                     />
                     <div className="w-20 h-14 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
                       <Image
@@ -307,7 +304,8 @@ export default function CreateScreenModal({
                         type="checkbox"
                         checked={formData.selectedDevices.includes(device.id)}
                         onChange={() => toggleDeviceSelection(device.id)}
-                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500"
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500 cursor-pointer"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -315,11 +313,10 @@ export default function CreateScreenModal({
                             {device.name}
                           </span>
                           <span
-                            className={`text-xs px-2 py-1 border rounded-md flex items-center gap-1 ${
-                              device.online
-                                ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
-                                : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                            }`}
+                            className={`text-xs px-2 py-1 border rounded-md flex items-center gap-1 ${device.online
+                              ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+                              : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+                              }`}
                           >
                             {device.online ? (
                               <Wifi className="w-3 h-3" />
@@ -349,7 +346,10 @@ export default function CreateScreenModal({
                       placeholder="Enter the PIN or scan the QR code"
                       className="flex-1 px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                     />
-                    <button className="p-3 border border-borderGray dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shrink-0 shadow-customShadow cursor-pointer">
+                    <button
+                      onClick={() => setShowQr(true)}
+                      className="p-3 border border-borderGray dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shrink-0 shadow-customShadow cursor-pointer"
+                    >
                       <QrCode className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                     </button>
                   </div>
@@ -370,11 +370,10 @@ export default function CreateScreenModal({
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className={`flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 border border-borderGray dark:border-gray-600 rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer ${
-              currentStep === 1
-                ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                : "text-gray-700 dark:text-gray-300 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
-            }`}
+            className={`flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 border border-borderGray dark:border-gray-600 rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer ${currentStep === 1
+              ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
+              : "text-gray-700 dark:text-gray-300 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+              }`}
           >
             <ChevronLeft className="w-5 h-5" />
             <span className="hidden md:block">Previous</span>
@@ -400,6 +399,7 @@ export default function CreateScreenModal({
           )}
         </div>
       </div>
+      <QRCodeDialog open={showQr} setOpen={setShowQr} />
     </div>
   );
 }
