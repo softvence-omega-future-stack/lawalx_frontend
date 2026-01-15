@@ -4,12 +4,12 @@ import { MoreVertical } from "lucide-react";
 
 export default function Account() {
     return (
-        <div className="space-y-8 border border-border bg-navbarBg rounded-xl p-4 md:p-6">
+        <div className="space-y-8 border border-border bg-navbarBg  rounded-xl p-4 md:p-6">
             {/* Password Section */}
             <section>
                 <h2 className="text-lg md:text-xl font-bold text-headings mb-6">Password</h2>
                 <div className="space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">text-lg md:text-xl font-bold text-headings
                         <label className="w-48 text-sm font-medium text-body">Old Password</label>
                         <input type="password" placeholder="***********" className="flex-1 px-4 py-2.5 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20" />
                     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Play } from "lucide-react";
 import BaseDialog from "@/common/BaseDialog";

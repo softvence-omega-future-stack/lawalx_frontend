@@ -64,12 +64,12 @@ const CalendarView: React.FC = () => {
                             !item.current && "bg-bgGray/10"
                         )}>
                             <span className={cn(
-                                "text-sm font-medium w-8 h-8 flex items-center justify-center rounded-full",
+                                "text-sm font-medium w-8 h-8 flex items-center justify-center rounded-full cursor-pointer",
                                 isToday ? "bg-bgBlue text-white" : "text-muted",
                                 !item.current && "text-gray-300"
                             )}>{item.day}</span>
                             {item.current && item.day === 17 && (
-                                <Link href="/schedules/1" className="block mt-2 px-3 py-1 bg-bgBlue text-white text-[10px] rounded-lg truncate">Schedule 1</Link>
+                                <Link href="/schedules/1" className="block mt-2 px-3 py-1 bg-bgBlue text-white text-[10px] rounded-lg truncate cursor-pointer">Schedule 1</Link>
                             )}
                         </div>
                     );
@@ -91,10 +91,10 @@ const CalendarView: React.FC = () => {
                         <div key={i} className={cn("min-h-[400px] p-2 border-r border-border last:border-r-0 transition-colors", isToday && "bg-blue-50/30")}>
                             <div className="text-center mb-4">
                                 <div className="text-[10px] font-bold text-muted uppercase tracking-wider">{daysOfWeek[i].slice(0, 3)}</div>
-                                <div className={cn("text-lg font-bold w-10 h-10 flex items-center justify-center rounded-full mx-auto mt-1", isToday ? "bg-bgBlue text-white" : "text-headings")}>{day.getDate()}</div>
+                                <div className={cn("text-lg font-bold w-10 h-10 flex items-center justify-center rounded-full mx-auto mt-1 cursor-pointer", isToday ? "bg-bgBlue text-white" : "text-headings")}>{day.getDate()}</div>
                             </div>
                             {i === 2 && (
-                                <Link href="/schedules/1" className="block p-2 bg-bgBlue/10 border-l-2 border-bgBlue rounded text-xs font-bold text-bgBlue hover:bg-bgBlue/20 transition-colors">
+                                <Link href="/schedules/1" className="block p-2 bg-bgBlue/10 border-l-2 border-bgBlue rounded text-xs font-bold text-bgBlue hover:bg-bgBlue/20 transition-colors cursor-pointer">
                                     Morning Content
                                 </Link>
                             )}
@@ -111,12 +111,12 @@ const CalendarView: React.FC = () => {
             <div className="divide-y divide-border">
                 {hours.map((hour) => (
                     <div key={hour} className="flex min-h-[60px] hover:bg-bgGray/20 transition-colors">
-                        <div className="w-16 p-4 text-right text-[10px] font-bold text-muted border-r border-border">
+                        <div className="w-16 p-4 text-right text-[10px] font-bold text-muted border-r border-border cursor-pointer">
                             {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                         </div>
                         <div className="flex-1 p-2 relative">
                             {hour === 10 && (
-                                <Link href="/schedules/1" className="block p-3 bg-bgBlue text-white rounded-lg text-xs font-bold w-3/4 hover:bg-blue-600 transition-colors">
+                                <Link href="/schedules/1" className="block p-3 bg-bgBlue text-white rounded-lg text-xs font-bold w-3/4 hover:bg-blue-600 transition-colors cursor-pointer">
                                     Morning Ad Campaign
                                 </Link>
                             )}
@@ -133,7 +133,7 @@ const CalendarView: React.FC = () => {
                 <div className="flex items-center gap-4">
                     <h2 className="text-lg font-bold text-headings dark:text-white">Schedule Calendar</h2>
                     <div className="flex items-center gap-2">
-                        <button onClick={setToday} className="px-3 py-1 text-sm font-medium border border-border rounded-lg hover:bg-gray-50 transition shadow-sm">Today</button>
+                        <button onClick={setToday} className="px-3 py-1 text-sm font-medium border border-border rounded-lg hover:bg-gray-50 transition shadow-customShadow cursor-pointer">Today</button>
                         <div className="flex items-center gap-1 ml-2">
                             <button onClick={navigatePrev} className="p-1.5 hover:bg-gray-100 cursor-pointer rounded-lg"><ChevronLeft className="w-5 h-5" /></button>
                             <button onClick={navigateNext} className="p-1.5 hover:bg-gray-100 cursor-pointer rounded-lg"><ChevronRight className="w-5 h-5" /></button>
@@ -161,7 +161,7 @@ const CalendarView: React.FC = () => {
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
                 <div className="grid grid-cols-7 border-b border-border bg-bgGray/30 dark:bg-gray-800/30">
                     {daysOfWeek.map((day) => (
-                        <div key={day} className="px-4 py-3 text-center text-sm font-semibold text-muted border-r border-border last:border-r-0">
+                        <div key={day} className="px-4 py-3 text-center text-sm font-semibold text-muted border-r border-border last:border-r-0 cursor-pointer">
                             {day}
                         </div>
                     ))}

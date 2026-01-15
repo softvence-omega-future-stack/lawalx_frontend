@@ -49,7 +49,7 @@ const ActionButton = ({
 
       <button
         onClick={onClick}
-        className={`action-btn shadow-customShadow flex items-center gap-2 px-4 py-2 md:py-3 text-white font-medium text-base select-none whitespace-nowrap ${className}`}
+        className={`action-btn shadow-customShadow flex items-center gap-2 px-4 py-2 md:py-3 text-white font-medium text-base select-none whitespace-nowrap shadow-customShadow ${className}`}
       >
         {icon}
         {title}

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import AuthInput from "./AuthInput";
@@ -24,6 +25,7 @@ interface SetPasswordFormProps {
 
 const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ onNext }) => {
     const [strength, setStrength] = useState(0);
+    const router = useRouter();
 
     const {
         register,
@@ -48,7 +50,9 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ onNext }) => {
 
     const onSubmit = (data: PasswordFormData) => {
         console.log("Step 3 Data (Password):", data);
-        onNext(data);
+        // onNext(data);
+        // Navigate to dashboard after successful validation
+        router.push("/signin");
     };
 
     const getStrengthText = () => {

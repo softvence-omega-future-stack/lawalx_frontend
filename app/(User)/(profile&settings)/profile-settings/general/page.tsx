@@ -27,7 +27,7 @@ export default function General() {
                 <div className="space-y-6">
                     {/* Profile Photo */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-semibold text-body">Profile Photo</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Profile Photo</label>
                         <div className="flex items-center gap-6">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
                                 <Image
@@ -51,7 +51,7 @@ export default function General() {
 
                     {/* Name */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Name</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Name</label>
                         <div className="flex-1 flex gap-4">
                             <input type="text" placeholder="First Name" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
                             <input type="text" placeholder="Last Name" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
@@ -60,19 +60,19 @@ export default function General() {
 
                     {/* Email */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Email</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Email</label>
                         <input type="email" placeholder="Email" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
                     </div>
 
                     {/* Designation */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Designation</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Designation</label>
                         <input type="text" placeholder="Designation" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
                     </div>
 
                     {/* Region */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Region</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Region</label>
                         <div className="flex-1">
                             <BaseSelect
                                 value={region}
@@ -87,7 +87,7 @@ export default function General() {
 
                     {/* Time Zone */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Time Zone</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Time Zone</label>
                         <div className="flex-1">
                             <BaseSelect
                                 value={timeZone}
@@ -112,7 +112,7 @@ export default function General() {
                 <div className="space-y-6">
                     {/* Language */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Language</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Language</label>
                         <div className="flex-1">
                             <BaseSelect
                                 value={language}
@@ -127,7 +127,7 @@ export default function General() {
 
                     {/* Time format */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Time format</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Time format</label>
                         <div className="flex-1">
                             <BaseSelect
                                 value={timeFormat}
@@ -142,7 +142,7 @@ export default function General() {
 
                     {/* Date format */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-48 text-sm font-medium text-body">Date format</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Date format</label>
                         <div className="flex-1">
                             <BaseSelect
                                 value={dateFormat}

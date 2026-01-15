@@ -46,6 +46,7 @@ interface ContentDetailsProps {
 const ContentDetails = ({ content }: ContentDetailsProps) => {
   const router = useRouter();
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  console.log("content", content);
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders((prev) => {
@@ -94,8 +95,8 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
       <div className={`space-y-2 ${level > 0 ? "ml-6 border-l-2 border-gray-200 pl-4" : ""}`}>
         {children.map((child) => (
           <div key={child.id} className="py-2">
-            <div className="flex items-center justify-between hover:bg-gray-50 p-2 rounded-lg transition-colors group">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-navbarBg border border-border transition-colors group">
+              <div className="flex items-center gap-3 flex-1 min-w-0 ">
                 {child.type === "folder" && child.children && child.children.length > 0 ? (
                   <button
                     onClick={() => toggleFolder(child.id)}
@@ -112,11 +113,11 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
                 <div className="flex-1 min-w-0">
                   <button
                     onClick={() => router.push(`/content/${child.id}`)}
-                    className="text-sm font-medium text-gray-900 hover:text-blue-600 hover:underline truncate block text-left w-full"
+                    className="text-sm font-medium text-headings hover:text-blue-600 hover:underline truncate block text-left w-full"
                   >
                     {child.title}
                   </button>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                  <div className="flex items-center gap-2 text-xs text-muted mt-0.5">
                     <span>{child.size}</span>
                     {child.duration && <span>• {child.duration}</span>}
                   </div>
@@ -146,12 +147,12 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
         <div className="flex items-start gap-3">
           <button
             onClick={() => router.push("/content")}
-            className="hover:bg-gray-100 rounded-xl transition-colors mt-1 p-1 cursor-pointer"
+            className="rounded-xl transition-colors mt-1 p-1 cursor-pointer shadow-customShadow hover:bg-bgBlue"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+            <ArrowLeft className="w-5 h-5 text-body" />
           </button>
           <div>
-            <h1 className="text-base sm:text-2xl md:text-3xl font-medium sm:font-semibold text-Heading">
+            <h1 className="text-base sm:text-2xl md:text-3xl font-medium sm:font-semibold text-headings">
               {content.title}
             </h1>
             <p className="text-sm sm:text-base text-textGray mt-1">
@@ -163,11 +164,11 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
-          <button onClick={onRename} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-gray-400 bg-white hover:bg-gray-50 rounded-lg text-sm sm:text-base font-medium text-textGray transition-colors cursor-pointer">
-            <PencilLine className="w-5 h-5 text-Heading" /> Rename
+          <button onClick={onRename} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-border rounded-lg text-sm sm:text-base font-medium text-body transition-colors cursor-pointer shadow-customShadow">
+            <PencilLine className="w-5 h-5 text-headings" /> Rename
           </button>
-          <button onClick={onAssign} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-gray-400 bg-white hover:bg-gray-50 rounded-lg text-sm sm:text-base font-medium text-textGray transition-colors cursor-pointer">
-            <UserPlus className="w-5 h-5 text-Heading" /> Assign to
+          <button onClick={onAssign} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-border rounded-lg text-sm sm:text-base font-medium text-body transition-colors cursor-pointer shadow-customShadow">
+            <UserPlus className="w-5 h-5 text-headings" /> Assign to
           </button>
 
           <ActionButton onClick={onDelete} icon={<Trash2 className="w-5 h-5 text-white" />} title="Delete" bgColor="#EF4444" hoverColor="#ff3b30" />
@@ -179,28 +180,28 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
         isFolder ? (
           <div className="space-y-6">
             {/* Folder Card */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-navbarBg rounded-xl border border-border p-6">
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="shrink-0">
-                  <div className="bg-linear-to-br from-blue-50 to-indigo-50 p-8 rounded-xl flex flex-col items-center justify-center w-full md:w-48 h-48">
+                  <div className="bg-navbarBg border border-border p-8 rounded-xl flex flex-col items-center justify-center w-full md:w-48 h-48">
                     <FolderOpen className="w-20 h-20 text-blue-500 mb-3" />
-                    <h3 className="text-base font-semibold text-gray-900">Folder</h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <h3 className="text-base font-semibold text-body">Folder</h3>
+                    <p className="text-sm text-muted mt-1">
                       {content.fileCount || content.children?.length || 0} files
                     </p>
                   </div>
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Overview</h2>
+                  <h2 className="text-lg font-semibold text-headings mb-4">Overview</h2>
                   <div className="space-y-3">
-                    <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-sm text-gray-600">Type:</span><span className="text-sm font-medium text-gray-900">Folder</span></div>
-                    <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-sm text-gray-600">Total Size:</span><span className="text-sm font-medium text-gray-900">{content.size || "—"}</span></div>
-                    <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-sm text-gray-600">Files:</span><span className="text-sm font-medium text-gray-900">{content.fileCount || content.children?.length || 0}</span></div>
-                    {content.uploadedDate && <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-sm text-gray-600">Uploaded:</span><span className="text-sm font-medium text-gray-900">{content.uploadedDate}</span></div>}
-                    {content.updatedAt && <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-sm text-gray-600">Last Updated:</span><span className="text-sm font-medium text-gray-900">{content.updatedAt}</span></div>}
+                    <div className="flex justify-between py-2 border-b border-border"><span className="text-sm text-body">Type:</span><span className="text-sm font-medium text-muted">Folder</span></div>
+                    <div className="flex justify-between py-2 border-b border-border"><span className="text-sm text-body">Total Size:</span><span className="text-sm font-medium text-muted">{content.size || "—"}</span></div>
+                    <div className="flex justify-between py-2 border-b border-border"><span className="text-sm text-body">Files:</span><span className="text-sm font-medium text-muted">{content.fileCount || content.children?.length || 0}</span></div>
+                    {content.uploadedDate && <div className="flex justify-between py-2 border-b border-border"><span className="text-sm text-body">Uploaded:</span><span className="text-sm font-medium text-muted">{content.uploadedDate}</span></div>}
+                    {content.updatedAt && <div className="flex justify-between py-2 border-b border-border"><span className="text-sm text-body">Last Updated:</span><span className="text-sm font-medium text-muted">{content.updatedAt}</span></div>}
                     {content.assignedTo && content.assignedTo.length > 0 && (
                       <div className="py-2">
-                        <div className="flex justify-between mb-2"><span className="text-sm text-gray-600">Assigned Devices:</span><span className="text-sm font-medium text-gray-900">{content.assignedTo.length}</span></div>
+                        <div className="flex justify-between mb-2"><span className="text-sm text-body">Assigned Devices:</span><span className="text-sm font-medium text-muted">{content.assignedTo.length}</span></div>
                         <div className="space-y-1 mt-2">{content.assignedTo.map((device, index) => (<div key={index} className="text-sm text-gray-700 bg-gray-50 px-3 py-1.5 rounded">{index + 1}. {device}</div>))}</div>
                       </div>
                     )}
@@ -211,17 +212,17 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
 
             {/* Folder Contents */}
             {content.children && content.children.length > 0 && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Folder Contents ({content.children.length})</h2>
-                <div className="bg-gray-50 rounded-lg p-4">{renderChildren(content.children)}</div>
+              <div className="bg-navbarBg rounded-xl border border-border p-6">
+                <h2 className="text-lg font-semibold text-headings mb-4">Folder Contents ({content.children.length})</h2>
+                <div className="bg-navbarBg rounded-xl border border-border p-4">{renderChildren(content.children)}</div>
               </div>
             )}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Side: Preview */}
-            <div className="bg-white rounded-lg md:rounded-[12px] h-fit border border-gray-200 p-4 md:p-6">
-              <h2 className="text-lg md:text-2xl font-semibold text-Heading mb-4">Preview</h2>
+            <div className="bg-navbarBg rounded-xl md:rounded-[12px] h-fit border border-border p-4 md:p-6">
+              <h2 className="text-lg md:text-2xl font-semibold text-headings mb-4">Preview</h2>
 
               {content.type === "video" && content.video ? (
                 <div className="w-full relative rounded-lg overflow-hidden">
@@ -234,17 +235,17 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
                 </div>
               ) : content.type === "playlist" && content.audio ? (
                 <div className="bg-linear-to-br from-blue-50 to-purple-50 p-6 rounded-xl">
-                  <div className="flex flex-col items-center justify-center mb-6">
-                    <AudioLines className="w-24 h-24 text-blue-500 mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
+                  <div className="flex flex-col items-center justify-center mb-6 bg-navbarBg p-4 rounded-xl">
+                    <AudioLines className="w-24 h-24 text-headings mb-4" />
+                    <h3 className="text-lg font-semibold text-headings mb-2 text-center">
                       {content.title}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted">
                       {content.size}
                       {content.duration && ` • ${content.duration}`}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <div className="bg-navbarBg rounded-lg p-4 shadow-sm">
                     <AudioPlayer
                       src={content.audio}
                       autoPlay={false}
@@ -272,42 +273,42 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
             </div>
 
             {/* Right Side: Overview */}
-            <div className="bg-white rounded-lg border h-fit border-gray-200 p-4 sm:p-6">
-              <h2 className="text-lg md:text-2xl font-semibold text-Heading">Overview</h2>
+            <div className="bg-navbarBg rounded-xl border h-fit border-border p-4 sm:p-6">
+              <h2 className="text-lg md:text-2xl font-semibold text-headings">Overview</h2>
 
               <div className="space-y-0">
                 {/* File Type */}
-                <div className="flex items-center justify-between py-4 border-b border-gray-200">
+                <div className="flex items-center justify-between py-4 border-b border-border">
                   <span className="text-sm md:text-base text-textGray">File Type:</span>
-                  <span className="px-3 py-1 bg-gray-100 text-navGray text-xs md:text-sm rounded">
+                  <span className="px-3 py-1 text-body text-xs md:text-sm rounded shadow-customShadow">
                     {getFileTypeDisplay()}
                   </span>
                 </div>
 
                 {/* File Size */}
-                <div className="flex items-center justify-between py-4 border-b border-gray-200">
-                  <span className="text-sm md:text-base text-textGray">File Size:</span>
-                  <span className="text-navGray text-xs md:text-sm">{content.size}</span>
+                <div className="flex items-center justify-between py-4 border-b border-border">
+                  <span className="text-sm md:text-base text-muted">File Size:</span>
+                  <span className="text-muted text-xs md:text-sm">{content.size}</span>
                 </div>
 
                 {/* Duration */}
                 {content.duration && (
-                  <div className="flex items-center justify-between py-4 border-b border-gray-200">
-                    <span className="text-sm md:text-base text-textGray">Duration:</span>
-                    <span className="text-navGray text-xs md:text-sm">{content.duration}</span>
+                  <div className="flex items-center justify-between py-4 border-b border-border">
+                    <span className="text-sm md:text-base text-muted">Duration:</span>
+                    <span className="text-muted text-xs md:text-sm">{content.duration}</span>
                   </div>
                 )}
 
                 {/* Total Assigned Devices */}
-                <div className="py-4 border-b border-gray-200">
+                <div className="py-4 border-b border-border">
                   <div className="flex flex-col sm:flex-row items-start justify-between">
                     <div className="flex flex-row sm:flex-col sm:space-y-2 mb-3 sm:mb-0 gap-2 sm:gap-0 items-center sm:items-start">
-                      <span className="text-sm md:text-base text-textGray">Total Assigned Devices:</span>
+                      <span className="text-sm md:text-base text-headings">Total Assigned Devices:</span>
                       <span className="text-Heading text-base md:text-lg font-medium">{content.assignedDevices?.length || 0}</span>
                     </div>
                     <div className="space-y-2">
                       {(content.assignedDevices || []).map((device, index) => (
-                        <div key={index} className="text-navGray text-xs md:text-sm">
+                        <div key={index} className="text-muted text-xs md:text-sm">
                           <span className="font-medium">{index + 1}.</span> {device}
                         </div>
                       ))}
@@ -316,16 +317,16 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
                 </div>
 
                 {/* Total Assigned Playlists */}
-                <div className="py-4 border-b border-gray-200">
+                <div className="py-4 border-b border-border">
                   <div className="flex flex-col sm:flex-row items-start justify-between">
                     <div className="flex flex-row sm:flex-col sm:space-y-2 mb-3 sm:mb-0 gap-2 sm:gap-0 items-center sm:items-start">
-                      <span className="text-sm md:text-base text-textGray">Total Assigned Playlists:</span>
+                      <span className="text-sm md:text-base text-headings">Total Assigned Playlists:</span>
                       <span className="text-Heading text-base md:text-lg font-medium">{content.assignedPlaylists?.length || 0}</span>
                     </div>
 
                     <div className="space-y-2">
                       {(content.assignedPlaylists || []).map((playlist, index) => (
-                        <div key={index} className="text-navGray text-xs md:text-sm">
+                        <div key={index} className="text-muted text-xs md:text-sm">
                           <span className="font-medium">{index + 1}.</span> {playlist}
                         </div>
                       ))}
@@ -337,12 +338,12 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
                 <div className="pt-4">
                   <div className="flex flex-col sm:flex-row items-start justify-between">
                     <div className="flex flex-row sm:flex-col sm:space-y-2 mb-3 sm:mb-0 gap-2 sm:gap-0 items-center sm:items-start">
-                      <span className="text-sm md:text-base text-textGray">Schedules:</span>
+                      <span className="text-sm md:text-base text-headings">Schedules:</span>
                       <span className="text-Heading text-base md:text-lg font-medium">{content.schedules?.length || 0}</span>
                     </div>
                     <div className="space-y-2">
                       {(content.schedules || []).map((schedule, index) => (
-                        <div key={index} className="text-navGray text-xs md:text-sm">
+                        <div key={index} className="text-muted text-xs md:text-sm">
                           <span className="">{index + 1}.</span> {schedule}
                         </div>
                       ))}

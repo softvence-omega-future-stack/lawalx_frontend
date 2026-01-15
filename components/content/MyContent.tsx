@@ -89,7 +89,7 @@ export const mockContentData: ContentItem[] = [
         duration: "1:30",
         thumbnail:
           "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-        video: "./detailsVideo.mp4",
+        video: "/detailsVideo.mp4",
         updatedAt: "2 days ago",
       },
       {
@@ -105,7 +105,7 @@ export const mockContentData: ContentItem[] = [
         id: "f1-3",
         title: "Background Music Pack",
         type: "playlist",
-        audio: "./audio.mp3",
+        audio: "/audio.mp3",
         size: "8 Items",
         duration: "12:00",
         updatedAt: "5 days ago",
@@ -122,7 +122,7 @@ export const mockContentData: ContentItem[] = [
     duration: "4:20",
     thumbnail:
       "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=400&h=300&fit=crop",
-    video: "./detailsVideo.mp4",
+    video: "/detailsVideo.mp4",
     assignedTo: ["Training Room Screen"],
     uploadedDate: "4 days ago",
     updatedAt: "3 days ago",
@@ -135,7 +135,7 @@ export const mockContentData: ContentItem[] = [
     duration: "6:10",
     thumbnail:
       "https://images.unsplash.com/photo-1529390079861-591de354faf5?w=400&h=300&fit=crop",
-    video: "./iceVideo.mp4",
+    video: "/iceVideo.mp4",
     uploadedDate: "1 week ago",
     updatedAt: "4 days ago",
   },
@@ -147,7 +147,7 @@ export const mockContentData: ContentItem[] = [
     type: "playlist",
     size: "20 Items",
     duration: "1:20:00",
-    audio: "./audio.mp3",
+    audio: "/audio.mp3",
     assignedTo: ["Main Lobby Display"],
     uploadedDate: "1 week ago",
     updatedAt: "5 days ago",
@@ -158,7 +158,7 @@ export const mockContentData: ContentItem[] = [
     type: "playlist",
     size: "10 Items",
     duration: "35:00",
-    audio: "./audio.mp3",
+    audio: "/audio.mp3",
     uploadedDate: "5 days ago",
     assignedTo: ["Main Gate Entry"],
     updatedAt: "4 days ago",
@@ -191,7 +191,7 @@ export const mockContentData: ContentItem[] = [
         title: "Ad Jingles",
         type: "playlist",
         size: "6 Items",
-        audio: "./audio.mp3",
+        audio: "/audio.mp3",
         duration: "4:00",
         updatedAt: "2 days ago",
       },
@@ -241,7 +241,7 @@ export const mockContentData: ContentItem[] = [
     type: "playlist",
     size: "15 Items",
     duration: "45:00",
-    audio: "./audio.mp3",
+    audio: "/audio.mp3",
     assignedTo: ["Event Hall Screen"],
     uploadedDate: "3 days ago",
     updatedAt: "2 days ago",
@@ -293,7 +293,7 @@ const MyContent = () => {
   };
 
   return (
-   <div className="mt-6 md:mt-10 space-y-6 md:space-y-8">
+    <div className="mt-6 md:mt-10 space-y-6 md:space-y-8">
       {/* Header */}
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-6">
         <DashboardHeading title="My Content" />

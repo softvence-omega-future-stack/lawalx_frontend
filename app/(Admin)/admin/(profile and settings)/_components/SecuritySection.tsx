@@ -25,7 +25,7 @@ export default function SecuritySection() {
         <div className="space-y-6">
             {/* Password Change */}
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-border bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">Password</h2>
                 </div>
                 <div className="p-6 space-y-6">
@@ -87,7 +87,7 @@ export default function SecuritySection() {
 
             {/* Two-Factor Authentication */}
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-border bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">Two-Factor Authentication</h2>
                 </div>
                 <div className="p-6 space-y-6">
@@ -124,7 +124,7 @@ export default function SecuritySection() {
 
             {/* Security Notifications */}
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-border bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">Security Notifications</h2>
                 </div>
                 <div className="p-6 space-y-6">
@@ -140,7 +140,7 @@ export default function SecuritySection() {
 
             {/* Active Sessions */}
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-border bg-blue-50/30 dark:bg-blue-900/10">
+                <div className="px-6 py-4 border-b border-border bg-[#F0FAFF] dark:bg-blue-900/10">
                     <h2 className="text-lg font-semibold text-headings">Active Sessions</h2>
                 </div>
                 <div className="p-6 space-y-4">
@@ -149,7 +149,7 @@ export default function SecuritySection() {
                             <div
                                 key={session.id}
                                 className={`p-4 rounded-xl border flex items-center justify-between transition-all ${session.current
-                                        ? 'border-bgBlue/30 bg-blue-50/10'
+                                        ? 'border-bgBlue/30 bg-[#F0FAFF]'
                                         : 'border-border bg-transparent'
                                     }`}
                             >
