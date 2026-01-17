@@ -28,10 +28,10 @@ export default function BannerPreview({ data }: BannerPreviewProps) {
 
       <div className="p-6 flex-1 bg-navbarBg border-b border-border rounded-b-xl flex flex-col items-center">
         {/* Toggle */}
-        <div className="flex p-1 bg-navbarBg rounded-lg border border-border mb-8 max-w-md w-full gap-2">
+        <div className="flex p-1 bg-navbarBg rounded-full border border-border mb-8 max-w-md w-full gap-2">
           <button
             onClick={() => setViewMode('web')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'web' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'web' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-customShadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
           >
             <Monitor className="w-4 h-4" />
@@ -39,7 +39,7 @@ export default function BannerPreview({ data }: BannerPreviewProps) {
           </button>
           <button
             onClick={() => setViewMode('mobile')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'mobile' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'mobile' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-customShadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
           >
             <Smartphone className="w-4 h-4" />
