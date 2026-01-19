@@ -3,45 +3,21 @@
 import UserDashboardNavbar from "@/components/layout/UserDashboardNavbar";
 import Wrapper from "@/components/layout/Wrapper";
 import SidebarComponent from "@/components/sidebar/SidebarComponent";
-import { Bell, Palette, UserRoundCog, Crown, Lock, Webhook } from 'lucide-react';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { FileUp, LayoutTemplate } from 'lucide-react';
+import { useState, useEffect } from "react";
 
-const customItems = [
-  {
-    icon: <Palette className="w-5 h-5" />,
-    label: 'General',
-    href: '/profile-settings/general',
-  },
-  {
-    icon: <UserRoundCog className="w-5 h-5" />,
-    label: 'Account',
-    href: '/profile-settings/account',
-  },
-  {
-    icon: <Crown className="w-5 h-5" />,
-    label: 'Subscriptions',
-    href: '/profile-settings/subscriptions',
-  },
-  {
-    icon: <Lock className="w-5 h-5" />,
-    label: 'Security',
-    href: '/profile-settings/security',
-  },
-  {
-    icon: <Bell className="w-5 h-5" />,
-    label: 'Notifications',
-    href: '/profile-settings/notifications',
-  },
-  {
-    icon: <Webhook className="w-5 h-5" />,
-    label: 'Integrations',
-    href: '/profile-settings/integrations',
-    comingSoon: true, // Assuming the sidebar component supports this, or I'll just leave it as is if not supported yet.
-  },
+const contentSidebarItems = [
+    {
+        icon: <FileUp className="w-5 h-5" />,
+        label: 'Uploaded Files',
+        href: '/content',
+    },
+    {
+        icon: <LayoutTemplate className="w-5 h-5" />,
+        label: 'Template',
+        href: '/content/template',
+    },
 ];
-
-// app/dashboard/content/layout.tsx
 
 export default function ContentGroupLayout({ children }: { children: React.ReactNode }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -72,16 +48,14 @@ export default function ContentGroupLayout({ children }: { children: React.React
             <UserDashboardNavbar />
 
             <div className="flex">
-                <SidebarComponent items={customItems} isCollapsed={isCollapsed} className="top-20 sm:top-24" />
+                <SidebarComponent items={contentSidebarItems} isCollapsed={isCollapsed} className="top-20 sm:top-24" />
 
                 <main
                     className={`flex-1 min-h-screen transition-all duration-300 ${isCollapsed ? 'ml-16 md:ml-20' : 'ml-64'}`}
                 >
-                  <Wrapper> {children}</Wrapper>
+                    <Wrapper>{children}</Wrapper>
                 </main>
             </div>
         </div>
     );
 }
-
-

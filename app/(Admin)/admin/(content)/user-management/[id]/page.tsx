@@ -28,6 +28,7 @@ import SubscriptionTab from "@/components/Admin/usermanagement/tabs/Subscription
 import ContentTab from "@/components/Admin/usermanagement/tabs/ContentTab";
 import DevicesTab from "@/components/Admin/usermanagement/tabs/DevicesTab";
 import ActivityLogsTab from "@/components/Admin/usermanagement/tabs/ActivityLogsTab";
+import Link from "next/link";
 
 type TabType =
   | "Details"
@@ -264,16 +265,18 @@ export default function UserProfilePage() {
         </button> */}
 
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
-          <Home className="w-4 h-4" />
+          <Link href="/admin/dashboard">
+            <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+          </Link>
           <ChevronRight className="w-4 h-4" />
-          <span
-            className="text-blue-500 dark:text-blue-400 cursor-pointer hover:underline"
-            onClick={() => router.push("/admin/user-management")}
+          <Link
+            href="/admin/user-management"
+            className=" hover:text-bgBlue cursor-pointer"
           >
             User Management
-          </span>
+          </Link>
           <ChevronRight className="w-4 h-4" />
-          <span className="text-gray-900 dark:text-white">{user.name}</span>
+          <span className="text-bgBlue">{user.name}</span>
         </div>
 
         <div className="flex justify-between items-start">

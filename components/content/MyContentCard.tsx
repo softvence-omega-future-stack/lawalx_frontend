@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Play,
   ChevronRight,
@@ -11,17 +11,23 @@ import {
   Pencil,
   FolderOpen,
   Trash2,
+  ScreenShare,
+  CalendarClock,
+  Folder,
+  Eye,
 } from "lucide-react";
 import { ContentItem } from "./MyContent";
 import { Checkbox } from "../ui/checkbox";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import folder from "@/public/icons/folder.svg";
 import MenuDropdown from "@/common/MenuDropdown";
 import VideoPlayDialog from "./VideoPlayDialog";
 import AudioPlayerDialog from "./AudioPlayerDialog";
 import FolderOpenDialog from "./FolderOepnDialog";
 import ActionButton from "../ActionButton";
+import RenameDialog from "./RenameDialog";
 
 interface ContentCardProps {
   item: ContentItem;
@@ -38,10 +44,12 @@ const MyContentCard = ({
   onMenuClick,
   onAssignClick,
 }: ContentCardProps) => {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
   const [openAudio, setOpenAudio] = useState(false);
   const [openFolder, setOpenFolder] = useState(false);
+  const [openRename, setOpenRename] = useState(false);
 
   const getTypeLabel = () => {
     switch (item.type) {
@@ -62,7 +70,7 @@ const MyContentCard = ({
   };
 
   console.log("item", item.id);
-  
+
 
   const getThumbnailIcon = () => {
     if (item.thumbnail) {
@@ -109,31 +117,64 @@ const MyContentCard = ({
 
   const isAssigned = (item.assignedTo ?? []).length > 0;
 
-  const dropdownOptions =
-    viewMode === "list"
-      ? [
-        { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
-        { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
-        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
-      ]
-      : [
-        { label: "Assign", value: "assign", icon: <Plus className="w-5 h-5" />, onClick: () => onAssignClick?.(item.id) },
-        { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "rename") },
-        { label: "Move to Folder", value: "move", icon: <FolderOpen className="w-5 h-5" />, onClick: () => onMenuClick?.(item.id, "move") },
+  // Get dropdown options based on content type
+  const getDropdownOptions = () => {
+    // Folder: only Rename and Delete
+    if (item.type === "folder") {
+      return [
+        { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => setOpenRename(true) },
         { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
       ];
+    }
+
+    // Audio/Playlist: Rename, Move to Folder, Delete, View Details
+    if (item.type === "playlist") {
+      return [
+        { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => setOpenRename(true) },
+        { label: "Move to Folder", value: "move", icon: <Folder className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "move") },
+        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+        { label: "View Details", value: "view", icon: <Eye className="w-5 h-5 text-headings" />, onClick: () => router.push(`/content/${item.id}`) },
+      ];
+    }
+
+    // Video/Image: Full options - Assign to Program, Schedule, Rename, Move to Folder, Delete, View Details
+    return [
+      { label: "Assign to Program", value: "assign", icon: <ScreenShare className="w-5 h-5 text-headings" />, onClick: () => onAssignClick?.(item.id) },
+      { label: "Schedule", value: "schedule", icon: <CalendarClock className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "schedule") },
+      { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => setOpenRename(true) },
+      { label: "Move to Folder", value: "move", icon: <Folder className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "move") },
+      { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+      { label: "View Details", value: "view", icon: <Eye className="w-5 h-5 text-headings" />, onClick: () => router.push(`/content/${item.id}`) },
+    ];
+  };
+
+  const dropdownOptions = getDropdownOptions();
+
+  const handleRename = (newName: string) => {
+    console.log(`Renaming item ${item.id} to ${newName}`);
+    onMenuClick?.(item.id, `rename:${newName}`);
+  };
 
   return (
     <>
       {open && <VideoPlayDialog item={item} open={open} setOpen={setOpen} />}
       {openAudio && <AudioPlayerDialog item={item} open={openAudio} setOpen={setOpenAudio} />}
       {openFolder && <FolderOpenDialog item={item} openFolder={openFolder} setOpenFolder={setOpenFolder} />}
+      {openRename && (
+        <RenameDialog
+          open={openRename}
+          setOpen={setOpenRename}
+          itemName={item.title}
+          itemType={item.type}
+          onRename={handleRename}
+        />
+      )}
 
       {viewMode === "list" ? (
         <>
-          <div className="bg-navbarBg w-full border-b border-border hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <div className="bg-navbarBg w-full border-b last:border-b-0 border-border hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
             <div className="flex flex-col md:flex-row justify-between w-full gap-6 md:gap-12 p-4 items-center">
-              <div className="flex items-center gap-4 w-full md:w-[35%]">
+              <div className="flex items-center gap-4 w-full md:w-[30%]">
                 <div className="flex items-center gap-2 shrink-0">
                   <Checkbox
                     onCheckedChange={() => onSelect?.(item.id)}
@@ -147,58 +188,77 @@ const MyContentCard = ({
                   )}
                 </div>
 
-                <div className="flex-1 items-center gap-3 min-w-0 flex">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   {getThumbnailIcon()}
                   <div className="flex-1 min-w-0">
                     <Link href={`/content/${item.id}`}>
-                      <h3 className="font-medium text-Heading dark:text-white text-sm md:text-lg truncate hover:text-bgBlue hover:underline">
-                        {item.title}
-                        {getFileExtension()}
+                      <h3 className="font-semibold text-Heading dark:text-white text-sm md:text-base lg:text-lg truncate hover:text-bgBlue hover:underline">
+                        {item.title}{getFileExtension()}
                       </h3>
                     </Link>
-                    <div className="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400 gap-2 mt-1">
-                      <span className="text-textGray dark:text-gray-300 px-3 py-1 border border-borderGray dark:border-gray-600 bg-bgGray dark:bg-gray-800 rounded-xl text-xs font-medium">
-                        {getTypeLabel()}
-                      </span>
-                      <span>{item.size}</span>
-                      {item.duration && <span>• {item.duration}</span>}
-                      {item.fileCount && <span>• {item.fileCount} Files</span>}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-textGray dark:text-gray-400 font-medium">{item.size}</span>
+                      {item.duration && <span className="text-xs text-textGray dark:text-gray-400 font-medium">• {item.duration}</span>}
+                      {item.fileCount && <span className="text-xs text-textGray dark:text-gray-400 font-medium">• {item.fileCount} Files</span>}
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-start w-full md:w-[25%]">
-                {isAssigned && (
-                  <div>
-                    <p className="text-sm font-medium text-Heading dark:text-white mb-1">Assigned To</p>
-                    <p className="text-sm text-textGray dark:text-gray-400">{item.assignedTo?.join(", ")}</p>
-                  </div>
-                )}
+              {/* File Type Column */}
+              <div className="hidden md:flex justify-start md:w-[15%]">
+                <span className="text-textGray dark:text-gray-300 px-3 py-1 border border-borderGray dark:border-gray-600 bg-bgGray dark:bg-gray-800 rounded-xl text-xs font-semibold uppercase tracking-wider">
+                  {item.fileExtension || getTypeLabel()}
+                </span>
               </div>
 
               <div className="flex justify-start w-full md:w-[25%]">
-                {item.uploadedDate && (
-                  <div>
-                    <p className="text-sm font-medium text-Heading dark:text-white mb-1">Uploaded</p>
-                    <p className="text-sm text-textGray dark:text-gray-400">{item.uploadedDate}</p>
-                  </div>
-                )}
+                <p className="text-sm text-textGray dark:text-gray-400 font-medium truncate">
+                  {isAssigned ? item.assignedTo?.join(", ") : "—"}
+                </p>
               </div>
 
-              <div className="flex items-center gap-2 w-full md:w-[15%] justify-end">
-                {!isAssigned && (
-                  <ActionButton title="Assign" icon={<TvMinimal className="w-4 h-4" />} onClick={() => onAssignClick?.(item.id)} />
-                )}
-                {isAssigned && (
+              <div className="flex justify-start w-full md:w-[20%]">
+                <p className="text-sm text-textGray dark:text-gray-400 font-medium">
+                  {item.uploadedDate || "—"}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4 w-full md:w-[10%] justify-end">
+                {/* File-type specific action buttons */}
+                {item.type === "video" && (
                   <button
-                    onClick={() => onAssignClick?.(item.id)}
-                    className="px-4 py-2 bg-bgBlue hover:bg-blue-500 text-white text-sm font-medium rounded-lg flex items-center gap-2"
+                    onClick={() => setOpen(true)}
+                    className="px-6 py-2 bg-bgBlue hover:bg-blue-500 text-white text-sm font-semibold rounded-lg flex items-center gap-2 shadow-customShadow transition-all cursor-pointer"
                   >
-                    <TvMinimal className="w-4 h-4" /> Assign
+                    <Play className="w-4 h-4" /> Play
                   </button>
                 )}
-                <MenuDropdown triggerIcon={<MoreVertical className="w-4 h-4 text-gray-500 dark:text-gray-400" />} options={dropdownOptions} />
+                {item.type === "playlist" && (
+                  <button
+                    onClick={() => setOpenAudio(true)}
+                    className="px-6 py-2 bg-bgBlue hover:bg-blue-500 text-white text-sm font-semibold rounded-lg flex items-center gap-2 shadow-customShadow transition-all cursor-pointer"
+                  >
+                    <Play className="w-4 h-4" /> Play
+                  </button>
+                )}
+                {item.type === "folder" && (
+                  <button
+                    onClick={() => router.push(`/content/${item.id}`)}
+                    className="px-6 py-2 bg-bgBlue hover:bg-blue-500 text-white text-sm font-semibold rounded-lg flex items-center gap-2 shadow-customShadow transition-all cursor-pointer"
+                  >
+                    <FolderOpen className="w-4 h-4" /> Open
+                  </button>
+                )}
+                {item.type === "image" && (
+                  <button
+                    onClick={() => router.push(`/content/${item.id}`)}
+                    className="px-6 py-2 bg-bgBlue hover:bg-blue-500 text-white text-sm font-semibold rounded-lg flex items-center gap-2 shadow-customShadow transition-all cursor-pointer"
+                  >
+                    <Eye className="w-4 h-4" /> View
+                  </button>
+                )}
+                <MenuDropdown triggerIcon={<MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer" />} options={dropdownOptions} />
               </div>
             </div>
           </div>
@@ -231,11 +291,11 @@ const MyContentCard = ({
             {item.thumbnail ? (
               <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
             ) : item.type === "folder" ? (
-              <Image className="cursor-pointer" onClick={() => setOpenFolder(true)} src={folder} alt="folder" />
+              <Image className="cursor-pointer" onClick={() => router.push(`/content/${item.id}`)} src={folder} alt="folder" />
             ) : (
               <div className="relative flex flex-col items-center gap-3">
                 <AudioLines className="w-20 h-20 text-bgBlue stroke-[1.5]" />
-                <button className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 mt-4 hover:bg-white dark:hover:bg-gray-900 transition-colors" onClick={() => setOpenAudio(true)}>
+                <button className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 mt-4 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer" onClick={() => setOpenAudio(true)}>
                   <Play className="w-8 h-8 text-gray-400 dark:text-gray-300 fill-[rgba(255,255,255,0.7)]" />
                 </button>
               </div>
@@ -245,7 +305,7 @@ const MyContentCard = ({
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
                   onClick={() => setOpen(true)}
-                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors"
+                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
                 >
                   <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
                 </button>
@@ -260,7 +320,7 @@ const MyContentCard = ({
                   {item.title}
                 </h3>
               </Link>
-              <MenuDropdown triggerIcon={<MoreVertical className="w-6 h-6 text-gray-500 dark:text-gray-400" />} options={dropdownOptions} />
+              <MenuDropdown triggerIcon={<MoreVertical className="w-6 h-6 text-muted" />} options={dropdownOptions} />
             </div>
 
             <div className="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400 mb-3 gap-2">

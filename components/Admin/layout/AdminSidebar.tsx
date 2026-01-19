@@ -13,7 +13,9 @@ import {
   CircleHelp,
   LineChart,
   ClipboardList,
-  HomeIcon
+  HomeIcon,
+  BanIcon,
+  Scaling
 } from 'lucide-react';
 
 export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) {
@@ -51,6 +53,7 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
         { id: 'support-tickets', label: 'Support Tickets', href: '/admin/support/support-tickets', icon: Ticket },
         { id: 'enterprise-requests', label: 'Enterprise Requests', href: '/admin/support/enterprise-requests', icon: MessageCircle },
         { id: 'knowledge-base', label: 'Knowledge Base', href: '/admin/support/knowledge-base', icon: MessageCircle },
+        { id: 'Banner', label: 'Banner', href: '/admin/support/banner', icon: Scaling },
       ],
     },
   ];
@@ -85,6 +88,7 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
     { icon: Ticket, href: '/admin/support/support-tickets', label: 'Support Tickets' },
     { icon: MessageCircle, href: '/admin/support/enterprise-requests', label: 'Enterprise Requests' },
     { icon: MessageCircle, href: '/admin/support/knowledge-base', label: 'Knowledge Base' },
+    { icon: Scaling, href: '/admin/support/banner', label: 'Banner' },
     { icon: BarChart3, href: '/admin/reports/financial-reports', label: 'Financial Reports' },
     { icon: BarChart3, href: '/admin/reports/subscription-&-billing-report', label: 'Subscription & Billing Report' },
     { icon: BarChart3, href: '/admin/reports/device-report', label: 'Device Report' },

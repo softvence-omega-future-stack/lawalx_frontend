@@ -40,7 +40,7 @@ const MenuDropdown = ({
           variant="ghost"
           size="icon"
           className={cn(
-            "text-textGray hover:text-gray-600 transition-colors p-1 cursor-pointer",
+            "text-headings hover:bg-gray-100 transition-colors p-1 cursor-pointer",
             className
           )}
         >
@@ -50,7 +50,7 @@ const MenuDropdown = ({
 
       <DropdownMenuContent
         align={align}
-        className="w-44 bg-white border border-borderGray shadow-md rounded-lg py-1"
+        className="w-full bg-white border border-border bg-navbarBg shadow-md rounded-lg py-1"
       >
         {options.map((opt, idx) => (
           <DropdownMenuItem
@@ -63,11 +63,11 @@ const MenuDropdown = ({
               "flex items-center gap-2 px-3 py-2 text-sm cursor-pointer rounded-md transition-colors",
               opt.danger
                 ? "text-red-600 hover:text-red-700 focus:text-red-700"
-                : "text-gray-700 hover:text-gray-900"
+                : "text-headings hover:text-gray-900"
             )}
           >
-            {opt.icon && <span className="text-gray-500">{opt.icon}</span>}
-            <span>{opt.label}</span>
+            {opt.icon && <span className="text-headings">{opt.icon}</span>}
+            <span className="text-headings">{opt.label}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

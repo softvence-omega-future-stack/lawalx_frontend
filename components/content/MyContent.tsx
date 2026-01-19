@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   CloudUpload,
   Grid2X2,
@@ -9,6 +9,7 @@ import {
   Search,
   FolderPlus,
   ListMusic,
+  Folder,
 } from "lucide-react";
 
 import DashboardHeading from "@/common/DashboardHeading";
@@ -16,8 +17,6 @@ import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
-import ActionButton from "../ActionButton";
-import BlueSelect from "@/common/BlueSelect";
 
 // ============================================
 // TYPES
@@ -292,34 +291,54 @@ const MyContent = () => {
     }
   };
 
+  // UPLOAD HANDLER
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      console.log("Selected files:", files);
+      // Here you would typically handle the upload logic (e.g., send to server)
+    }
+  };
+
   return (
-    <div className="mt-6 md:mt-10 space-y-6 md:space-y-8">
+    <div className="space-y-6 md:space-y-8">
+      {/* Hidden File Input for Upload */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        multiple // Allow selecting multiple files
+      />
+
       {/* Header */}
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 mb-6">
-        <DashboardHeading title="My Content" />
+        <div>
+          <DashboardHeading title="My Content" />
+          <p className="text-sm text-textGray mt-1">Upload, create and manage your content</p>
+        </div>
 
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
           {/* UPLOAD BUTTON */}
-          <div className="w-full sm:w-[200px]">
-            <ActionButton
-              title="Upload Content"
-              icon={<CloudUpload className="w-5 h-5" />}
-              bgColor="#0FA6FF"
-              hoverColor="#00A4FF"
-            />
-          </div>
+          <button
+            onClick={handleUploadClick}
+            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow"
+          >
+            <CloudUpload className="w-5 h-5" /> Upload Content
+          </button>
 
-          {/* Blue Select — Create New */}
-          <div className="w-full sm:w-[200px]">
-            <BlueSelect
-              value={createOption}
-              onChange={handleCreateChange}
-              options={createNew}
-              placeholder="Create New"
-              placeholderIcon={<Plus className="w-5 h-5 text-black font-bold" />}
-              showLabel={false}
-            />
-          </div>
+          <button
+            onClick={() => setOpen(true)}
+            className="border border-bgBlue text-bgBlue px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base font-semibold cursor-pointer hover:bg-bgBlue hover:text-white transition-all duration-300 ease-in-out shadow-customShadow"
+          >
+            <Folder className="w-5 h-5" /> Create Folder
+          </button>
         </div>
       </div>
 
@@ -334,13 +353,13 @@ const MyContent = () => {
               placeholder="Search Device"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 md:py-3 bg-bgGray dark:bg-gray-800 border border-borderGray dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-slate-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              className="w-full pl-10 pr-4 py-2 md:py-3 bg-input dark:bg-gray-800 border border-border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-slate-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
 
           {/* Sorting & Filters */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
-            <div className="w-full sm:w-[155px]">
+            <div className="w-full sm:w-[170px]">
               <BaseSelect
                 value={sortOption}
                 onChange={setSortOption}
@@ -350,7 +369,7 @@ const MyContent = () => {
               />
             </div>
 
-            <div className="w-full sm:w-[155px]">
+            <div className="w-full sm:w-[170px]">
               <BaseSelect
                 value={contentFilter}
                 onChange={setContentFilter}
@@ -362,10 +381,10 @@ const MyContent = () => {
             </div>
 
             {/* GRID / LIST */}
-            <div className="w-[100px] flex items-center bg-bgGray dark:bg-gray-800 p-1.5 rounded-lg">
+            <div className="w-[100px] flex gap-2 items-center bg-bgGray dark:bg-gray-800 p-1.5 rounded-lg">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "grid" ? "bg-white dark:bg-gray-700" : ""}`}
+                className={`flex-1 flex items-center justify-center p-2 rounded-md transition shadow-customShadow cursor-pointer ${viewMode === "grid" ? "bg-white dark:bg-gray-700" : ""}`}
               >
                 <Grid2X2
                   className={`w-5 h-5 ${viewMode === "grid" ? "text-bgBlue" : "text-textGray dark:text-gray-400"}`}
@@ -374,7 +393,7 @@ const MyContent = () => {
 
               <button
                 onClick={() => setViewMode("list")}
-                className={`flex-1 flex items-center justify-center p-2 rounded-md transition ${viewMode === "list" ? "bg-white dark:bg-gray-700" : ""}`}
+                className={`flex-1 flex items-center justify-center p-2 rounded-md transition shadow-customShadow cursor-pointer ${viewMode === "list" ? "bg-white dark:bg-gray-700" : ""}`}
               >
                 <List
                   className={`w-5 h-5 ${viewMode === "list" ? "text-bgBlue" : "text-textGray dark:text-gray-400"}`}
@@ -394,13 +413,24 @@ const MyContent = () => {
       {filteredContent.length === 0 ? (
         <EmptyState contentFilter={contentFilter} searchQuery={searchQuery} />
       ) : (
-        <ContentGrid
-          items={filteredContent}
-          viewMode={viewMode}
-          onItemSelect={handleItemSelect}
-          onItemMenuClick={handleItemMenuClick}
-          onAssignClick={handleAssignClick}
-        />
+        <div className={viewMode === "list" ? "bg-navbarBg rounded-xl border border-border overflow-hidden" : ""}>
+          {viewMode === "list" && (
+            <div className="hidden md:flex items-center justify-between px-4 py-4 border-b border-border bg-[#F9FAFB] dark:bg-gray-800/50 md:gap-12">
+              <div className="w-[30%] text-xs font-bold text-textGray uppercase tracking-widest">File Name</div>
+              <div className="w-[15%] text-xs font-bold text-textGray uppercase tracking-widest">File Type</div>
+              <div className="w-[25%] text-xs font-bold text-textGray uppercase tracking-widest">Assigned To</div>
+              <div className="w-[20%] text-xs font-bold text-textGray uppercase tracking-widest">Uploaded</div>
+              <div className="w-[10%] text-xs font-bold text-textGray uppercase tracking-widest text-right">Actions</div>
+            </div>
+          )}
+          <ContentGrid
+            items={filteredContent}
+            viewMode={viewMode}
+            onItemSelect={handleItemSelect}
+            onItemMenuClick={handleItemMenuClick}
+            onAssignClick={handleAssignClick}
+          />
+        </div>
       )}
 
       {open && <CreateFolderDialog open={open} setOpen={setOpen} />}
