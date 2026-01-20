@@ -12,7 +12,8 @@ import {
   Image as ImageIcon,
   Music,
   Type,
-  Home
+  Home,
+  ChevronRight
 } from "lucide-react";
 import { 
   PieChart, 
@@ -22,6 +23,7 @@ import {
   Tooltip 
 } from "recharts";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 
 // Define the time range options
 const TIME_RANGES = [
@@ -103,15 +105,15 @@ const ContentAndProgramsReport = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-                <span><Home className="w-4 h-4 text-gray-400" /></span>
-                <span>›</span>
-                <span>Reports & Analytics</span>
-                <span>›</span>
-                <span>Content And Programs</span>
-                {/* <span>›</span>
-                <span className="text-cyan-600 font-medium">MRR/ARR</span> */}
-              </div>
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
+            <Link href="/admin/dashboard">
+                <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span>Reports & Analytics</span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-bgBlue dark:text-blue-400 font-medium">Content And Programs</span>
+          </div> 
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
             Content And Programs
           </h1>
