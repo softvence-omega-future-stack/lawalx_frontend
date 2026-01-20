@@ -3,8 +3,9 @@
 import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
 import { useTheme } from 'next-themes';
-import { Users, DollarSign, Percent, TrendingUp, TrendingDown, UserPlus, ChevronDown, Download, Target, Zap, Home, TargetIcon } from 'lucide-react';
+import { Users, DollarSign, Percent, TrendingUp, TrendingDown, UserPlus, ChevronDown, Download, Target, Zap, Home, TargetIcon, ChevronRight, HomeIcon } from 'lucide-react';
 import Dropdown from '@/components/shared/Dropdown';
+import Link from 'next/link';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -149,15 +150,15 @@ const FinancialReport = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-              <span><Home className="w-4 h-4 text-gray-400" /></span>
-              <span>›</span>
-              <span>Reports & Analytics</span>
-              <span>›</span>
-              <span>Financial Report</span>
-              {/* <span>›</span>
-                <span className="text-cyan-600 font-medium">MRR/ARR</span> */}
-            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
+            <Link href="/admin/dashboard">
+                <HomeIcon className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span>Reports & Analytics</span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-bgBlue dark:text-blue-400 font-medium">Financial Report</span>
+          </div> 
             <h1 className="text-2xl md:text-3xl font-bold mb-1">Financial Report</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Comprehensive financial analytics and subscription metrics

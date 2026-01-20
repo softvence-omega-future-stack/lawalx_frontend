@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Activity, Clock, Zap, AlertTriangle, Database, ChevronRight, Home, Server, TrendingUp, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
 type TabType = 'Performance' | 'Server Status' | 'Uptime Tracking' | 'Error Logs';
 
@@ -61,11 +62,13 @@ export default function SystemHealth() {
         <div className="min-h-screen">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
-                <Home className="w-4 h-4" />
+                <Link href="/admin/dashboard">
+                    <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+                </Link>
                 <ChevronRight className="w-4 h-4" />
-                <span className="text-gray-500 dark:text-gray-400">System</span>
+                <span>System</span>
                 <ChevronRight className="w-4 h-4" />
-                <span className="text-blue-500 dark:text-blue-400">System Health & Storage</span>
+                <span className="text-bgBlue dark:text-blue-400 font-medium">System Health & Storage</span>
             </div>
 
             {/* Header */}

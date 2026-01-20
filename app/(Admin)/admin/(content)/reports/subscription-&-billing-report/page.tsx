@@ -2,10 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { Download, Filter, Moon, Sun, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, XCircle, Clock, RefreshCw, DollarSign, ChevronDown, Home } from 'lucide-react';
+import { Download, Filter, Moon, Sun, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, XCircle, Clock, RefreshCw, DollarSign, ChevronDown, Home, ChevronRight } from 'lucide-react';
 import Dropdown from '@/components/shared/Dropdown';
 
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
 
 const generateBillingData = (range: number) => {
   // Logic to adjust data based on range (1, 7, 30, 365)
@@ -1056,15 +1057,15 @@ const BillingDashboard = () => {
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-                <span><Home className="w-4 h-4 text-gray-400" /></span>
-                <span>›</span>
-                <span>Reports & Analytics</span>
-                <span>›</span>
-                <span className='text-bgBlue'>Billing & Payment Report</span>
-                {/* <span>›</span>
-                <span className="text-cyan-600 font-medium">MRR/ARR</span> */}
-              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
+            <Link href="/admin/dashboard">
+                <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span>Reports & Analytics</span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-bgBlue dark:text-blue-400 font-medium">Billing & Payment Report</span>
+          </div> 
               <h1 className={`text-2xl md:text-3xl font-bold ${theme.text}`}>Billing & Payment Report</h1>
               <p className={`${theme.textSecondary} mt-1`}>Comprehensive financial analytics and subscription metrics</p>
             </div>

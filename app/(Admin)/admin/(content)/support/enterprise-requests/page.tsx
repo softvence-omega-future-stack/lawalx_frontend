@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Eye, MoreVertical, Settings, Home, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, Eye, MoreVertical, Settings, Home, ChevronRight, ChevronDown, HomeIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
     Select,
@@ -315,7 +315,9 @@ export default function EnterpriseRequests() {
         <div className="min-h-screen">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-                <Home className="w-4 h-4" />
+                <Link href="/admin/dashboard">
+                    <HomeIcon className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+                </Link>
                 <ChevronRight className="w-4 h-4" />
                 <span>Customer Supports</span>
                 <ChevronRight className="w-4 h-4" />
