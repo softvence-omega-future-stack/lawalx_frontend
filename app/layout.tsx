@@ -46,6 +46,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
+import ReduxProvider from "@/redux/store/ReduxProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -68,7 +69,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <ReduxProvider>
+            {children}
+          </ReduxProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -5,6 +5,7 @@ import SidebarComponent from "@/components/sidebar/SidebarComponent";
 import { User, Shield, UserCog, Settings } from 'lucide-react';
 import React, { useState, useEffect } from "react";
 import { ThemeProvider } from "@/components/Admin/layout/ThemeProvider";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const customItems = [
     {
@@ -55,18 +56,20 @@ export default function ContentLayout({ children }: { children: React.ReactNode 
 
     return (
         <ThemeProvider>
-            <div className="bg-White min-h-screen">
-                <AdminNavbar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+            <ProtectedRoute allowedRoles={['ADMIN', 'SUPERADMIN', 'SUPER_ADMIN']}>
+                <div className="bg-White min-h-screen">
+                    <AdminNavbar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-                <div className="flex pt-16">
-                    <SidebarComponent items={customItems} isCollapsed={isCollapsed} />
+                    <div className="flex pt-16">
+                        <SidebarComponent items={customItems} isCollapsed={isCollapsed} />
 
-                    {/* Main content - push right on desktop */}
-                    <main className={`flex-1 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'} p-4 md:p-6`}>
-                        {children}
-                    </main>
+                        {/* Main content - push right on desktop */}
+                        <main className={`flex-1 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'} p-4 md:p-6`}>
+                            {children}
+                        </main>
+                    </div>
                 </div>
-            </div>
+            </ProtectedRoute>
         </ThemeProvider>
     );
 }

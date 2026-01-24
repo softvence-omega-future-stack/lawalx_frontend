@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { Eye, EyeClosed } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useLoginMutation } from '@/redux/api/users/authApi';
+import { useAppDispatch } from '@/redux/store/hook';
+import { setUser } from '@/redux/features/auth/authSlice';
+import { jwtDecode } from 'jwt-decode';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,10 +15,36 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useAppDispatch();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In real app: validate credentials here
-    router.push('/admin/verify-admin');
+    try {
+      const res = await login({ email, password }).unwrap();
+      console.log("Admin Login Response:", res);
+      if (res.success) {
+        const { accessToken, refreshToken } = res.data;
+
+        // Decode role to verify if this is an ADMIN
+        const decoded: any = jwtDecode(accessToken);
+        const role = (decoded.role || "ADMIN").toUpperCase();
+
+        if (role !== "ADMIN" && role !== "SUPERADMIN") {
+          alert("not valid email or pass");
+          return;
+        }
+
+        dispatch(setUser({
+          token: accessToken,
+          refreshToken
+        }));
+        router.push('/admin/dashboard');
+      }
+    } catch (error) {
+      console.error("Admin login API call failed:", error);
+      alert("not valid email or pass");
+    }
   };
 
   return (
@@ -25,7 +55,7 @@ export default function LoginPage() {
           <div className="bg-navbarBg border border-border rounded-lg shadow-customShadow overflow-hidden">
             {/* Blue Toggle at Top */}
             <div className="bg-bgBlue p-4 w-fit mt-6 rounded-full text-center mx-auto shadow-customShadow">
-                <Image src="/admin/navbar/adminlogo.svg" alt="Logo" width={28} height={28} className="mx-auto" />
+              <Image src="/admin/navbar/adminlogo.svg" alt="Logo" width={28} height={28} className="mx-auto" />
             </div>
 
             {/* Content */}
