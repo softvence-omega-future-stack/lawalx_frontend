@@ -34,9 +34,7 @@ const SignInPasswordStep: React.FC<SignInPasswordStepProps> = ({ email, onLogin,
     });
 
     const onSubmit = (data: PasswordFormData) => {
-        console.log("Password login:", data);
-        // onLogin(data);
-        router.push("/dashboard");
+        onLogin(data);
     };
 
     return (

@@ -22,6 +22,7 @@ import Navbar from '@/components/Admin/layout/AdminNavbar';
 import Sidebar from '@/components/Admin/layout/AdminSidebar';
 import { useState, useEffect } from 'react';
 import Wrapper from '@/components/layout/Wrapper';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -42,14 +43,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-White">
-        <Navbar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        <Sidebar isCollapsed={isCollapsed} />
+      <ProtectedRoute allowedRoles={['ADMIN', 'SUPERADMIN', 'SUPER_ADMIN']}>
+        <div className="min-h-screen bg-White">
+          <Navbar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+          <Sidebar isCollapsed={isCollapsed} />
 
-        <main className={`pt-16 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
-          <Wrapper>{children}</Wrapper>
-        </main>
-      </div>
+          <main className={`pt-16 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
+            <Wrapper>{children}</Wrapper>
+          </main>
+        </div>
+      </ProtectedRoute>
     </ThemeProvider>
   );
 }
