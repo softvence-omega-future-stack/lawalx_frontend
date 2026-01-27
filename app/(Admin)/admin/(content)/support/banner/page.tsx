@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Plus, Eye, Home, ChevronRight } from 'lucide-react';
+import { Plus, Eye, Home, ChevronRight, HomeIcon } from 'lucide-react';
 import BannerStats from '@/components/Admin/support/Banner/BannerStats';
 import BannerTable from '@/components/Admin/support/Banner/BannerTable';
 
@@ -13,7 +13,9 @@ export default function BannerPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-8 border-b border-border">
         <div>
           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-            <Home className="w-4 h-4" />
+            <Link href="/admin/dashboard">
+                <HomeIcon className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+            </Link>
             <ChevronRight className="w-4 h-4" />
             <span>Customer Supports</span>
             <ChevronRight className="w-4 h-4" />

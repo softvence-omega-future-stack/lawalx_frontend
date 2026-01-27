@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Monitor, Wifi, WifiOff, Clock, Search, Download, ChevronDown, MoreVertical, X, Trash2, Edit, UserCheck } from 'lucide-react';
+import { Monitor, Wifi, WifiOff, Clock, Search, Download, ChevronDown, MoreVertical, X, Trash2, Edit, UserCheck, ChevronRight, HomeIcon } from 'lucide-react';
 import PreviewDeviceModal from '@/components/devices/modals/PreviewDeviceModal';
 import GoogleMapModal from '@/components/shared/modals/GoogleMapModal';
+import Link from 'next/link';
 
 // Generate demo data with dates - ensuring data for each time range
 const generateDevicesData = () => {
@@ -440,6 +441,15 @@ export default function GlobalDevices() {
   return (
     <div className="min-h-screen">
       <div className="space-y-6">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+          <Link href="/admin/dashboard">
+            <HomeIcon className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+          </Link>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-blue-500 dark:text-blue-400">
+            Devices
+          </span>
+        </div>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>

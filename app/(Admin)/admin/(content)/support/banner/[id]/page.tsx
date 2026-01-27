@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ChevronRight, Code, Home, LayoutTemplate } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Code, Home, HomeIcon, LayoutTemplate } from 'lucide-react';
 import BannerForm, { BannerFormData } from '@/components/Admin/support/Banner/BannerForm';
 import BannerPreview from '@/components/Admin/support/Banner/BannerPreview';
 import { banners } from '@/components/Admin/support/Banner/mockData';
@@ -127,10 +127,12 @@ export default function EditBannerPage() {
     return (
         <div className="min-h-screen">
             {/* Header */}
-            <div className="border-b border-border flex items-center justify-between shrink-0 pb-6 pt-4">
+            <div className="border-b border-border flex items-center justify-between shrink-0 pb-6">
                 <div className="flex flex-col items-start">
                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-                        <Home className="w-4 h-4" />
+                        <Link href="/admin/dashboard">
+                            <HomeIcon className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+                        </Link>
                         <ChevronRight className="w-4 h-4" />
                         <span>Customer Supports</span>
                         <ChevronRight className="w-4 h-4" />
@@ -158,11 +160,11 @@ export default function EditBannerPage() {
             {/* Main Content */}
             <div className="flex-1 overflow-hidden flex flex-col py-6">
                 {/* Tab Switcher */}
-                <div className="rounded-lg border border-border p-1 inline-flex mb-6 shrink-0 w-max bg-navbarBg gap-2">
+                <div className="rounded-full border border-border p-1 inline-flex mb-6 shrink-0 w-max bg-navbarBg gap-2">
                     <button
                         onClick={() => setActiveTab('prebuilt')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${activeTab === 'prebuilt'
-                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm'
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${activeTab === 'prebuilt'
+                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-customShadow'
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
                             }`}
                     >
@@ -171,8 +173,8 @@ export default function EditBannerPage() {
                     </button>
                     <button
                         onClick={() => setActiveTab('custom')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${activeTab === 'custom'
-                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm'
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${activeTab === 'custom'
+                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-customShadow'
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
                             }`}
                     >

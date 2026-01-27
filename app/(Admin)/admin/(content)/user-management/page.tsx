@@ -218,7 +218,7 @@ export default function UserManagementPage() {
     <div className="min-h-screen">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
           <Link href="/admin/dashboard">
             <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
           </Link>

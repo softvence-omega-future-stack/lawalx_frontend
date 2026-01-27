@@ -43,6 +43,7 @@ import {
     Dialog,
     DialogContent,
 } from "@/components/ui/dialog";
+import Link from 'next/link';
 
 export default function ReportHub() {
     const [activeTab, setActiveTab] = useState<'saved' | 'history'>('saved');
@@ -208,12 +209,14 @@ export default function ReportHub() {
         <div className="min-h-screen">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-                <Home className="w-4 h-4" />
-                <ChevronRight className="w-4 h-4" />
-                <span>Reports & Analytics</span>
-                <ChevronRight className="w-4 h-4" />
-                <span className="text-bgBlue font-medium">Report Hub</span>
-            </div>
+            <Link href="/admin/dashboard">
+                <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span>Reports & Analytics</span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-bgBlue dark:text-blue-400 font-medium">Financial Report</span>
+          </div> 
 
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
