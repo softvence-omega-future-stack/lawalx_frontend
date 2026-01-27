@@ -1,7 +1,5 @@
 import {
-  BaseQueryApi,
   BaseQueryFn,
-  DefinitionType,
   FetchArgs,
   fetchBaseQuery,
   FetchBaseQueryError,

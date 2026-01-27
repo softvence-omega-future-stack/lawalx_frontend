@@ -9,6 +9,7 @@ import { useAppDispatch } from "@/redux/store/hook";
 import { setUser } from "@/redux/features/auth/authSlice";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
 
 type Step = "EMAIL" | "PASSWORD" | "CODE";
 
@@ -35,9 +36,10 @@ const SignInForm = () => {
                 // Decode role to verify if this is actually a USER
                 const decoded: any = jwtDecode(accessToken);
                 const role = (decoded.role || "USER").toUpperCase();
+                toast.success(res.message);
 
                 if (role !== "USER") {
-                    alert("not valid email or pass");
+                    toast.error("not valid email or pass");
                     return;
                 }
 
@@ -49,7 +51,7 @@ const SignInForm = () => {
             }
         } catch (error) {
             console.error("User login API call failed:", error);
-            alert("not valid email or pass");
+            toast.error("not valid email or pass");
         }
     };
 

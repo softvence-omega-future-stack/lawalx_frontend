@@ -136,7 +136,7 @@ export default function CreateScreenModal({
                 Step 1
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
-                Screen Information
+                Program Information
               </div>
             </div>
           </div>
@@ -216,7 +216,7 @@ export default function CreateScreenModal({
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Enter screen description"
+                  placeholder="Enter program description"
                   rows={6}
                   className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
