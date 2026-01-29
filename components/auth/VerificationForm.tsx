@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import AuthInput from "./AuthInput";
 import Link from "next/link";
+import { useRegisterVerifyMutation, useRegisterInitiateMutation } from "@/redux/features/auth/authApi";
+import { toast } from "sonner";
 
 const verificationSchema = z.object({
     code: z.string().min(4, "Code must be at least 4 characters"),
@@ -15,11 +17,15 @@ type VerificationFormData = z.infer<typeof verificationSchema>;
 
 interface VerificationFormProps {
     email: string;
+    fullName?: string;
     onNext: (data: VerificationFormData) => void;
-    onResend: () => void;
+    onResend?: () => void;
 }
 
-const VerificationForm: React.FC<VerificationFormProps> = ({ email, onNext, onResend }) => {
+const VerificationForm: React.FC<VerificationFormProps> = ({ email, fullName, onNext, onResend }) => {
+    const [registerVerify, { isLoading }] = useRegisterVerifyMutation();
+    const [registerInitiate, { isLoading: isResending }] = useRegisterInitiateMutation();
+
     const {
         register,
         handleSubmit,
@@ -28,9 +34,35 @@ const VerificationForm: React.FC<VerificationFormProps> = ({ email, onNext, onRe
         resolver: zodResolver(verificationSchema),
     });
 
-    const onSubmit = (data: VerificationFormData) => {
-        console.log("Step 2 Data (Verification):", data);
-        onNext(data);
+    const onSubmit = async (data: VerificationFormData) => {
+        try {
+            const res = await registerVerify({
+                email,
+                otp: data.code
+            }).unwrap();
+
+            if (res.success) {
+                toast.success(res.message || "OTP verified successfully");
+                onNext(data);
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Invalid or expired code. Please try again.");
+        }
+    };
+
+    const handleResend = async () => {
+        if (!email) return;
+        try {
+            const res = await registerInitiate({
+                email,
+                fullName: fullName || "User"
+            }).unwrap();
+            if (res.success) {
+                toast.success(res.message || "Verification code resent to email");
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Failed to resend code.");
+        }
     };
 
     return (
@@ -50,22 +82,25 @@ const VerificationForm: React.FC<VerificationFormProps> = ({ email, onNext, onRe
                     required
                     {...register("code")}
                     error={errors.code?.message}
+                    disabled={isLoading}
                 />
 
                 <button
                     type="submit"
-                    className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer"
+                    disabled={isLoading}
+                    className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    Confirm
+                    {isLoading ? "Verifying..." : "Confirm"}
                 </button>
 
                 <div className="text-center">
                     <button
                         type="button"
-                        onClick={onResend}
-                        className="text-bgBlue font-medium hover:underline cursor-pointer"
+                        onClick={onResend || handleResend}
+                        disabled={isResending}
+                        className="text-bgBlue font-medium hover:underline cursor-pointer disabled:opacity-50"
                     >
-                        Resend code
+                        {isResending ? "Resending..." : "Resend code"}
                     </button>
                 </div>
             </form>

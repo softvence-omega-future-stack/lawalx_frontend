@@ -10,6 +10,8 @@ import { setUser } from "@/redux/features/auth/authSlice";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
+import { toast } from "sonner";
+
 type Step = "EMAIL" | "PASSWORD" | "CODE";
 
 const SignInForm = () => {
@@ -37,7 +39,7 @@ const SignInForm = () => {
                 const role = (decoded.role || "USER").toUpperCase();
 
                 if (role !== "USER") {
-                    alert("not valid email or pass");
+                    toast.error("You are not authorized to login as a user.");
                     return;
                 }
 
@@ -45,11 +47,12 @@ const SignInForm = () => {
                     token: accessToken,
                     refreshToken
                 }));
+                toast.success(res.message || "Login successful! Redirecting...");
                 router.push("/dashboard");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("User login API call failed:", error);
-            alert("not valid email or pass");
+            toast.error(error?.data?.message || "Invalid email or password");
         }
     };
 
@@ -60,6 +63,7 @@ const SignInForm = () => {
                 email={email}
                 onLogin={handleLogin}
                 onSwitchToCode={() => setStep("CODE")}
+                isLoading={isLoading}
             />
         ),
         CODE: (
