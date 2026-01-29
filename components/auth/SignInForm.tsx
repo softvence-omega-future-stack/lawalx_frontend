@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import SignInEmailStep from "./SignInEmailStep";
 import SignInPasswordStep from "./SignInPasswordStep";
 import SignInCodeStep from "./SignInCodeStep";

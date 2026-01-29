@@ -8,7 +8,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { logout, setToken } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://lawaltwo.sakibalhasa.xyz:9958/api/v1",
+  baseUrl: process.env.NEXT_PUBLIC_API_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as any).auth.token;
     if (token) {
@@ -59,5 +59,8 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: ["User"],
+  tagTypes: [
+    "User",
+  "Schedules",
+  ],
 });

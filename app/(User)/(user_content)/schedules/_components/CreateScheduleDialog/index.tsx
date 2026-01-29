@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import StepIndicator from "./StepIndicator";
 import Step1NameDescription from "./Step1NameDescription";
 import Step2ContentSelection from "./Step2ContentSelection";
@@ -9,6 +10,8 @@ import Step3ScreenSelection from "./Step3ScreenSelection";
 import Step4ScheduleSettings from "./Step4ScheduleSettings";
 import { ContentItem } from "../../_data";
 import { FileText, Settings, TvMinimal, Video, X } from "lucide-react";
+import { usePostSchedulesMutation } from "@/redux/api/userDashboard/schedules/schedules.api";
+import { SchedulePayload } from "@/types/schedule";
 
 interface CreateScheduleDialogProps {
     open: boolean;
@@ -23,6 +26,7 @@ const STEPS = [
 ];
 
 const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOpen }) => {
+    const [createSchedules] = usePostSchedulesMutation();
     const [currentStep, setCurrentStep] = useState(1);
     const [showLowerThird, setShowLowerThird] = useState(false);
 
@@ -57,7 +61,9 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
         selectedDays: [] as string[],
         selectedDates: [] as number[],
         playTime: "03:00",
-        startDate: ""
+        endTime: "05:00",
+        startDate: "",
+        endDate: ""
     });
 
     const handleContentSelect = (content: ContentItem) => {
@@ -94,48 +100,99 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
         setStep1Data({ name: "", description: "" });
         setStep2Data({ contentType: "image-video", selectedContent: null });
         setStep3Data({ selectedScreens: [] });
-        setStep4Data({ repeat: "run-once", selectedDays: [], selectedDates: [], playTime: "03:00", startDate: "" });
+        setStep4Data({ repeat: "run-once", selectedDays: [], selectedDates: [], playTime: "03:00", endTime: "05:00", startDate: "", endDate: "" });
         setOpen(false);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // Determine active content
         const activeContent = showLowerThird ? lowerThirdData.selectedContent : step2Data.selectedContent;
 
-        // Construct the final complete object
-        const finalData = {
-            metadata: {
-                step1_general: step1Data,
-                step2_content_config: showLowerThird ? lowerThirdData : step2Data,
-                step3_screens: step3Data,
-                step4_schedule: step4Data,
-            },
-            // Include media info explicitly in the log for "all data" visibility
-            media_file: activeContent ? {
-                id: activeContent.id,
-                name: activeContent.name,
-                type: activeContent.type,
-                url: activeContent.url || null,
-                thumbnail: activeContent.thumbnail
-            } : null
+        // Map contentType from form to API payload
+        let contentType: "IMAGE_TEXT" | "IMAGE" | "VIDEO" | "TEXT" = "IMAGE";
+        if (showLowerThird) {
+            contentType = "IMAGE_TEXT";
+        } else if (step2Data.contentType === "video") {
+            contentType = "VIDEO";
+        } else if (step2Data.contentType === "text") {
+            contentType = "TEXT";
+        }
+
+        // Map fontSize from numeric to named size
+        const fontSizeMap: { [key: string]: "Small" | "Medium" | "Large" } = {
+            "16": "Small",
+            "24": "Medium",
+            "32": "Large",
         };
 
-        console.log("=== FINAL FORM SUBMISSION DATA ===");
-        console.log(finalData);
+        const fontSize: "Small" | "Medium" | "Large" =
+            fontSizeMap[lowerThirdData.lowerThirdConfig.fontSize] || "Medium";
 
-        // Also log as JSON string if they need to copy-paste it
-        console.log("=== JSON STRING ===");
-        console.log(JSON.stringify(finalData, null, 2));
+        // Convert play time (HH:MM) to ISO time format
+        const [hours, minutes] = step4Data.playTime.split(":").map(Number);
+        const [endHours, endMinutes] = step4Data.endTime.split(":").map(Number);
 
-        // Close dialog
-        handleCancel();
+        // Construct ISO format date-time strings
+        const startDateTime = step4Data.startDate 
+            ? new Date(step4Data.startDate).toISOString().split("T")[0] + `T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00.000Z`
+            : undefined;
+
+        const endDateTime = step4Data.endDate
+            ? new Date(step4Data.endDate).toISOString().split("T")[0] + `T${String(endHours).padStart(2, "0")}:${String(endMinutes).padStart(2, "0")}:00.000Z`
+            : undefined;
+
+        // Construct the API payload
+        const payload: SchedulePayload = {
+            name: step1Data.name,
+            description: step1Data.description,
+            text: lowerThirdData.lowerThirdConfig.message,
+            textColor: lowerThirdData.lowerThirdConfig.textColor,
+            fontSize: fontSize,
+            font: lowerThirdData.lowerThirdConfig.fontFamily,
+            backgroundColor: lowerThirdData.lowerThirdConfig.backgroundColor,
+            backgroundOpacity: lowerThirdData.lowerThirdConfig.backgroundOpacity,
+            animation: lowerThirdData.lowerThirdConfig.animationDirection,
+            loop: lowerThirdData.lowerThirdConfig.loop,
+            position: (lowerThirdData.lowerThirdConfig.position.charAt(0).toUpperCase() +
+                lowerThirdData.lowerThirdConfig.position.slice(1)) as "Top" | "Middle" | "Bottom",
+            contentType: contentType,
+            recurrenceType: step4Data.repeat === "run-once" ? undefined : (step4Data.repeat as "daily" | "weekly" | "monthly"),
+            startDate: step4Data.startDate,
+            endDate: step4Data.endDate,
+            startTime: startDateTime,
+            endTime: endDateTime,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            daysOfWeek: step4Data.selectedDays as ("Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun")[],
+            dayOfMonth: step4Data.selectedDates,
+            contentId: activeContent?.id,
+            deviceId: step3Data.selectedScreens[0], // First selected screen
+        };
+
+        console.log("=== SUBMITTING SCHEDULE PAYLOAD ===");
+        console.log(payload);
+
+        try {
+            // Call the API mutation
+            const result = await createSchedules(payload).unwrap();
+            console.log("Schedule created successfully:", result);
+
+            // Show success message
+            toast.success("Schedule created successfully!");
+
+            // Close dialog
+            handleCancel();
+        } catch (error) {
+            console.error("Error creating schedule:", error);
+            // Show error message
+            toast.error("Failed to create schedule. Please try again.");
+        }
     };
 
     const isNextDisabled = () => {
         if (currentStep === 1) return !step1Data.name;
         if (currentStep === 2 && !showLowerThird) return !step2Data.selectedContent;
         if (currentStep === 3) return step3Data.selectedScreens.length === 0;
-        if (currentStep === 4) return !step4Data.playTime || !step4Data.startDate;
+        if (currentStep === 4) return !step4Data.playTime || !step4Data.startDate || !step4Data.endDate || !step4Data.endTime;
         return false;
     };
 
@@ -217,6 +274,7 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
                     </div>
                 </div>
 
+
                 {/* Footer - Sticky at bottom */}
                 <div className="p-6 border-t border-border flex items-center justify-between bg-navbarBg/80 backdrop-blur-md">
                     <button
@@ -227,6 +285,7 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
                     </button>
 
                     <div className="flex items-center gap-3">
+                        {/* Always show Back button except on step 1 and not in lower third */}
                         {(currentStep > 1 || showLowerThird) && (
                             <button
                                 onClick={handleBack}
@@ -236,6 +295,7 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
                             </button>
                         )}
 
+                        {/* Always show Next/Create button */}
                         <button
                             onClick={handleNext}
                             disabled={isNextDisabled()}
