@@ -21,15 +21,11 @@ const SignUpPage = () => {
         const updatedData = { ...formData, ...stepData };
         setFormData(updatedData);
 
-        // As per prompt: console.log data on button clicks
         if (step === "details") {
-            console.log("Signup Button Clicked - Step 1 Data:", stepData);
             setStep("verification");
         } else if (step === "verification") {
-            console.log("Confirm Button Clicked - Step 2 Data:", stepData);
             setStep("password");
         } else if (step === "password") {
-            console.log("Confirm Button Clicked - Step 3 Data:", stepData);
             setStep("plans");
         }
     };
@@ -38,16 +34,14 @@ const SignUpPage = () => {
         const finalData = { ...formData, selectedPlan: plan };
         console.log("Plan Selected:", plan);
         console.log("Successfully Completed Signup. Final Data:", finalData);
-        // setStep("success");
-        // setShowSuccess(true);
+        setStep("success");
     };
 
     const handleEnterpriseSubmit = (enterpriseData: any) => {
         const finalData = { ...formData, ...enterpriseData };
         console.log("Enterprise Request Submit Button Clicked");
         console.log("Final Enterprise Request Data:", finalData);
-        // setStep("success");
-        // setShowSuccess(true);
+        setStep("success");
     };
 
     const renderStep = () => {
@@ -57,13 +51,19 @@ const SignUpPage = () => {
             case "verification":
                 return (
                     <VerificationForm
-                        email={formData.email || "lawal@tape.com"}
+                        email={formData.email}
+                        fullName={formData.fullName}
                         onNext={handleNext}
-                        onResend={() => console.log("Resend Code Clicked")}
                     />
                 );
             case "password":
-                return <SetPasswordForm onNext={handleNext} />;
+                return (
+                    <SetPasswordForm
+                        email={formData.email}
+                        fullName={formData.fullName}
+                        onNext={handleNext}
+                    />
+                );
             case "plans":
                 return (
                     <div className="w-screen h-screen fixed inset-0 bg-navbarBg z-100 overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-500">

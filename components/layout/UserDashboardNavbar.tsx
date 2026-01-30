@@ -122,7 +122,7 @@ export default function UserDashboardNavbar() {
             <Image
               src="/tape.svg"
               alt="DigitalSignage Logo"
-              width={150}
+              width={100}
               height={40}
               className="h-12 w-auto"
             />

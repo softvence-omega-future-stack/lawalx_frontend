@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,6 +8,8 @@ import AuthInput from "./AuthInput";
 import Image from "next/image";
 import Link from "next/link";
 import { User, Mail } from "lucide-react";
+import { useRegisterInitiateMutation } from "@/redux/features/auth/authApi";
+import { toast } from "sonner";
 
 const signupSchema = z.object({
     fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -21,6 +23,8 @@ interface SignupFormProps {
 }
 
 const SignupForm: React.FC<SignupFormProps> = ({ onNext }) => {
+    const [registerInitiate, { isLoading }] = useRegisterInitiateMutation();
+
     const {
         register,
         handleSubmit,
@@ -29,9 +33,16 @@ const SignupForm: React.FC<SignupFormProps> = ({ onNext }) => {
         resolver: zodResolver(signupSchema),
     });
 
-    const onSubmit = (data: SignupFormData) => {
-        console.log("Step 1 Data:", data);
-        onNext(data);
+    const onSubmit = async (data: SignupFormData) => {
+        try {
+            const res = await registerInitiate(data).unwrap();
+            if (res.success) {
+                toast.success(res.message || "Verification code sent to email");
+                onNext(data);
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Something went wrong. Please try again.");
+        }
     };
 
     return (
@@ -49,6 +60,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onNext }) => {
                     icon={User}
                     {...register("fullName")}
                     error={errors.fullName?.message}
+                    disabled={isLoading}
                 />
 
                 <AuthInput
@@ -59,13 +71,15 @@ const SignupForm: React.FC<SignupFormProps> = ({ onNext }) => {
                     icon={Mail}
                     {...register("email")}
                     error={errors.email?.message}
+                    disabled={isLoading}
                 />
 
                 <button
                     type="submit"
-                    className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow mt-2 cursor-pointer"
+                    disabled={isLoading}
+                    className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow mt-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    Sign Up
+                    {isLoading ? "Signing Up..." : "Sign Up"}
                 </button>
 
                 <button

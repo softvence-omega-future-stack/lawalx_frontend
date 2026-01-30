@@ -4,11 +4,10 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Loader2 } from "lucide-react";
 import AuthInput from "./AuthInput";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 const passwordSchema = z.object({
     password: z.string().min(1, "Password is required"),
@@ -20,15 +19,14 @@ interface SignInPasswordStepProps {
     email: string;
     onLogin: (data: PasswordFormData) => void;
     onSwitchToCode: () => void;
+    isLoading?: boolean;
 }
 
-const SignInPasswordStep: React.FC<SignInPasswordStepProps> = ({ email, onLogin, onSwitchToCode }) => {
-    const [showPassword, setShowPassword] = useState(false);
-    const router = useRouter();
+const SignInPasswordStep: React.FC<SignInPasswordStepProps> = ({ email, onLogin, onSwitchToCode, isLoading }) => {
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<PasswordFormData>({
         resolver: zodResolver(passwordSchema),
     });
@@ -45,31 +43,22 @@ const SignInPasswordStep: React.FC<SignInPasswordStepProps> = ({ email, onLogin,
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="relative">
-                    <AuthInput
-                        label="Password"
-                        placeholder="Type your password"
-                        type={showPassword ? "text" : "password"}
-                        required
-                        {...register("password")}
-                        error={errors.password?.message}
-                        className="pr-12"
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-[38px] text-muted hover:text-bgBlue transition-colors focus:outline-none"
-                    >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                </div>
-
+                <AuthInput
+                    label="Password"
+                    placeholder="Type your password"
+                    type="password"
+                    required
+                    {...register("password")}
+                    error={errors.password?.message}
+                    disabled={isLoading}
+                />
 
                 <button
                     type="submit"
-                    className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer"
+                    disabled={isLoading}
+                    className="w-full h-12 bg-bgBlue text-white rounded-xl font-medium hover:bg-[#0EA5E9] transition-colors shadow-customShadow cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                    Sign In
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
                 </button>
 
                 <button
@@ -82,16 +71,16 @@ const SignInPasswordStep: React.FC<SignInPasswordStepProps> = ({ email, onLogin,
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <input
+                        {/* <input
                             type="checkbox"
                             id="remember"
                             className="w-4 h-4 rounded border-gray-300 text-bgBlue focus:ring-bgBlue"
                         />
                         <label htmlFor="remember" className="text-sm text-headings cursor-pointer">
-                            Remember for 30 days
-                        </label>
+                            Remember me
+                        </label> */}
                     </div>
-                    <Link href="/reset-password" className="text-sm text-bgBlue font-medium hover:underline">
+                    <Link href="/forget-password" className="text-sm text-bgBlue font-medium hover:underline">
                         Forget Password
                     </Link>
                 </div>
