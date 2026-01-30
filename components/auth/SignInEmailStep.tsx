@@ -73,7 +73,7 @@ const SignInEmailStep: React.FC<SignInEmailStepProps> = ({ onNext }) => {
                             Remember for 30 days
                         </label> */}
                     </div>
-                    <Link href="/reset-password" className="text-sm text-bgBlue font-medium hover:underline">
+                    <Link href="/forget-password" className="text-sm text-bgBlue font-medium hover:underline">
                         Forget Password
                     </Link>
                 </div>
