@@ -1,7 +1,5 @@
 import {
-  BaseQueryApi,
   BaseQueryFn,
-  DefinitionType,
   FetchArgs,
   fetchBaseQuery,
   FetchBaseQueryError,
@@ -10,11 +8,11 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { logout, setToken } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "https://lawaltwo.sakibalhasa.xyz/api/v1",
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as any).auth.token;
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("authorization", `${token}`);
     }
     return headers;
   },
@@ -61,5 +59,5 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: ["User"],
+  tagTypes: ["User", "Content"],
 });

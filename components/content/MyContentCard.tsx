@@ -4,10 +4,8 @@ import { useState } from "react";
 import {
   Play,
   ChevronRight,
-  TvMinimal,
   AudioLines,
   MoreVertical,
-  Plus,
   Pencil,
   FolderOpen,
   Trash2,
@@ -68,8 +66,6 @@ const MyContentCard = ({
       default: return "";
     }
   };
-
-  console.log("item", item.id);
 
 
   const getThumbnailIcon = () => {
