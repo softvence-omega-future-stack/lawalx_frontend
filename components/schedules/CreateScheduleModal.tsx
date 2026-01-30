@@ -14,6 +14,7 @@ import {
   Calendar,
 } from "lucide-react";
 import Dropdown from "@/components/shared/Dropdown";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Import the exact same ContentItem type used in SchedulesPage
 interface ContentItem {
@@ -194,21 +195,19 @@ export default function ScheduleModal({
             <React.Fragment key={s.id}>
               <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                    step > s.id
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${step > s.id
                       ? "bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-800"
                       : step === s.id
-                      ? "bg-blue-50 dark:bg-blue-900/30 border border-bgBlue"
-                      : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
-                  }`}
+                        ? "bg-blue-50 dark:bg-blue-900/30 border border-bgBlue"
+                        : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
+                    }`}
                 >
                   {step > s.id ? (
                     <CircleCheckBigIcon className="w-6 h-6 text-bgGreen" />
                   ) : (
                     <s.icon
-                      className={`w-6 h-6 ${
-                        step >= s.id ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
-                      }`}
+                      className={`w-6 h-6 ${step >= s.id ? "text-bgBlue" : "text-gray-400 dark:text-gray-500"
+                        }`}
                     />
                   )}
                 </div>
@@ -332,25 +331,23 @@ export default function ScheduleModal({
                     className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={form.devices.includes(screen.name)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
+                        onCheckedChange={(checked) => {
+                          if (checked) {
                             setForm({ ...form, devices: [...form.devices, screen.name] });
                           } else {
                             setForm({ ...form, devices: form.devices.filter(d => d !== screen.name) });
                           }
                         }}
-                        className="w-5 h-5 rounded border-gray-300 text-bgBlue focus:ring-bgBlue"
+                        className="w-5 h-5 border-gray-300 data-[state=checked]:bg-bgBlue data-[state=checked]:border-bgBlue"
                       />
                       <span className="font-medium text-gray-900 dark:text-white">{screen.name}</span>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                      screen.status === "online"
+                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${screen.status === "online"
                         ? "bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
                         : "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
-                    }`}>
+                      }`}>
                       {screen.status}
                     </span>
                   </label>
@@ -389,11 +386,10 @@ export default function ScheduleModal({
                             : [...days, day];
                           setForm({ ...form, days: updated });
                         }}
-                        className={`py-3 rounded-lg font-medium text-sm transition-all ${
-                          (form.days ?? []).includes(day)
+                        className={`py-3 rounded-lg font-medium text-sm transition-all ${(form.days ?? []).includes(day)
                             ? "bg-bgBlue text-white"
                             : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                        }`}
+                          }`}
                       >
                         {day}
                       </button>
@@ -421,11 +417,10 @@ export default function ScheduleModal({
                               : [...current, day];
                             setForm({ ...form, monthlyDays: updated });
                           }}
-                          className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
-                            selected
+                          className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${selected
                               ? "bg-bgBlue text-white"
                               : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                          }`}
+                            }`}
                         >
                           {num}
                         </button>
@@ -527,11 +522,10 @@ export default function ScheduleModal({
           <button
             onClick={prev}
             disabled={step === 1}
-            className={`flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 border border-borderGray dark:border-gray-600 rounded-lg font-medium transition-colors ${
-              step === 1
+            className={`flex items-center gap-2 px-3 py-1.5 md:px-5 md:py-2.5 border border-borderGray dark:border-gray-600 rounded-lg font-medium transition-colors ${step === 1
                 ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
                 : "text-gray-700 dark:text-gray-300 hover:scale-[1.02] hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-            }`}
+              }`}
           >
             <ChevronLeft className="w-5 h-5" />
             <span className="hidden md:block">Previous</span>

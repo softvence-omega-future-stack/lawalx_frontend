@@ -80,6 +80,7 @@ export default function UserDashboardNavbar() {
   const [newOpen, setNewOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const dispatch = useAppDispatch();
 
   // Dark Mode Setup
   const { theme, setTheme } = useTheme();
@@ -93,8 +94,6 @@ export default function UserDashboardNavbar() {
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
-
-  const dispatch = useAppDispatch();
 
   const handleLogout = () => {
     dispatch(logout());
