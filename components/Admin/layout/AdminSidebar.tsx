@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useAppDispatch } from '@/redux/store/hook';
+import { logout } from '@/redux/features/auth/authSlice';
 import {
   LayoutDashboard, Users, CreditCard, Globe, Monitor,
   MessageCircle, BarChart3, Activity, FileText, LogOut, ChevronDown,
@@ -13,11 +15,15 @@ import {
   CircleHelp,
   LineChart,
   ClipboardList,
-  HomeIcon
+  HomeIcon,
+  BanIcon,
+  Scaling
 } from 'lucide-react';
 
 export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   // Auto-expand parent if child is active (only when not collapsed)
@@ -51,6 +57,7 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
         { id: 'support-tickets', label: 'Support Tickets', href: '/admin/support/support-tickets', icon: Ticket },
         { id: 'enterprise-requests', label: 'Enterprise Requests', href: '/admin/support/enterprise-requests', icon: MessageCircle },
         { id: 'knowledge-base', label: 'Knowledge Base', href: '/admin/support/knowledge-base', icon: MessageCircle },
+        { id: 'Banner', label: 'Banner', href: '/admin/support/banner', icon: Scaling },
       ],
     },
   ];
@@ -85,6 +92,7 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
     { icon: Ticket, href: '/admin/support/support-tickets', label: 'Support Tickets' },
     { icon: MessageCircle, href: '/admin/support/enterprise-requests', label: 'Enterprise Requests' },
     { icon: MessageCircle, href: '/admin/support/knowledge-base', label: 'Knowledge Base' },
+    { icon: Scaling, href: '/admin/support/banner', label: 'Banner' },
     { icon: BarChart3, href: '/admin/reports/financial-reports', label: 'Financial Reports' },
     { icon: BarChart3, href: '/admin/reports/subscription-&-billing-report', label: 'Subscription & Billing Report' },
     { icon: BarChart3, href: '/admin/reports/device-report', label: 'Device Report' },
@@ -122,8 +130,8 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
           <Link
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group relative ${isActive(item.href)
-                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               } ${isCollapsed ? 'justify-center' : ''}`}
             title={isCollapsed ? item.label : ''}
           >
@@ -134,8 +142,8 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
           <button
             onClick={() => toggleExpand(item.id)}
             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all ${isParentActive || isExpanded
-                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               } ${isCollapsed ? 'justify-center' : ''}`}
           >
             <div className="flex items-center gap-3">
@@ -155,8 +163,8 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
                 key={child.id}
                 href={child.href}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${isActive(child.href)
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-500 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
               >
                 <child.icon className="w-4 h-4" />
@@ -181,8 +189,8 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
                   key={idx}
                   href={item.href}
                   className={`flex justify-center p-3 rounded-lg transition-all group relative ${isActive(item.href)
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                     }`}
                   title={item.label}
                 >
@@ -220,14 +228,17 @@ export default function AdminSidebar({ isCollapsed }: { isCollapsed: boolean }) 
 
         {/* Logout */}
         <div className="px-3 pb-4">
-          <Link
-            href="/admin/login"
+          <button
+            onClick={() => {
+              dispatch(logout());
+              router.push('/admin/login');
+            }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all ${isCollapsed ? 'justify-center' : ''}`}
             title="Logout"
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
             {!isCollapsed && <span className="text-sm font-medium">Logout</span>}
-          </Link>
+          </button>
         </div>
       </div>
     </aside>

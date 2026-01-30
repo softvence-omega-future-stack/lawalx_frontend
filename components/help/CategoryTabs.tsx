@@ -20,7 +20,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({
           <button
             key={category}
             onClick={() => onSelectCategory(category)}
-            className={`pb-4 text-sm font-medium transition-colors relative ${
+            className={`pb-4 text-sm font-medium transition-colors relative cursor-pointer ${
               selectedCategory === category
                 ? 'text-blue-500 dark:text-blue-400'
                 : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'

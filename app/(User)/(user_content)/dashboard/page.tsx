@@ -1371,21 +1371,15 @@ export default function Dashboard() {
             <Tv className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">Add Device</div>
-              {/* <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
-                Add New Device
-              </div> */}
             </div>
-            <span className="ml-auto bg-gray-50 p-2 rounded-full"><Plus className="w-4 h-4 text-bgBlue" /></span>
+            <span className="ml-auto bg-gray-50 dark:bg-gray-800 p-2 rounded-full"><Plus className="w-4 h-4 text-bgBlue" /></span>
           </button>
           <button className="flex items-center gap-2 px-3 sm:px-4 py-3 rounded-xl bg-navbarBg cursor-pointer transition-colors hover:shadow-md">
             <Video className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">Upload Content</div>
-              {/* <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
-                Add new content
-              </div> */}
             </div>
-            <span className="ml-auto bg-gray-50 p-2 rounded-full"><CloudUpload className="w-4 h-4 text-bgBlue" /></span>
+            <span className="ml-auto bg-gray-50 dark:bg-gray-800 p-2 rounded-full"><CloudUpload className="w-4 h-4 text-bgBlue" /></span>
           </button>
           <button
             onClick={() => setIsScheduleModalOpen(true)}
@@ -1394,11 +1388,8 @@ export default function Dashboard() {
             <Calendar className="w-8 h-8 text-[#155DFC] p-2 bg-blue-50 dark:bg-blue-900/50 rounded-md" />
             <div className="text-left">
               <div className="font-medium text-gray-900 dark:text-white">Schedule</div>
-              {/* <div className="text-[.6rem] md:text-sm text-gray-600 dark:text-gray-400">
-                Schedule new content
-              </div> */}
             </div>
-            <span className="ml-auto bg-gray-50 p-2 rounded-full"><Plus className="w-4 h-4 text-bgBlue" /></span>
+            <span className="ml-auto bg-gray-50 dark:bg-gray-800 p-2 rounded-full"><Plus className="w-4 h-4 text-bgBlue" /></span>
           </button>
         </div>
       </div>

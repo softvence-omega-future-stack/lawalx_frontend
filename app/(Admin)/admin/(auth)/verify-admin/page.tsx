@@ -49,9 +49,9 @@ export default function VerifyAdminPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-linear-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-navbarBg flex items-center justify-center p-4">
         <div className="w-full max-w-lg">
-          <div className="bg-white rounded-lg shadow-customShadow overflow-hidden">
+          <div className="bg-navbarBg border border-border rounded-lg shadow-customShadow overflow-hidden">
             <div className="bg-bgBlue shadow-customShadow p-4 w-fit mt-6 rounded-full text-center mx-auto">
               <Image
                 src="/admin/navbar/adminlogo.svg"
@@ -63,15 +63,15 @@ export default function VerifyAdminPage() {
             </div>
 
             <div className="px-10 pt-8 pb-10 text-center">
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Tape Admin Portal
               </h1>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-gray-600 mt-2 dark:text-white">
                 Enter your verification code
               </p>
 
               {/* Info Box */}
-              <div className="mt-8 mb-10 px-4 py-4 bg-blue-50 border border-bgBlue rounded-lg text-left">
+              <div className="mt-8 mb-10 px-4 py-4 bg-navbarBg border border-border rounded-lg text-left">
                 <p className="text-sm text-bgBlue">
                   <Shield className="inline-block w-5 h-5 mr-2 text-bgBlue" />
                   We have sent a verification code to your registered device.
@@ -80,7 +80,7 @@ export default function VerifyAdminPage() {
 
               {/* OTP Input */}
               <div className="mb-10">
-                <label className="block text-sm font-medium text-gray-700 mb-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-4">
                   Verification Code
                 </label>
                 <div className="flex items-center justify-center w-full gap-2 sm:gap-4">
@@ -97,8 +97,8 @@ export default function VerifyAdminPage() {
                         onKeyDown={(e) => handleKeyDown(index, e)}
                         className={`
                         w-10 h-10
-                        text-center text-md font-semibold
-                        bg-gray-50 border-2 rounded-lg
+                        text-center text-md font-semibold dark:text-white
+                        bg-navbarBg border-2 rounded-lg
                         focus:outline-none focus:border-bgBlue focus:ring-1 focus:ring-bgBlue dark:text-black
                         transition-all duration-200
                         ${code[index] ? "border-bgBlue shadow-sm" : "border-gray-300"}
@@ -122,7 +122,7 @@ export default function VerifyAdminPage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleBack}
-                  className="flex-1 px-6 py-3.5 text-gray-700 font-medium rounded-lg shadow-customShadow hover:bg-gray-50 transition"
+                  className="flex-1 px-6 py-3.5 text-gray-700 dark:text-white font-medium border border-border rounded-lg shadow-customShadow bg-navbarBg transition dark:hover:bg-gray-700 hover:bg-gray-50 cursor-pointer"
                 >
                   Back
                 </button>
@@ -130,7 +130,7 @@ export default function VerifyAdminPage() {
                   onClick={handleLogin}
                   disabled={code.join("").length < 6}
                   className={`
-                    flex-1 px-6 py-3.5 text-white font-medium rounded-xl transition shadow-customShadow
+                    flex-1 px-6 py-3.5 text-white font-medium border border-border rounded-lg shadow-customShadow bg-bgBlue dark:bg-bgBlue hover:bg-blue-500 transition cursor-pointer
                     ${
                       code.join("").length === 6
                         ? "bg-bgBlue hover:bg-blue-500"

@@ -26,6 +26,8 @@ import {
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { useAppDispatch } from "@/redux/store/hook";
+import { logout } from "@/redux/features/auth/authSlice";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -92,6 +94,12 @@ export default function UserDashboardNavbar() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   const isActive = (href: string) => pathname?.startsWith(href);
 
   return (
@@ -115,7 +123,7 @@ export default function UserDashboardNavbar() {
             <Image
               src="/tape.svg"
               alt="DigitalSignage Logo"
-              width={150}
+              width={100}
               height={40}
               className="h-12 w-auto"
             />
@@ -391,10 +399,13 @@ export default function UserDashboardNavbar() {
                     <div className="border-t border-gray-200 dark:border-gray-700" />
                   </div>
                   <div className="px-4 py-1">
-                    <Link href="/signin" className="flex items-center w-full text-left py-2 text-sm text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 px-2">
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full text-left py-2 text-sm text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 px-2 cursor-pointer"
+                    >
                       <LogOutIcon className="w-4 h-4 mr-2" />
                       Sign Out
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </>
@@ -518,7 +529,10 @@ export default function UserDashboardNavbar() {
 
               <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
 
-              <button className="flex items-center w-full py-2 text-sm text-red-600 dark:text-red-400 hover:text-red-700 font-medium">
+              <button
+                onClick={handleLogout}
+                className="flex items-center w-full py-2 text-sm text-red-600 dark:text-red-400 hover:text-red-700 font-medium cursor-pointer"
+              >
                 <LogOutIcon className="w-4 h-4 mr-3" /> Sign Out
               </button>
             </div>
@@ -567,7 +581,13 @@ export default function UserDashboardNavbar() {
                 <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded flex items-center gap-2">
                   <SettingsIcon className="w-4 h-4" /> Settings
                 </button>
-                <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full text-left px-2 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded flex items-center gap-2 cursor-pointer"
+                >
                   <LogOutIcon className="w-4 h-4" /> Sign Out
                 </button>
               </div>

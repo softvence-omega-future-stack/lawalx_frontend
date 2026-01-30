@@ -4,6 +4,13 @@ import React, { useState } from "react";
 import SignInEmailStep from "./SignInEmailStep";
 import SignInPasswordStep from "./SignInPasswordStep";
 import SignInCodeStep from "./SignInCodeStep";
+import { useLoginMutation } from "@/redux/api/users/authApi";
+import { useAppDispatch } from "@/redux/store/hook";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+
+import { toast } from "sonner";
 
 type Step = "EMAIL" | "PASSWORD" | "CODE";
 
@@ -16,10 +23,37 @@ const SignInForm = () => {
         setStep("PASSWORD");
     };
 
-    const handleLogin = (data: any) => {
-        console.log("Logging in with:", data);
-        // Execute login logic here
-        // router.push('/dashboard');
+    const [login, { isLoading }] = useLoginMutation();
+    const dispatch = useAppDispatch();
+    const router = useRouter();
+
+    const handleLogin = async (data: any) => {
+        try {
+            const res = await login({ email, password: data.password }).unwrap();
+            console.log("User Login Response:", res);
+            if (res.success) {
+                const { accessToken, refreshToken } = res.data;
+
+                // Decode role to verify if this is actually a USER
+                const decoded: any = jwtDecode(accessToken);
+                const role = (decoded.role || "USER").toUpperCase();
+
+                if (role !== "USER") {
+                    toast.error("You are not authorized to login as a user.");
+                    return;
+                }
+
+                dispatch(setUser({
+                    token: accessToken,
+                    refreshToken
+                }));
+                toast.success(res.message || "Login successful! Redirecting...");
+                router.push("/dashboard");
+            }
+        } catch (error: any) {
+            console.error("User login API call failed:", error);
+            toast.error(error?.data?.message || "Invalid email or password");
+        }
     };
 
     const steps = {
@@ -29,6 +63,7 @@ const SignInForm = () => {
                 email={email}
                 onLogin={handleLogin}
                 onSwitchToCode={() => setStep("CODE")}
+                isLoading={isLoading}
             />
         ),
         CODE: (

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Eye, Plus, MoreVertical, FileText, User, HelpCircle, AlertTriangle, Users, Play, Edit, Trash2, Home, ChevronRight, Video, ChevronDown, Check } from 'lucide-react';
+import { Search, Eye, Plus, MoreVertical, FileText, User, HelpCircle, AlertTriangle, Users, Play, Edit, Trash2, Home, ChevronRight, Video, ChevronDown, Check, HomeIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
     Select,
@@ -141,7 +141,9 @@ export default function KnowledgeBase() {
         <div className="min-h-screen">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-                <Home className="w-4 h-4" />
+                <Link href="/admin/dashboard">
+                    <HomeIcon className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+                </Link>
                 <ChevronRight className="w-4 h-4" />
                 <span>Customer Supports</span>
                 <ChevronRight className="w-4 h-4" />

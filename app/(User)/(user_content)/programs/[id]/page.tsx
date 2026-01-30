@@ -32,7 +32,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "2 videos, 1 content",
     devices: 4,
     lastUpdated: "2h ago",
-    video: "./detailsVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -43,7 +43,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "3 videos, 2 content",
     devices: 2,
     lastUpdated: "1h ago",
-    video: "./iceVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1726409724841-016b6f4f8b1b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -54,7 +54,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "1 video, 1 content",
     devices: 3,
     lastUpdated: "3h ago",
-    video: "./detailsVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1637592156141-d41fb6234e71?q=80&w=1253&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -65,7 +65,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "2 videos, 2 content",
     devices: 1,
     lastUpdated: "30m ago",
-    video: "./iceVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -76,7 +76,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "3 videos, 1 content",
     devices: 2,
     lastUpdated: "4h ago",
-    video: "./detailsVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1726409724841-016b6f4f8b1b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
@@ -87,7 +87,7 @@ const mockScreens: ScreenData[] = [
     assignedContent: "1 video, 2 content",
     devices: 1,
     lastUpdated: "15m ago",
-    video: "./iceVideo.mp4",
+    video: "https://youtu.be/RgA9bjbkIMI?si=vrI3B55dfry-LAe0",
     thumbnail: "https://images.unsplash.com/photo-1733681198831-eb4b838c6f77?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
 ];
@@ -117,8 +117,9 @@ const ScreenCardDetails = () => {
       </div>
       <div className="mx-auto w-full">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-9 gap-4">
-          <div className="mt-3">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 border border-t-0 border-r-0 border-l-0 border-border py-6 md:py-8 rounded-t-xl bg-navbarBg">
+          <div className="mt-0">
               <h1 className="text-lg sm:text-2xl md:text-[30px] font-semibold text-headings">
                 {screen.title}
               </h1>
@@ -126,7 +127,11 @@ const ScreenCardDetails = () => {
                 {screen.description}
               </p>
           </div>
-          <ActionButton title="Update Changes" bgColor="#0FA6FF" hoverColor="#00A4FF" icon={<Save className="w-5 h-5" />}/>
+          <button
+            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow"
+          >
+            Save Changes
+          </button>
         </div>
 
    {/* Tabs */}

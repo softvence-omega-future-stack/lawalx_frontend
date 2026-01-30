@@ -112,13 +112,13 @@ const FAQs = () => {
                     >
                       <button
                         onClick={() => toggleQuestion(item.id)}
-                        className="w-full py-4 flex items-start justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors px-2"
+                        className="w-full py-4 flex items-start justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors px-2 cursor-pointer"
                       >
                         <span className="text-base font-medium text-gray-900 dark:text-white pr-4">
                           {item.question}
                         </span>
                         <ChevronRight
-                          className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 ${expandedQuestions.includes(item.id) ? 'rotate-90' : ''
+                          className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 cursor-pointer ${expandedQuestions.includes(item.id) ? 'rotate-90' : ''
                             }`}
                         />
                       </button>

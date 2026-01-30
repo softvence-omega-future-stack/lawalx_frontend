@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { CheckCircle, Clock, TrendingUp, ChevronDown, Download, Filter, Home, ArrowRight, ChevronRight } from 'lucide-react';
 import Dropdown from '@/components/shared/Dropdown';
+import Link from 'next/link';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -82,13 +83,15 @@ const CustomerServiceReports = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-              <span><Home className="w-4 h-4 text-gray-400" /></span>
-              <span><ChevronRight className="w-4 h-4 text-gray-400" /></span>
-              <span>Reports & Analytics</span>
-              <span><ChevronRight className="w-4 h-4 text-gray-400" /></span>
-              <span className='text-bgBlue'>Customer Service & Support Reports</span>
-            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
+            <Link href="/admin/dashboard">
+                <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span>Reports & Analytics</span>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-bgBlue dark:text-blue-400 font-medium">Customer Service & Support Reports</span>
+          </div> 
             <h1 className="text-2xl md:text-3xl font-bold mb-1">Customer Service & Support Reports</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Ticket, support operations, and customer satisfaction
