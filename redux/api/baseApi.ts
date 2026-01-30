@@ -10,7 +10,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { logout, setToken } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "https://gfwndvfv-5001.inc1.devtunnels.ms/api/v1",
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "https://lawaltwo.sakibalhasa.xyz/api/v1",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as any).auth.token;
     if (token) {
