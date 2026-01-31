@@ -41,7 +41,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
               /* Active Page */
               <span
                 aria-current="page"
-                className="text-bgBlue font-medium dark:text-white dark:hover:text-bgBlue"
+                className="text-bgBlue font-medium"
               >
                 {item.label}
               </span>

@@ -139,7 +139,7 @@ const MyScreensPage: React.FC = () => {
         <div className="w-full mx-auto">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between md:flex-nowrap mb-6 gap-3">
-            <DashboardHeading title="My Screens" />
+            <DashboardHeading title="My Programs" />
             <button
             onClick={() => setIsModalOpen(true)}
               className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow flex items-center gap-2"

@@ -26,6 +26,9 @@ import AudioPlayerDialog from "./AudioPlayerDialog";
 import FolderOpenDialog from "./FolderOepnDialog";
 import ActionButton from "../ActionButton";
 import RenameDialog from "./RenameDialog";
+import DeleteConfirmationModal from "@/components/Admin/modals/DeleteConfirmationModal";
+import { useDeleteFileMutation } from "@/redux/api/users/content/content.api";
+import { toast } from "sonner";
 
 interface ContentCardProps {
   item: ContentItem;
@@ -42,12 +45,14 @@ const MyContentCard = ({
   onMenuClick,
   onAssignClick,
 }: ContentCardProps) => {
+  const [fileDelete, { isLoading: isDeleting }] = useDeleteFileMutation();
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
   const [openAudio, setOpenAudio] = useState(false);
   const [openFolder, setOpenFolder] = useState(false);
   const [openRename, setOpenRename] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const getTypeLabel = () => {
     switch (item.type) {
@@ -113,13 +118,31 @@ const MyContentCard = ({
 
   const isAssigned = (item.assignedTo ?? []).length > 0;
 
+  const handleDelete = async () => {
+    try {
+      const res = await fileDelete(item.id as any).unwrap();
+      if (res?.success) {
+        toast.success(res.message || "Deleted successfully.");
+        router.refresh();
+        onMenuClick?.(item.id, "delete");
+      } else {
+        // If API returns a non-successful payload
+        toast.error(res?.message || "Failed to delete. Please try again.");
+      }
+    } catch (err: any) {
+      console.error("Failed to delete file:", err);
+      const msg = err?.data?.message || err?.message || "Failed to delete. Please try again.";
+      toast.error(msg);
+    }
+  };
+
   // Get dropdown options based on content type
   const getDropdownOptions = () => {
     // Folder: only Rename and Delete
     if (item.type === "folder") {
       return [
         { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => setOpenRename(true) },
-        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => setOpenDeleteDialog(true) },
       ];
     }
 
@@ -128,7 +151,7 @@ const MyContentCard = ({
       return [
         { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => setOpenRename(true) },
         { label: "Move to Folder", value: "move", icon: <Folder className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "move") },
-        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+        { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => setOpenDeleteDialog(true) },
         { label: "View Details", value: "view", icon: <Eye className="w-5 h-5 text-headings" />, onClick: () => router.push(`/content/${item.id}`) },
       ];
     }
@@ -139,7 +162,7 @@ const MyContentCard = ({
       { label: "Schedule", value: "schedule", icon: <CalendarClock className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "schedule") },
       { label: "Rename", value: "rename", icon: <Pencil className="w-5 h-5" />, onClick: () => setOpenRename(true) },
       { label: "Move to Folder", value: "move", icon: <Folder className="w-5 h-5 text-headings" />, onClick: () => onMenuClick?.(item.id, "move") },
-      { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => onMenuClick?.(item.id, "delete") },
+      { label: "Delete", value: "delete", icon: <Trash2 className="w-5 h-5 text-red-500" />, danger: true, onClick: () => setOpenDeleteDialog(true) },
       { label: "View Details", value: "view", icon: <Eye className="w-5 h-5 text-headings" />, onClick: () => router.push(`/content/${item.id}`) },
     ];
   };
@@ -165,6 +188,18 @@ const MyContentCard = ({
           onRename={handleRename}
         />
       )}
+
+      <DeleteConfirmationModal
+        isOpen={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={async () => {
+          await handleDelete();
+          setOpenDeleteDialog(false);
+        }}
+        title={`Delete ${getTypeLabel()}`}
+        description={`Are you sure you want to delete this ${getTypeLabel().toLowerCase()}? This action cannot be undone.`}
+        itemName={item.title}
+      />
 
       {viewMode === "list" ? (
         <>

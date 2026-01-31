@@ -37,3 +37,9 @@ export interface MyContentResponse {
   message: string;
   data: ContentItem[];
 }
+
+// All success response 
+export interface SuccessResponse {
+  success: boolean;
+  message: string;
+}

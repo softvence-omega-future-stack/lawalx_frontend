@@ -1,5 +1,5 @@
 import { baseApi } from "../../baseApi";
-import { CreateFolderPayload, MyContentResponse, UploadFilePayload } from "./content.type";
+import { CreateFolderPayload, MyContentResponse, SuccessResponse, UploadFilePayload } from "./content.type";
 
 const contentAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -26,7 +26,35 @@ const contentAPI = baseApi.injectEndpoints({
       }),
       providesTags: ["Content"],
     }),
+    getSingleFileDetails: build.query<MyContentResponse, string>({
+      query: (id) => ({
+        url: `/file/detail/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Content"],
+    }),
+    updateFile: build.mutation<any, SuccessResponse>({
+      query: (id) => ({
+        url: `/file/update/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Content"],
+    }),
+    assignProgram: build.mutation<any, SuccessResponse>({
+      query: (id) => ({
+        url: `/file/${id}/assign-program`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Content"],
+    }),
+    deleteFile: build.mutation<any, SuccessResponse>({
+      query: (id) => ({
+        url: `/file/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Content"],
+    }),
   }),
 });
 
-export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentQuery } = contentAPI;
+export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentQuery, useGetSingleFileDetailsQuery, useUpdateFileMutation, useAssignProgramMutation, useDeleteFileMutation } = contentAPI;
