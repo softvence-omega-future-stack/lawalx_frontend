@@ -8,11 +8,11 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { logout, setToken } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as any).auth.token;
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("authorization", `${token}`);
     }
     return headers;
   },
@@ -59,8 +59,5 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: [
-    "User",
-  "Schedules",
-  ],
+  tagTypes: ["User", "Content"],
 });

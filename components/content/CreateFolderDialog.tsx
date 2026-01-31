@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -12,13 +12,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useCreateFolderMutation } from "@/redux/api/users/content/content.api";
 
 interface CreateFolderDialogProps {
     open: boolean;
     setOpen: (open: boolean) => void;
+    parentId?: string;
+    onSuccess?: (folder: any) => void;
 }
 
-const CreateFolderDialog = ({ open, setOpen }: CreateFolderDialogProps) => {
+const CreateFolderDialog = ({ open, setOpen, parentId, onSuccess }: CreateFolderDialogProps) => {
+    const [createFolder, { isLoading }] = useCreateFolderMutation();
     const [folderName, setFolderName] = useState("");
 
     const handleCancel = () => {
@@ -26,10 +32,22 @@ const CreateFolderDialog = ({ open, setOpen }: CreateFolderDialogProps) => {
         setFolderName("");
     };
 
-    const handleCreateFolder = () => {
-        console.log("Creating folder:", folderName);
-        // Add your folder creation logic here
-        handleCancel();
+    const handleCreateFolder = async () => {
+        const name = folderName.trim();
+        if (!name) {
+            toast.error("Please enter a folder name");
+            return;
+        }
+        // Close the dialog immediately (optimistic UX) and clear the input
+        setOpen(false);
+        setFolderName("");
+        try {
+            const res = await createFolder({ name }).unwrap();
+            toast.success(res?.message || "Folder created successfully");
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Failed to create folder. Please try again.");
+            console.error("Error creating folder:", error);
+        }
     };
 
     return (
@@ -67,16 +85,25 @@ const CreateFolderDialog = ({ open, setOpen }: CreateFolderDialogProps) => {
                         type="button"
                         variant="outline"
                         onClick={handleCancel}
-                        className="flex-1 h-12 rounded-lg text-base font-bold text-body border-border shadow-customShadow hover:bg-gray-50"
+                        className="flex-1 h-12 rounded-lg text-base font-bold text-body border-border shadow-customShadow hover:bg-gray-50 cursor-pointer "
+                        disabled={isLoading}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="button"
                         onClick={handleCreateFolder}
-                        className="flex-1 h-12 rounded-lg text-base font-bold bg-bgBlue hover:bg-[#0095FF] text-white transition-colors shadow-customShadow"
+                        className="flex-1 h-12 rounded-lg text-base font-bold bg-bgBlue hover:bg-[#0095FF] text-white transition-colors shadow-customShadow cursor-pointer "
+                        disabled={isLoading}
                     >
-                        Create Folder
+                        {isLoading ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                                Creating...
+                            </div>
+                        ) : (
+                            "Create Folder"
+                        )}
                     </Button>
                 </DialogFooter>
             </DialogContent>

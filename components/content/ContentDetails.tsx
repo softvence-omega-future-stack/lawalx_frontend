@@ -13,8 +13,9 @@ import {
   ChevronDown,
   Plus,
   CloudUpload,
+  Loader2,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import AudioPlayer from "react-h5-audio-player";
@@ -31,6 +32,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { sortByName, allContent } from "./MyContent";
+import { useUploadFileMutation } from "@/redux/api/users/content/content.api";
+import { toast } from "sonner";
 
 export interface ContentItem {
   id: string;
@@ -57,6 +60,7 @@ interface ContentDetailsProps {
 }
 
 const ContentDetails = ({ content }: ContentDetailsProps) => {
+  const [uploadFile, { isLoading }] = useUploadFileMutation();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -101,8 +105,47 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
     }
   };
 
+  // UPLOAD HANDLER
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    if (isLoading) return; // prevent opening picker while uploading
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    // Build FormData
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append("file", files[i]);
+    }
+
+    // If we are inside a folder, tell backend to attach files to that parent
+    if (isFolder && content.id) {
+      formData.append("parentId", content.id);
+    }
+
+    try {
+      const res = await uploadFile(formData).unwrap();
+      // console.log(res);
+
+      toast.success(res?.message || "File(s) uploaded successfully");
+      // reset file input so same file can be re-selected later
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err: any) {
+      console.error("Upload failed:", err);
+      toast.error(err?.data?.message || "Upload failed. Please try again.");
+    }
+  };
+
   return (
     <div className="">
+      {/* Hidden file input for Upload */}
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" multiple />
+
       {openRename && (
         <RenameDialog
           open={openRename}
@@ -163,10 +206,20 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
                   <Plus className="w-5 h-5 text-bgBlue group-hover:text-white group-focus:text-white transition-colors" /> Add Existing
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => console.log("Upload")}
-                  className="group flex items-center gap-3 px-4 py-3 text-sm text-headings hover:bg-bgBlue hover:text-white border-t border-border transition-colors cursor-pointer rounded-lg focus:bg-bgBlue focus:text-white outline-none"
+                  onClick={handleUploadClick}
+                  disabled={isLoading}
+                  className={`group flex items-center gap-3 px-4 py-3 text-sm text-headings border-t border-border transition-colors cursor-pointer rounded-lg focus:bg-bgBlue focus:text-white outline-none ${isLoading ? "opacity-60 pointer-events-none" : "hover:bg-bgBlue hover:text-white"}`}
                 >
-                  <CloudUpload className="w-5 h-5 text-bgBlue group-hover:text-white group-focus:text-white transition-colors " /> Upload
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-bgBlue" />
+                      <span>Uploading</span>
+                    </div>
+                  ) : (
+                    <>
+                      <CloudUpload className="w-5 h-5 text-bgBlue group-hover:text-white group-focus:text-white transition-colors " /> Upload
+                    </>
+                  )}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
