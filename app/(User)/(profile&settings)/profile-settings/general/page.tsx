@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Upload } from "lucide-react";
 import BaseSelect from "@/common/BaseSelect";
 import profile from "../../../../../public/images/profile-settings.png";
+import { useGetUserProfileQuery } from "@/redux/api/users/userProfileApi";
 
 export default function General() {
     const [region, setRegion] = React.useState("USA");
@@ -13,6 +14,9 @@ export default function General() {
     const [language, setLanguage] = React.useState("English");
     const [timeFormat, setTimeFormat] = React.useState("12 Hour (AM/PM)");
     const [dateFormat, setDateFormat] = React.useState("MM/DD/YYYY (01/15/2025)");
+
+    const { data: userProfile, isLoading } = useGetUserProfileQuery();
+    const userInfo = userProfile?.data;
 
     return (
         <div className="space-y-8 border border-border bg-navbarBg rounded-xl p-4 md:p-6">
@@ -36,7 +40,7 @@ export default function General() {
                                     fill
                                     className="object-cover"
                                 />
-                            </div>
+                                    </div>
                             <div className="flex-1 border border-border bg-navbarBg rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                                 <div className="w-8 h-8 mb-2 bg-navbarBg rounded-lg flex items-center justify-center border border-border">
                                     <Upload className="w-4 h-4 text-gray-500" />
@@ -53,21 +57,38 @@ export default function General() {
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
                         <label className="w-full md:w-1/3 text-sm font-semibold text-body">Name</label>
                         <div className="flex-1 flex gap-4">
-                            <input type="text" placeholder="First Name" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
-                            <input type="text" placeholder="Last Name" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
+                            <input
+                                type="text"
+                                placeholder="Full Name"
+                                value={userInfo?.full_name ?? "null"}
+                                readOnly
+                                className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-70 text-gray-500"
+                            />
                         </div>
                     </div>
 
                     {/* Email */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
                         <label className="w-full md:w-1/3 text-sm font-semibold text-body">Email</label>
-                        <input type="email" placeholder="Email" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={userInfo?.username ?? "null"}
+                            readOnly
+                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-70 text-gray-500"
+                        />
                     </div>
 
                     {/* Designation */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
                         <label className="w-full md:w-1/3 text-sm font-semibold text-body">Designation</label>
-                        <input type="text" placeholder="Designation" className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20 bg-input" />
+                        <input
+                            type="text"
+                            placeholder="Designation"
+                            value={userInfo?.designation ?? "null"}
+                            readOnly
+                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-70 text-gray-500"
+                        />
                     </div>
 
                     {/* Region */}

@@ -14,7 +14,7 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as any).auth.token;
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("authorization", token);
     }
     return headers;
   },
@@ -61,5 +61,5 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: ["User"],
+  tagTypes: ["User", "NotificationPermission", "Notification", "Activity"],
 });

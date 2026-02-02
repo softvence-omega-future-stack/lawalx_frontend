@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import {  Calendar, Users, MousePointer, Clock, CheckSquare, FileText, Headphones, RefreshCw, AlertCircle, MoreVertical, ChevronDown, Plus, Crown, DollarSign, Shield, Webhook, TvMinimal, FileVideo } from 'lucide-react';
+import { Calendar, Users, MousePointer, Clock, CheckSquare, FileText, Headphones, RefreshCw, AlertCircle, MoreVertical, ChevronDown, Plus, Crown, DollarSign, Shield, Webhook, TvMinimal, FileVideo } from 'lucide-react';
 import AddUserModal from '@/components/Admin/usermanagement/AddUserModal';
 
 type DateRange = '1day' | '7days' | '1month' | '1year';
@@ -39,43 +39,43 @@ const getMetricsData = (range: DateRange) => {
     '1month': 4.3,
     '1year': 52
   };
-  
+
   const mult = multipliers[range];
-  
+
   return {
     totalUsers: Math.round(12458 * mult),
     totalUsersChange: range === '1day' ? '+0.1%' : range === '7days' ? '+4.3%' : range === '1month' ? '+18.2%' : '+156%',
     totalUsersValue: range === '1day' ? '+12' : range === '7days' ? '+421' : range === '1month' ? '+1,820' : '+78,450',
     totalUsersPositive: true,
-    
+
     activeSubscriptions: Math.round(1100 * (range === '1day' ? 0.95 : range === '7days' ? 1 : range === '1month' ? 1.05 : 1.2)),
     subscriptionsChange: range === '1day' ? '-0.2%' : range === '7days' ? '-8.2%' : range === '1month' ? '+5.3%' : '+20.1%',
     subscriptionsValue: range === '1day' ? '-2' : range === '7days' ? '-98' : range === '1month' ? '+58' : '+184',
     subscriptionsPositive: range === '1month' || range === '1year',
-    
+
     mrr: range === '1day' ? '$0.9K' : range === '7days' ? '$28.1K' : range === '1month' ? '$112K' : '$1.35M',
     mrrChange: range === '1day' ? '+2.1%' : range === '7days' ? '+137%' : range === '1month' ? '+22.5%' : '+285%',
     mrrValue: range === '1day' ? '+$19' : range === '7days' ? '+$16.6K' : range === '1month' ? '+$20.6K' : '+$1.05M',
     mrrPositive: true,
-    
+
     uptime: range === '1day' ? '100%' : range === '7days' ? '99.8%' : range === '1month' ? '99.7%' : '99.5%',
     uptimeChange: range === '1day' ? '+0.2%' : range === '7days' ? '-0.2%' : range === '1month' ? '-0.3%' : '-0.5%',
     uptimePositive: range === '1day',
-    
+
     responseTime: range === '1day' ? '165ms' : range === '7days' ? '189ms' : range === '1month' ? '198ms' : '215ms',
     responseChange: range === '1day' ? '-12.7%' : range === '7days' ? '+14.5%' : range === '1month' ? '+20.1%' : '+31.5%',
     responsePositive: range === '1day',
-    
+
     devices: Math.round(1100 * (range === '1day' ? 0.98 : range === '7days' ? 1 : range === '1month' ? 1.08 : 1.25)),
     devicesChange: range === '1day' ? '-2.0%' : range === '7days' ? '-14.7%' : range === '1month' ? '+8.2%' : '+25.0%',
     devicesValue: range === '1day' ? '-22' : range === '7days' ? '-189' : range === '1month' ? '+84' : '+220',
     devicesPositive: range === '1month' || range === '1year',
-    
+
     contentItems: Math.round(1100 * (range === '1day' ? 1.01 : range === '7days' ? 1 : range === '1month' ? 1.15 : 1.8)),
     contentChange: range === '1day' ? '+1.1%' : range === '7days' ? '+6.3%' : range === '1month' ? '+15.0%' : '+80.0%',
     contentValue: range === '1day' ? '+11' : range === '7days' ? '+65' : range === '1month' ? '+144' : '+488',
     contentPositive: true,
-    
+
     tickets: range === '1day' ? 3 : range === '7days' ? 12 : range === '1month' ? 48 : 580,
     ticketsChange: range === '1day' ? '+50%' : range === '7days' ? '-3.5%' : range === '1month' ? '+12.5%' : '+33.3%',
     ticketsValue: range === '1day' ? '+1' : range === '7days' ? '-1' : range === '1month' ? '+5' : '+145',
@@ -138,7 +138,7 @@ const getBarChartData = (range: DateRange, type: 'uploaded' | 'payments') => {
       { label: 'Video', uploaded: 220, views: 100 },
       { label: 'Template', uploaded: 320, views: 150 }
     ];
-    
+
     const mult = range === '1day' ? 0.05 : range === '7days' ? 1 : range === '1month' ? 4 : 48;
     return base.map(item => ({
       ...item,
@@ -195,7 +195,7 @@ const getSubscriptionData = (range: DateRange) => {
     { name: 'Business', value: 28, color: '#FB923C' },
     { name: 'Enterprise', value: 10, color: '#FDE047' }
   ];
-  
+
   const mult = range === '1day' ? 0.95 : range === '7days' ? 1 : range === '1month' ? 1.15 : 1.5;
   return base.map(item => ({
     ...item,
@@ -226,9 +226,9 @@ const MetricCard: React.FC<MetricCardProps> = ({ icon, title, value, change, isP
   </div>
 );
 
-const DashboardHeader: React.FC<{ onExport: () => void; onAddClientClick: () => void }> = ({ 
-  onExport, 
-  onAddClientClick 
+const DashboardHeader: React.FC<{ onExport: () => void; onAddClientClick: () => void }> = ({
+  onExport,
+  onAddClientClick
 }) => (
   <div className="border-b border-border pb-6">
     <div className="flex items-center justify-between">
@@ -237,7 +237,7 @@ const DashboardHeader: React.FC<{ onExport: () => void; onAddClientClick: () => 
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Monitor system performance and manage client operations</p>
       </div>
       <div className="flex items-center gap-2">
-        <button 
+        <button
           onClick={onExport}
           className="text-nowrap px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-navbarBg border border-border shadow-customShadow rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1.5 transition-colors"
         >
@@ -251,7 +251,7 @@ const DashboardHeader: React.FC<{ onExport: () => void; onAddClientClick: () => 
           <span className='hidden lg:block'>View Critical Alerts</span>
         </button>
         <button
-          onClick={onAddClientClick}   
+          onClick={onAddClientClick}
           className="text-nowrap px-3 py-2 text-xs font-medium text-white bg-bgBlue rounded-md shadow-customShadow hover:bg-blue-500 dark:hover:bg-blue-500 flex items-center gap-1.5 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -264,23 +264,23 @@ const DashboardHeader: React.FC<{ onExport: () => void; onAddClientClick: () => 
 
 const DateSelector: React.FC<{ dateRange: DateRange; onDateRangeChange: (range: DateRange) => void }> = ({ dateRange, onDateRangeChange }) => {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const dateRangeOptions: { value: DateRange; label: string }[] = [
     { value: '1day', label: '1 Day' },
     { value: '7days', label: '7 Days' },
     { value: '1month', label: '1 Month' },
     { value: '1year', label: '1 Year' }
   ];
-  
-  const currentDate = new Date().toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
-  
+
   const selectedOption = dateRangeOptions.find(opt => opt.value === dateRange);
-  
+
   return (
     <div className="flex items-center justify-center flex-col sm:flex-row sm:justify-start gap-3 mb-5">
       <div className="flex items-center gap-2 px-3 py-1.5 bg-navbarBg border border-border rounded-md text-[.65rem] md:text-xs text-nowrap">
@@ -299,7 +299,7 @@ const DateSelector: React.FC<{ dateRange: DateRange; onDateRangeChange: (range: 
           </span>
           <ChevronDown className={`w-3.5 h-3.5 text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
-        
+
         {isOpen && (
           <div className="absolute top-full left-0 mt-1 bg-navbarBg border border-border rounded-md shadow-lg z-10 min-w-[140px]">
             {dateRangeOptions.map((option) => (
@@ -309,9 +309,8 @@ const DateSelector: React.FC<{ dateRange: DateRange; onDateRangeChange: (range: 
                   onDateRangeChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                  dateRange === option.value ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300'
-                }`}
+                className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${dateRange === option.value ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-700 dark:text-gray-300'
+                  }`}
               >
                 {option.label}
               </button>
@@ -336,7 +335,7 @@ const SubscriptionDistribution: React.FC<{ dateRange: DateRange }> = ({ dateRang
         </div>
         <MoreVertical className="w-4 h-4 text-gray-300 dark:text-gray-600 cursor-pointer" />
       </div>
-      
+
       <div className="flex items-center justify-center my-4">
         <div className="relative" style={{ width: '180px', height: '180px' }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -378,9 +377,9 @@ const SubscriptionDistribution: React.FC<{ dateRange: DateRange }> = ({ dateRang
         ))}
       </div>
 
-     <div className="flex justify-end">
-  <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
-</div>
+      <div className="flex justify-end">
+        <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
+      </div>
 
     </div>
   );
@@ -418,57 +417,57 @@ const PlatformActivityTrend: React.FC<{ dateRange: DateRange }> = ({ dateRange }
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22D3EE" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#22D3EE" stopOpacity={0.05}/>
+              <stop offset="5%" stopColor="#22D3EE" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#22D3EE" stopOpacity={0.05} />
             </linearGradient>
             <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#A78BFA" stopOpacity={0.05}/>
+              <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#A78BFA" stopOpacity={0.05} />
             </linearGradient>
             <linearGradient id="colorLogins" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10B981" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#10B981" stopOpacity={0.05}/>
+              <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#10B981" stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-          <XAxis 
-            dataKey="label" 
-            tick={{ fontSize: 10, fill: '#9CA3AF' }} 
+          <XAxis
+            dataKey="label"
+            tick={{ fontSize: 10, fill: '#9CA3AF' }}
             stroke="#E5E7EB"
             tickLine={false}
           />
-          <YAxis 
-            tick={{ fontSize: 10, fill: '#9CA3AF' }} 
+          <YAxis
+            tick={{ fontSize: 10, fill: '#9CA3AF' }}
             stroke="#E5E7EB"
             tickLine={false}
           />
-          <Tooltip 
+          <Tooltip
             contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #E5E7EB', backgroundColor: '#fff' }}
             labelStyle={{ color: '#374151' }}
           />
-          <Area 
-            type="monotone" 
-            dataKey="value3" 
-            stroke="#22D3EE" 
+          <Area
+            type="monotone"
+            dataKey="value3"
+            stroke="#22D3EE"
             strokeWidth={2}
-            fillOpacity={1} 
-            fill="url(#colorRevenue)" 
+            fillOpacity={1}
+            fill="url(#colorRevenue)"
           />
-          <Area 
-            type="monotone" 
-            dataKey="value2" 
-            stroke="#A78BFA" 
+          <Area
+            type="monotone"
+            dataKey="value2"
+            stroke="#A78BFA"
             strokeWidth={2}
-            fillOpacity={1} 
-            fill="url(#colorProgress)" 
+            fillOpacity={1}
+            fill="url(#colorProgress)"
           />
-          <Area 
-            type="monotone" 
-            dataKey="value1" 
-            stroke="#10B981" 
+          <Area
+            type="monotone"
+            dataKey="value1"
+            stroke="#10B981"
             strokeWidth={2}
-            fillOpacity={1} 
-            fill="url(#colorLogins)" 
+            fillOpacity={1}
+            fill="url(#colorLogins)"
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -504,18 +503,18 @@ const ContentUsageBreakdown: React.FC<{ title: string; subtitle: string; type: '
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-          <XAxis 
-            dataKey="label" 
-            tick={{ fontSize: 10, fill: '#9CA3AF' }} 
+          <XAxis
+            dataKey="label"
+            tick={{ fontSize: 10, fill: '#9CA3AF' }}
             stroke="#E5E7EB"
             tickLine={false}
           />
-          <YAxis 
-            tick={{ fontSize: 10, fill: '#9CA3AF' }} 
+          <YAxis
+            tick={{ fontSize: 10, fill: '#9CA3AF' }}
             stroke="#E5E7EB"
             tickLine={false}
           />
-          <Tooltip 
+          <Tooltip
             contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #E5E7EB' }}
           />
           <Bar dataKey={keys[0]} fill={colors[0]} radius={[3, 3, 0, 0]} barSize={type === 'uploaded' ? 40 : 20} />
@@ -524,8 +523,8 @@ const ContentUsageBreakdown: React.FC<{ title: string; subtitle: string; type: '
       </ResponsiveContainer>
 
       <div className="flex justify-end">
-  <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
-</div>
+        <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
+      </div>
 
     </div>
   );
@@ -572,10 +571,9 @@ const RecentCriticalActivity: React.FC = () => {
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-gray-900 dark:text-white">{activity.user}</span>
-                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                  activity.badge === 'Critical' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
-                  'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
-                }`}>
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${activity.badge === 'Critical' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                    'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                  }`}>
                   {activity.badge}
                 </span>
               </div>
@@ -652,7 +650,7 @@ const Dashboard: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange>('7days');
   const metrics = getMetricsData(dateRange);
   const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
-  
+
   const handleExport = () => {
     window.print();
   };
@@ -665,14 +663,14 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <DashboardHeader 
-        onExport={handleExport} 
-        onAddClientClick={() => setIsAddClientModalOpen(true)} 
+      <DashboardHeader
+        onExport={handleExport}
+        onAddClientClick={() => setIsAddClientModalOpen(true)}
       />
-      
+
       <div className="mt-6">
         <DateSelector dateRange={dateRange} onDateRangeChange={setDateRange} />
-        
+
         {/* Metrics Grid - Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
           <MetricCard
@@ -785,14 +783,14 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-{/* THE REUSABLE ADD USER / CLIENT MODAL */}
+      {/* THE REUSABLE ADD USER / CLIENT MODAL */}
       <AddUserModal
         isOpen={isAddClientModalOpen}
         onClose={() => setIsAddClientModalOpen(false)}
         onAddUser={handleAddClient}
       />
 
-      
+
       <style>{`
         @media print {
           body * {
