@@ -44,44 +44,62 @@ const customItems = [
 // app/dashboard/content/layout.tsx
 
 export default function ContentGroupLayout({ children }: { children: React.ReactNode }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        const handleResize = () => {
-            const width = window.innerWidth;
-            if (width < 768) {
-                setIsMobile(true);
-                setIsCollapsed(true);
-            } else if (width < 1024) {
-                setIsMobile(false);
-                setIsCollapsed(true);
-            } else {
-                setIsMobile(false);
-                if (width >= 1024) setIsCollapsed(false);
-            }
-        };
+  useEffect(() => {
+    setMounted(true);
 
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setIsMobile(true);
+        setIsCollapsed(true);
+      } else if (width < 1024) {
+        setIsMobile(false);
+        setIsCollapsed(true);
+      } else {
+        setIsMobile(false);
+        if (width >= 1024) setIsCollapsed(false);
+      }
+    };
 
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Prevent hydration mismatch - don't render until mounted
+  if (!mounted) {
     return (
-        <div className="min-h-screen bg-White">
-            <UserDashboardNavbar />
-
-            <div className="flex">
-                <SidebarComponent items={customItems} isCollapsed={isCollapsed} className="top-20 sm:top-24 bg-[#FAFAFA] dark:bg-cardBg" />
-
-                <main
-                    className={`flex-1 min-h-screen transition-all duration-300 ${isCollapsed ? 'ml-16 md:ml-20' : 'ml-64'}`}
-                >
-                  <Wrapper> {children}</Wrapper>
-                </main>
-            </div>
+      <div className="min-h-screen bg-White">
+        <UserDashboardNavbar />
+        <div className="flex">
+          <SidebarComponent items={customItems} isCollapsed={false} className="top-20 sm:top-24 bg-[#FAFAFA] dark:bg-cardBg" />
+          <main className="flex-1 min-h-screen transition-all duration-300 ml-64">
+            <Wrapper>{children}</Wrapper>
+          </main>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-screen bg-White">
+      <UserDashboardNavbar />
+
+      <div className="flex">
+        <SidebarComponent items={customItems} isCollapsed={isCollapsed} className="top-20 sm:top-24 bg-[#FAFAFA] dark:bg-cardBg" />
+
+        <main
+          className={`flex-1 min-h-screen transition-all duration-300 ${isCollapsed ? 'ml-16 md:ml-20' : 'ml-64'}`}
+        >
+          <Wrapper> {children}</Wrapper>
+        </main>
+      </div>
+    </div>
+  );
 }
 
 
