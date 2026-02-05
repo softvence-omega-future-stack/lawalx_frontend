@@ -27,7 +27,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useAppDispatch } from "@/redux/store/hook";
+import { useGetUserProfileQuery } from "@/redux/api/users/userProfileApi";
 import { logout } from "@/redux/features/auth/authSlice";
+import { useGetMyNotificationsQuery, useReadAllNotificationsMutation, useReadNotificationMutation } from "@/redux/api/users/notificationApi";
+import { formatDistanceToNow } from "date-fns";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -37,36 +40,7 @@ const navItems = [
   { href: "/schedules", label: "Schedules" },
 ];
 
-const notifications = [
-  {
-    id: 1,
-    icon: Monitor,
-    title: "New Device Added",
-    description: 'Your "Office 1" device has been added to the server.',
-    time: "1 hour ago",
-  },
-  {
-    id: 2,
-    icon: Bell,
-    title: "Account Approved",
-    description: "Your account has been approved. You can now access all features.",
-    time: "1 hour ago",
-  },
-  {
-    id: 3,
-    icon: Bell,
-    title: "Account Approved",
-    description: "Your account has been approved. You can now access all features.",
-    time: "1 hour ago",
-  },
-  {
-    id: 4,
-    icon: Bell,
-    title: "Account Approved",
-    description: "Your account has been approved. You can now access all features.",
-    time: "1 hour ago",
-  },
-];
+// Notification Mock Removed
 
 // interface UserDashboardNavbarProps {
 //   isCollapsed?: boolean;
@@ -99,7 +73,56 @@ export default function UserDashboardNavbar() {
     dispatch(logout());
   };
 
+  // User Profile
+  const { data: userProfile } = useGetUserProfileQuery();
+  const userInfo = userProfile?.data;
+
   const isActive = (href: string) => pathname?.startsWith(href);
+
+  // Notification Hooks
+  const { data: notificationData } = useGetMyNotificationsQuery();
+  const [readAllNotifications] = useReadAllNotificationsMutation();
+  const [readNotification] = useReadNotificationMutation();
+
+  const allNotifications = notificationData?.data || [];
+
+  // Sort: Unread first, then by date (assuming API returns recent first or we sort by createdAt)
+  const sortedNotifications = [...allNotifications].sort((a: any, b: any) => {
+    if (a.isRead === b.isRead) {
+      return new Date(b.notification.createdAt).getTime() - new Date(a.notification.createdAt).getTime();
+    }
+    return a.isRead ? 1 : -1;
+  });
+
+  const unreadCount = allNotifications.filter((n: any) => !n.isRead).length;
+
+  // Icons Helper
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "USER": return User;
+      case "DEVICE": return Monitor;
+      case "SYSTEM": return SettingsIcon;
+      default: return Bell;
+    }
+  };
+
+  const handleReadAll = async () => {
+    try {
+      await readAllNotifications().unwrap();
+    } catch (error) {
+      console.error("Failed to mark all as read", error);
+    }
+  };
+
+  const handleNotificationClick = async (id: string, isRead: boolean) => {
+    if (!isRead) {
+      try {
+        await readNotification(id).unwrap();
+      } catch (error) {
+        console.error("Failed to mark as read", error);
+      }
+    }
+  };
 
   return (
     <header className="bg-navbarBg border-b border-border sticky top-0 z-50 max-w-[1920px] mx-auto transition-colors">
@@ -253,7 +276,7 @@ export default function UserDashboardNavbar() {
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors relative cursor-pointer"
             >
               <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              {notifications.length > 0 && (
+              {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               )}
             </button>
@@ -266,33 +289,40 @@ export default function UserDashboardNavbar() {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       Notifications
                     </h3>
-                    <button className="text-sm text-bgBlue dark:text-blue-400 hover:text-blue-500 font-medium">
+                    <button
+                      onClick={handleReadAll}
+                      className="text-sm text-bgBlue dark:text-blue-400 hover:text-blue-500 font-medium cursor-pointer"
+                    >
                       Mark All Read
                     </button>
                   </div>
                   <div className="overflow-y-auto max-h-96">
-                    {notifications.map((notification) => {
-                      const IconComponent = notification.icon;
+                    {sortedNotifications.slice(0, 6).map((item: any) => {
+                      const IconComponent = getNotificationIcon(item.notification.actorType || "SYSTEM");
                       return (
                         <div
-                          key={notification.id}
-                          className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-colors"
+                          key={item.notificationId}
+                          onClick={() => handleNotificationClick(item.notificationId, item.isRead)}
+                          className={`px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-colors ${!item.isRead ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
                         >
                           <div className="flex items-start gap-3">
                             <div className="mt-1">
                               <IconComponent className="w-10 h-10 text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 rounded-full p-2" />
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                                {notification.title}
+                              <h4 className={`text-sm font-semibold mb-1 ${!item.isRead ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400"}`}>
+                                {item.notification.title}
                               </h4>
                               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                {notification.description}
+                                {item.notification.body}
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-500">
-                                {notification.time}
+                                {formatDistanceToNow(new Date(item.notification.createdAt), { addSuffix: true })}
                               </p>
                             </div>
+                            {!item.isRead && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            )}
                           </div>
                         </div>
                       );
@@ -300,9 +330,11 @@ export default function UserDashboardNavbar() {
                   </div>
 
                   <div className="px-6 py-3 text-center border-t border-gray-200 dark:border-gray-700">
-                    <button className="text-sm text-bgBlue dark:text-blue-400 hover:text-blue-500 font-medium">
-                      View All
-                    </button>
+                    <Link href="/notifications">
+                      <button className="text-sm text-bgBlue dark:text-blue-400 hover:text-blue-500 font-medium cursor-pointer">
+                        View All
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </>
@@ -343,14 +375,28 @@ export default function UserDashboardNavbar() {
                 <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-xl overflow-hidden z-40">
                   <div className="px-6 py-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm font-medium">
-                        JD
-                      </div>
+                      {
+                        userInfo?.image_url ? (
+                          <div className="w-10 h-10 rounded-full overflow-hidden">
+                            <Image
+                              src={userInfo.image_url}
+                              alt={userInfo.full_name}
+                              width={40}
+                              height={40}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">
+                            {userInfo?.full_name?.substring(0, 2) || "JD"}
+                          </div>
+                        )
+                      }
                       <div>
                         <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                          James David
+                          {userInfo?.full_name || "User"}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">James@gmail.com</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">@{userInfo?.username || "username"}</p>
                       </div>
                     </div>
                   </div>
@@ -462,10 +508,10 @@ export default function UserDashboardNavbar() {
               </button>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+            {/* <div className="border-t border-gray-200 dark:border-gray-700 my-2" /> */}
 
             {/* Notifications Section */}
-            <div className="px-4 py-2">
+            {/* <div className="px-4 py-2">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Notifications</p>
                 {notifications.length > 0 && (
@@ -479,7 +525,7 @@ export default function UserDashboardNavbar() {
                 </div>
               ))}
               <button className="w-full text-left text-xs text-bgBlue dark:text-blue-400 font-medium py-1 mt-1">View All Notifications</button>
-            </div>
+            </div> */}
 
             <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
 
@@ -497,10 +543,10 @@ export default function UserDashboardNavbar() {
               </Link>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+            {/* <div className="border-t border-gray-200 dark:border-gray-700 my-2" /> */}
 
             {/* Profile & Settings & Theme */}
-            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg mx-2">
+            {/* <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg mx-2">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm font-medium">
                   JD
@@ -534,7 +580,7 @@ export default function UserDashboardNavbar() {
               >
                 <LogOutIcon className="w-4 h-4 mr-3" /> Sign Out
               </button>
-            </div>
+            </div> */}
 
           </nav>
 
@@ -567,10 +613,12 @@ export default function UserDashboardNavbar() {
             {/* Mobile Profile */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
               <div className="flex items-center px-2 mb-3">
-                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500 mr-3">JD</div>
+                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500 mr-3 uppercase">
+                  {userInfo?.full_name?.substring(0, 2) || "JD"}
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">James David</p>
-                  <p className="text-xs text-gray-500">James@gmail.com</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{userInfo?.full_name || "User"}</p>
+                  <p className="text-xs text-gray-500">@{userInfo?.username || "username"}</p>
                 </div>
               </div>
               <div className="space-y-1">

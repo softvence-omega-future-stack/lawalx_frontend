@@ -1226,6 +1226,7 @@ import {
   TriangleAlertIcon,
   Plus,
   CloudUpload,
+  Activity,
 } from "lucide-react";
 
 import ActionCardButton from "@/common/ActionCardButton";
@@ -1234,6 +1235,8 @@ import AddDeviceModal from "@/components/dashboard/AddDeviceModal";
 import Image from "next/image";
 import Link from "next/link";
 import ScheduleModal from "@/components/schedules/CreateScheduleModal";
+import { formatDistanceToNow } from "date-fns";
+import { useGetAllActivitiesQuery } from "@/redux/api/users/dashboard/activityApi";
 
 export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1247,12 +1250,8 @@ export default function Dashboard() {
     { name: "Meeting Room", online: false, location: "California Branch", screen: "Screen 1" },
   ];
 
-  const activities = [
-    { type: "device", title: "Lobby Screen added", description: "New device added to network", time: "2 hours ago" },
-    { type: "notification", title: "Content uploaded", description: "New video content uploaded", time: "1 day ago" },
-    { type: "device", title: "Reception Display added", description: "New device added to network", time: "5 hours ago" },
-    { type: "notification", title: "Content uploaded", description: "New video content uploaded", time: "1 day ago" },
-  ];
+  const { data: activityData } = useGetAllActivitiesQuery();
+  const activities = activityData?.data?.slice(0, 4) || [];
 
   const totalDevices = devices.length;
   const onlineDevices = devices.filter((d) => d.online).length;
@@ -1423,8 +1422,8 @@ export default function Dashboard() {
                     </span>
                     <span
                       className={`text-xs px-2 py-0.5 rounded-md border flex items-center gap-1 ${device.online
-                          ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                          : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
+                        ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                        : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
                         }`}
                     >
                       {device.online ? (
@@ -1454,39 +1453,37 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Recent Activities
             </h2>
-            <button className="text-sm text-bgBlue hover:text-blue-400 cursor-pointer">
+            <Link href="/activity" className="text-sm text-bgBlue hover:text-blue-400 cursor-pointer">
               View All
-            </button>
+            </Link>
           </div>
 
           <div className="space-y-3 p-6">
-            {activities.map((activity, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-navbarBg"
-              >
-                {activity.type === "device" ? (
+            {activities.length === 0 ? (
+              <div className="text-center text-gray-500 py-4 dark:text-gray-400">No recent activities</div>
+            ) : (
+              activities.map((activity: any) => (
+                <div
+                  key={activity.id}
+                  className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-navbarBg"
+                >
                   <span className="mt-0.5 p-2.5 border rounded-full border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
-                    <Monitor className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    <Activity className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   </span>
-                ) : (
-                  <span className="mt-0.5 p-2.5 border rounded-full border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
-                    <Bell className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  </span>
-                )}
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900 dark:text-white">
-                    {activity.title}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {activity.description}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {activity.time}
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900 dark:text-white">
+                      {activity.actionType}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {activity.description}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
