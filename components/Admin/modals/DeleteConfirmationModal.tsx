@@ -6,6 +6,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Trash2 } from 'lucide-react';
@@ -39,14 +40,14 @@ export default function DeleteConfirmationModal({
                         <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white text-center">
                             {title}
                         </DialogTitle>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 text-center px-4">
+                        <DialogDescription className="text-sm text-gray-500 dark:text-gray-400 text-center px-4">
                             {description}
                             {itemName && (
                                 <span className="block mt-2 font-bold text-gray-900 dark:text-white italic">
                                     "{itemName}"
                                 </span>
                             )}
-                        </p>
+                        </DialogDescription>
                     </DialogHeader>
 
                     <div className="mt-8 flex items-center gap-4">

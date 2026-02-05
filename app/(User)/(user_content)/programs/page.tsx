@@ -139,7 +139,7 @@ const MyScreensPage: React.FC = () => {
         <div className="w-full mx-auto">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between md:flex-nowrap mb-6 gap-3">
-            <DashboardHeading title="My Screens" />
+            <DashboardHeading title="My Programs" />
             <button
             onClick={() => setIsModalOpen(true)}
               className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow flex items-center gap-2"
@@ -155,7 +155,7 @@ const MyScreensPage: React.FC = () => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search screen..."
+                  placeholder="Search programs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-1.5 md:py-3 bg-bgGray dark:bg-gray-800 border border-border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"

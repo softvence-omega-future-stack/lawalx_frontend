@@ -10,13 +10,17 @@ import {
   FolderPlus,
   ListMusic,
   Folder,
+  Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import DashboardHeading from "@/common/DashboardHeading";
 import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
+import { useGetAllContentQuery, useUploadFileMutation } from "@/redux/api/users/content/content.api";
+import CommonLoader from "@/common/CommonLoader";
 
 // ============================================
 // TYPES
@@ -252,12 +256,14 @@ export const mockContentData: ContentItem[] = [
 // COMPONENT
 // ============================================
 const MyContent = () => {
+  const [uploadFile, { isLoading }] = useUploadFileMutation();
+  const {data: allContentData, isLoading: isAllContentLoading} = useGetAllContentQuery(undefined);
   const [searchQuery, setSearchQuery] = useState("");
-  const [createOption, setCreateOption] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [contentFilter, setContentFilter] = useState("all-content");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [open, setOpen] = useState(false);
+  console.log("All Content Data:", allContentData);
 
   // FILTER + SORT
   const filteredContent = mockContentData
@@ -283,14 +289,6 @@ const MyContent = () => {
   const handleItemMenuClick = (id: string) => console.log("Menu clicked:", id);
   const handleAssignClick = (id: string) => console.log("Assign:", id);
 
-  const handleCreateChange = (value: string) => {
-    setCreateOption(value);
-
-    if (value === "new-folder") {
-      setOpen(true);
-    }
-  };
-
   // UPLOAD HANDLER
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -298,11 +296,26 @@ const MyContent = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files && files.length > 0) {
-      console.log("Selected files:", files);
-      // Here you would typically handle the upload logic (e.g., send to server)
+    if (!files || files.length === 0) return;
+
+    // Build FormData
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append("file", files[i]);
+    }
+
+    try {
+      const res = await uploadFile(formData).unwrap();
+      // console.log(res);
+
+      toast.success(res?.message || "File(s) uploaded successfully");
+      // reset file input so same file can be re-selected later
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err: any) {
+      console.error("Upload failed:", err);
+      toast.error(err?.data?.message || "Upload failed. Please try again.");
     }
   };
 
@@ -328,9 +341,18 @@ const MyContent = () => {
           {/* UPLOAD BUTTON */}
           <button
             onClick={handleUploadClick}
-            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow"
+            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center justify-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow min-w-[160px]"
+            disabled={isLoading}
+            aria-busy={isLoading}
           >
-            <CloudUpload className="w-5 h-5" /> Upload Content
+            {isLoading ? (
+              <CommonLoader size={24} color="text-white" text="Uploading..." className="m-0" />
+            ) : (
+              <>
+                <CloudUpload className="w-5 h-5" />
+                <span className="truncate">Upload Content</span>
+              </>
+            )}
           </button>
 
           <button
