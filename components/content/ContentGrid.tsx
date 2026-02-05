@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import { ContentItem } from "./MyContent";
 import MyContentCard from "./MyContentCard";
 
