@@ -26,9 +26,9 @@ export interface ContentItem {
   parentId: string | null;
   userId: string;
 
-  uploadedAt: string; // ISO date
-  createdAt: string;  // ISO date
-  updatedAt: string;  // ISO date
+  uploadedAt: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MyContentResponse {
