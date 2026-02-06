@@ -1,17 +1,3 @@
-// import HomeNavbar from "@/common/HomeNavbar";
-// import HeroSection from "@/components/home/HeroSection";
-
-// export default function Home() {
-//   return (
-//     <div>
-//       <HomeNavbar />
-//       <HeroSection/>
-//     </div>
-//   );
-// }
-
-
-// import LandingNavbar from "@/components/layout/LandingNavbar";
 
 export default function HomePage() {
   return (
@@ -29,3 +15,20 @@ export default function HomePage() {
     </div>
   );
 }
+
+
+
+// import HomeNavbar from "@/common/HomeNavbar";
+// import HeroSection from "@/components/home/HeroSection";
+
+// export default function Home() {
+//   return (
+//     <div>
+//       <HomeNavbar />
+//       <HeroSection/>
+//     </div>
+//   );
+// }
+
+
+// import LandingNavbar from "@/components/layout/LandingNavbar";
