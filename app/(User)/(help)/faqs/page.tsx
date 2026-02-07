@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { ChevronRight } from 'lucide-react';
 import HelpCenterHeader from '@/components/help/HelpCenterHeader';
 import CategoryTabs from '@/components/help/CategoryTabs';
