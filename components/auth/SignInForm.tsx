@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import SignInEmailStep from "./SignInEmailStep";
 import SignInPasswordStep from "./SignInPasswordStep";
 import SignInCodeStep from "./SignInCodeStep";
@@ -9,7 +9,6 @@ import { useAppDispatch } from "@/redux/store/hook";
 import { setUser } from "@/redux/features/auth/authSlice";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-
 import { toast } from "sonner";
 
 type Step = "EMAIL" | "PASSWORD" | "CODE";
@@ -37,9 +36,10 @@ const SignInForm = () => {
                 // Decode role to verify if this is actually a USER
                 const decoded: any = jwtDecode(accessToken);
                 const role = (decoded.role || "USER").toUpperCase();
+                toast.success(res.message);
 
                 if (role !== "USER") {
-                    toast.error("You are not authorized to login as a user.");
+                    toast.error("not valid email or pass");
                     return;
                 }
 
@@ -47,12 +47,11 @@ const SignInForm = () => {
                     token: accessToken,
                     refreshToken
                 }));
-                toast.success(res.message || "Login successful! Redirecting...");
                 router.push("/dashboard");
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("User login API call failed:", error);
-            toast.error(error?.data?.message || "Invalid email or password");
+            toast.error("not valid email or pass");
         }
     };
 
@@ -63,7 +62,6 @@ const SignInForm = () => {
                 email={email}
                 onLogin={handleLogin}
                 onSwitchToCode={() => setStep("CODE")}
-                isLoading={isLoading}
             />
         ),
         CODE: (

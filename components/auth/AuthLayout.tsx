@@ -45,7 +45,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, imageSrc = "/images/a
 
             {/* Right Side: Featured Image */}
             <div className="hidden lg:flex w-full lg:w-1/2 items-center justify-center relative overflow-hidden bg-navbarBg">
-                <div className="relative z-10 w-full max-w-2xl animate-in fade-in zoom-in duration-700">
+                <div className="relative z-10 w-full max-w-2xl animate-in fade-in zoom-in duration-700 py-4">
                     <Image
                         src={imageSrc}
                         alt="Featured mockup"

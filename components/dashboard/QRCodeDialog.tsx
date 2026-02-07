@@ -19,7 +19,7 @@ interface QRCodeDialogProps {
 const QRCodeDialog = ({ open, setOpen }: QRCodeDialogProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[400px] p-0 gap-0 rounded-2xl overflow-hidden border-none bg-white shadow-lg">
+            <DialogContent className="sm:max-w-[400px] p-0 gap-0 rounded-2xl overflow-hidden border-none bg-navbarBg shadow-lg">
                 <DialogHeader className="p-6 pb-2 text-center">
                     <DialogTitle className="text-2xl font-bold text-headings">
                         Scan QR Code
@@ -30,7 +30,7 @@ const QRCodeDialog = ({ open, setOpen }: QRCodeDialogProps) => {
                 </DialogHeader>
 
                 <div className="flex flex-col items-center justify-center p-8 pb-10 space-y-6">
-                    <div className="bg-white p-4 rounded-xl border-2 border-dashed border-gray-300">
+                    <div className="bg-navbarBg p-4 rounded-xl border-2 border-dashed border-gray-300" >
                         <Image
                             src="/images/qr.png"
                             alt="QR Code"
