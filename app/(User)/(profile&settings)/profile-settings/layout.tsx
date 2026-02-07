@@ -75,10 +75,14 @@ export default function ContentGroupLayout({ children }: { children: React.React
     return (
       <div className="min-h-screen bg-White">
         <UserDashboardNavbar />
+
         <div className="flex">
-          <SidebarComponent items={customItems} isCollapsed={false} className="top-20 sm:top-24 bg-[#FAFAFA] dark:bg-cardBg" />
-          <main className="flex-1 min-h-screen transition-all duration-300 ml-64">
-            <Wrapper>{children}</Wrapper>
+          <SidebarComponent items={customItems} isCollapsed={isCollapsed} className="top-20 sm:top-24 bg-[#FAFAFA] dark:bg-cardBg" />
+
+          <main
+            className={`flex-1 min-h-screen transition-all duration-300 ${isCollapsed ? 'ml-16 md:ml-20' : 'ml-64'}`}
+          >
+            <Wrapper> {children}</Wrapper>
           </main>
         </div>
       </div>

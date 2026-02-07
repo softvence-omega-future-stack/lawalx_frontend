@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Play, X } from "lucide-react";
 import Image from "next/image";
 import HelpCenterHeader from '@/components/help/HelpCenterHeader';
