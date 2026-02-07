@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { X, QrCode } from "lucide-react";
 import Dropdown from "@/components/shared/Dropdown";
 
