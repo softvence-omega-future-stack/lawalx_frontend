@@ -189,19 +189,19 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
               onClick={() => setOpenRename(true)}
               className="group flex items-center gap-2 px-6 py-2.5 border border-[#3CA9F3] text-[#3CA9F3] rounded-lg text-base font-semibold transition-all hover:bg-[#3CA9F3] hover:text-white shadow-customShadow bg-white cursor-pointer outline-none"
             >
-              <PencilLine className="w-5 h-5 transition-colors group-hover:text-white" /> Rename
+              <PencilLine className="w-5 h-5 transition-colors group-hover:text-white text-bgBlue" /> Rename
             </button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-6 py-2.5 border border-border text-headings rounded-lg text-base font-semibold transition-all hover:bg-gray-50 shadow-customShadow bg-white cursor-pointer outline-none">
-                  <Plus className="w-5 h-5 text-bgBlue" /> Add <ChevronDown className="w-4 h-4 ml-1" />
+                <button className="flex items-center gap-2 px-6 py-2.5 border border-border text-[#171717] rounded-lg text-base font-semibold transition-all hover:bg-gray-50 shadow-customShadow bg-white cursor-pointer outline-none">
+                  <Plus className="w-5 h-5 text-[#171717]" /> Add <ChevronDown className="w-4 h-4 ml-1" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-white shadow-lg p-1 z-50">
                 <DropdownMenuItem
                   onClick={() => console.log("Add Existing")}
-                  className="group flex items-center gap-3 px-4 py-3 text-sm text-headings hover:bg-bgBlue hover:text-white transition-colors cursor-pointer rounded-lg focus:bg-bgBlue focus:text-white outline-none"
+                  className="group flex items-center gap-3 px-4 py-3 text-sm hover:bg-bgBlue hover:text-white transition-colors cursor-pointer rounded-lg focus:bg-bgBlue focus:text-black outline-none"
                 >
                   <Plus className="w-5 h-5 text-bgBlue group-hover:text-white group-focus:text-white transition-colors" /> Add Existing
                 </DropdownMenuItem>
@@ -231,8 +231,8 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
         )}
 
         {!isFolder && (
-          <button onClick={() => setOpenAssign(true)} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-border rounded-lg text-sm sm:text-base font-medium text-headings cursor-pointer shadow-customShadow">
-            <Plus className="w-5 h-5 text-headings" /> Assign To
+          <button onClick={() => setOpenAssign(true)} className="flex items-center gap-2 px-4 py-2 sm:py-3 border border-border rounded-lg text-sm sm:text-base font-medium text-headings cursor-pointer shadow-customShadow hover:text-bgBlue transition-colors">
+            <Plus className="w-5 h-5 text-headings hover:text-bgBlue transition-colors" /> Assign To
           </button>
         )}
       </div>

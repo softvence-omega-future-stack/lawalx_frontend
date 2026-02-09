@@ -10,7 +10,6 @@ import {
   FolderPlus,
   ListMusic,
   Folder,
-  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,12 +18,10 @@ import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
+import FolderOpenDialog from "./FolderOepnDialog";
 import { useGetAllContentQuery, useUploadFileMutation } from "@/redux/api/users/content/content.api";
 import CommonLoader from "@/common/CommonLoader";
 
-// ============================================
-// TYPES
-// ============================================
 export interface SelectOption {
   label: string;
   value: string;
@@ -51,9 +48,6 @@ export interface ContentItem {
   children?: ContentItem[];
 }
 
-// ============================================
-// OPTIONS
-// ============================================
 export const createNew: SelectOption[] = [
   { label: "New Folder", value: "new-folder", icon: <FolderPlus size={22} /> },
   { label: "New Playlist", value: "new-playlist", icon: <ListMusic size={22} /> },
@@ -251,13 +245,9 @@ export const mockContentData: ContentItem[] = [
   },
 ];
 
-
-// ============================================
-// COMPONENT
-// ============================================
 const MyContent = () => {
   const [uploadFile, { isLoading }] = useUploadFileMutation();
-  const {data: allContentData, isLoading: isAllContentLoading} = useGetAllContentQuery(undefined);
+  const { data: allContentData, isLoading: isAllContentLoading } = useGetAllContentQuery(undefined);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [contentFilter, setContentFilter] = useState("all-content");
@@ -285,8 +275,26 @@ const MyContent = () => {
     });
 
   // HANDLERS
+  const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null);
+  const [openMoveFolder, setOpenMoveFolder] = useState(false);
+
   const handleItemSelect = (id: string) => console.log("Selected:", id);
-  const handleItemMenuClick = (id: string) => console.log("Menu clicked:", id);
+  // onItemMenuClick now receives (id, action)
+  const handleItemMenuClick = (id: string, action?: string) => {
+    console.log("Menu clicked:", id, action);
+    if (action === "move") {
+      const found = filteredContent.find((c) => c.id === id) || mockContentData.flatMap(i => i.children ?? []).find(c => c.id === id);
+      if (found) {
+        setSelectedItem(found);
+        setOpenMoveFolder(true);
+      } else {
+        // fallback: create a minimal item
+        setSelectedItem({ id, title: "", type: "image", size: "" });
+        setOpenMoveFolder(true);
+      }
+    }
+  };
+
   const handleAssignClick = (id: string) => console.log("Assign:", id);
 
   // UPLOAD HANDLER
@@ -456,6 +464,13 @@ const MyContent = () => {
       )}
 
       {open && <CreateFolderDialog open={open} setOpen={setOpen} />}
+
+      {/* Move to Folder dialog - reuse FolderOpenDialog component */}
+      {selectedItem && (
+        <>
+          <FolderOpenDialog item={selectedItem as any} openFolder={openMoveFolder} setOpenFolder={setOpenMoveFolder} />
+        </>
+      )}
     </div>
   );
 };

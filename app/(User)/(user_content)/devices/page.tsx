@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { TvMinimal, Radio, WifiOff, Search, ChevronDown, MoreVertical, X, Trash2, Edit, Monitor, UserCheck, Clock } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { TvMinimal, Radio, WifiOff, Search, ChevronDown, MoreVertical, Trash2, Edit, Monitor, UserCheck } from "lucide-react";
 import Link from "next/link";
 import AddDeviceModal from "@/components/dashboard/AddDeviceModal";
 import PreviewDeviceModal from "@/components/devices/modals/PreviewDeviceModal";
