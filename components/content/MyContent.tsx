@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   CloudUpload,
   Grid2X2,
@@ -10,7 +10,6 @@ import {
   FolderPlus,
   ListMusic,
   Folder,
-  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,41 +18,12 @@ import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
-import { useGetAllContentQuery, useUploadFileMutation } from "@/redux/api/users/content/content.api";
+import FolderOpenDialog from "./FolderOepnDialog";
+import { useGetAllContentDataQuery, useUploadFileMutation } from "@/redux/api/users/content/content.api";
 import CommonLoader from "@/common/CommonLoader";
+import { ContentItem, SelectOption } from "@/types/content";
+import { transformFile, transformFolder } from "@/lib/content-utils";
 
-// ============================================
-// TYPES
-// ============================================
-export interface SelectOption {
-  label: string;
-  value: string;
-  icon?: React.ReactNode;
-}
-
-export interface ContentItem {
-  id: string;
-  title: string;
-  type: "folder" | "playlist" | "video" | "image";
-  size: string;
-  duration?: string;
-  fileCount?: number;
-  thumbnail?: string;
-  video?: string;
-  audio?: string;
-  uploadedDate?: string;
-  fileExtension?: string;
-  updatedAt?: string;
-  assignedDevices?: string[];
-  assignedPlaylists?: string[];
-  schedules?: string[];
-  assignedTo?: string[];
-  children?: ContentItem[];
-}
-
-// ============================================
-// OPTIONS
-// ============================================
 export const createNew: SelectOption[] = [
   { label: "New Folder", value: "new-folder", icon: <FolderPlus size={22} /> },
   { label: "New Playlist", value: "new-playlist", icon: <ListMusic size={22} /> },
@@ -72,221 +42,72 @@ export const allContent: SelectOption[] = [
 ];
 
 
-export const mockContentData: ContentItem[] = [
-  // ---- Folder with nested videos & playlists ----
-  {
-    id: "f1",
-    title: "Company Update Q3",
-    type: "folder",
-    size: "45 MB",
-    fileCount: 3,
-    assignedTo: ["Main Lobby Display", "Main Gate Entry"],
-    uploadedDate: "3 days ago",
-    updatedAt: "2 days ago",
-    children: [
-      {
-        id: "f1-1",
-        title: "Intro Video - Q3",
-        type: "video",
-        size: "25 MB",
-        duration: "1:30",
-        thumbnail:
-          "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-        video: "/detailsVideo.mp4",
-        updatedAt: "2 days ago",
-      },
-      {
-        id: "f1-2",
-        title: "Q3 Report Graphics",
-        type: "image",
-        size: "8 MB",
-        thumbnail:
-          "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=400&h=300&fit=crop",
-        updatedAt: "1 day ago",
-      },
-      {
-        id: "f1-3",
-        title: "Background Music Pack",
-        type: "playlist",
-        audio: "/audio.mp3",
-        size: "8 Items",
-        duration: "12:00",
-        updatedAt: "5 days ago",
-      },
-    ],
-  },
 
-  // ---- Top-level videos ----
-  {
-    id: "v1",
-    title: "Tutorial - How to Use Dashboard",
-    type: "video",
-    size: "50 MB",
-    duration: "4:20",
-    thumbnail:
-      "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?w=400&h=300&fit=crop",
-    video: "/detailsVideo.mp4",
-    assignedTo: ["Training Room Screen"],
-    uploadedDate: "4 days ago",
-    updatedAt: "3 days ago",
-  },
-  {
-    id: "v2",
-    title: "Product Demo",
-    type: "video",
-    size: "120 MB",
-    duration: "6:10",
-    thumbnail:
-      "https://images.unsplash.com/photo-1529390079861-591de354faf5?w=400&h=300&fit=crop",
-    video: "/iceVideo.mp4",
-    uploadedDate: "1 week ago",
-    updatedAt: "4 days ago",
-  },
-
-  // ---- Top-level playlists (music) ----
-  {
-    id: "p1",
-    title: "Office Ambient Mix",
-    type: "playlist",
-    size: "20 Items",
-    duration: "1:20:00",
-    audio: "/audio.mp3",
-    assignedTo: ["Main Lobby Display"],
-    uploadedDate: "1 week ago",
-    updatedAt: "5 days ago",
-  },
-  {
-    id: "p2",
-    title: "Marketing Assets - Audio",
-    type: "playlist",
-    size: "10 Items",
-    duration: "35:00",
-    audio: "/audio.mp3",
-    uploadedDate: "5 days ago",
-    assignedTo: ["Main Gate Entry"],
-    updatedAt: "4 days ago",
-  },
-
-  // ---- Another folder with nested playlist + video ----
-  {
-    id: "f2",
-    title: "Campaign Assets",
-    type: "folder",
-    size: "220 MB",
-    fileCount: 4,
-    uploadedDate: "2 days ago",
-    updatedAt: "1 day ago",
-    assignedTo: ["Marketing Screen"],
-    children: [
-      {
-        id: "f2-1",
-        title: "Campaign Teaser",
-        type: "video",
-        size: "80 MB",
-        duration: "0:45",
-        thumbnail:
-          "https://images.unsplash.com/photo-1508873699372-7ae3e3b6b6f6?w=400&h=300&fit=crop",
-        video: "./campaign-teaser.mp4",
-        updatedAt: "1 day ago",
-      },
-      {
-        id: "f2-2",
-        title: "Ad Jingles",
-        type: "playlist",
-        size: "6 Items",
-        audio: "/audio.mp3",
-        duration: "4:00",
-        updatedAt: "2 days ago",
-      },
-      {
-        id: "f2-3",
-        title: "Campaign Poster",
-        type: "image",
-        size: "3 MB",
-        thumbnail:
-          "https://images.unsplash.com/photo-1490685451225-4b4b8f0f2c9f?w=400&h=300&fit=crop",
-        updatedAt: "3 days ago",
-      },
-    ],
-  },
-
-  // ---- Single image item (top-level) ----
-  {
-    id: "img1",
-    title: "Office Background Image",
-    type: "image",
-    size: "12 MB",
-    thumbnail:
-      "https://images.unsplash.com/photo-1508780709619-79562169bc64?w=400&h=300&fit=crop",
-    assignedTo: ["Main Lobby Display", "Reception Screen"],
-    uploadedDate: "6 days ago",
-    updatedAt: "5 days ago",
-  },
-
-  // ---- Short demo video ----
-  {
-    id: "v3",
-    title: "Welcome Loop",
-    type: "video",
-    size: "30 MB",
-    duration: "0:30",
-    thumbnail:
-      "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=300&fit=crop",
-    video: "./detailsVideo.mp4",
-    uploadedDate: "5 days ago",
-    updatedAt: "4 days ago",
-  },
-
-  // ---- Another playlist ----
-  {
-    id: "p3",
-    title: "Event BGM Collection",
-    type: "playlist",
-    size: "15 Items",
-    duration: "45:00",
-    audio: "/audio.mp3",
-    assignedTo: ["Event Hall Screen"],
-    uploadedDate: "3 days ago",
-    updatedAt: "2 days ago",
-  },
-];
-
-
-// ============================================
-// COMPONENT
-// ============================================
 const MyContent = () => {
   const [uploadFile, { isLoading }] = useUploadFileMutation();
-  const {data: allContentData, isLoading: isAllContentLoading} = useGetAllContentQuery(undefined);
+  const { data: allContentData, isLoading: isAllContentLoading } = useGetAllContentDataQuery(undefined);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [contentFilter, setContentFilter] = useState("all-content");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [open, setOpen] = useState(false);
-  console.log("All Content Data:", allContentData);
+  const [isMounted, setIsMounted] = useState(false);
+  console.log("all content data", allContentData);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // TRANSFORMATION
+  const contentItems: ContentItem[] = useMemo(() => {
+    if (!allContentData?.data) return [];
+    const folders = allContentData.data.folders.map((f: any) => transformFolder(f, isMounted));
+    const rootFiles = allContentData.data.rootFiles.map((f: any) => transformFile(f, isMounted));
+    return [...folders, ...rootFiles];
+  }, [allContentData, isMounted]);
 
   // FILTER + SORT
-  const filteredContent = mockContentData
-    .filter((item) => {
-      const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
-      let matchesType = true;
+  const filteredContent = useMemo(() => {
+    return contentItems
+      .filter((item) => {
+        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+        let matchesType = true;
 
-      if (contentFilter === "folders") matchesType = item.type === "folder";
-      else if (contentFilter === "playlists") matchesType = item.type === "playlist";
-      else if (contentFilter === "files")
-        matchesType = item.type === "video" || item.type === "image";
+        if (contentFilter === "folders") matchesType = item.type === "folder";
+        else if (contentFilter === "playlists") matchesType = item.type === "playlist";
+        else if (contentFilter === "files")
+          matchesType = item.type === "video" || item.type === "image";
 
-      return matchesSearch && matchesType;
-    })
-    .sort((a, b) => {
-      if (sortOption === "a-z") return a.title.localeCompare(b.title);
-      if (sortOption === "z-a") return b.title.localeCompare(a.title);
-      return 0;
-    });
+        return matchesSearch && matchesType;
+      })
+      .sort((a, b) => {
+        if (sortOption === "a-z") return a.title.localeCompare(b.title);
+        if (sortOption === "z-a") return b.title.localeCompare(a.title);
+        return 0;
+      });
+  }, [contentItems, searchQuery, contentFilter, sortOption]);
 
   // HANDLERS
+  const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null);
+  const [openMoveFolder, setOpenMoveFolder] = useState(false);
+
   const handleItemSelect = (id: string) => console.log("Selected:", id);
-  const handleItemMenuClick = (id: string) => console.log("Menu clicked:", id);
+  // onItemMenuClick now receives (id, action)
+  const handleItemMenuClick = (id: string, action?: string) => {
+    console.log("Menu clicked:", id, action);
+    if (action === "move") {
+      const found = filteredContent.find((c) => c.id === id) || contentItems.flatMap(i => i.children ?? []).find(c => c.id === id);
+      if (found) {
+        setSelectedItem(found);
+        setOpenMoveFolder(true);
+      } else {
+        // fallback: create a minimal item
+        setSelectedItem({ id, title: "", type: "image", size: "" });
+        setOpenMoveFolder(true);
+      }
+    }
+  };
+
   const handleAssignClick = (id: string) => console.log("Assign:", id);
 
   // UPLOAD HANDLER
@@ -432,7 +253,11 @@ const MyContent = () => {
       </h2>
 
       {/* CONTENT GRID */}
-      {filteredContent.length === 0 ? (
+      {isAllContentLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <CommonLoader size={48} text="Loading content..." />
+        </div>
+      ) : filteredContent.length === 0 ? (
         <EmptyState contentFilter={contentFilter} searchQuery={searchQuery} />
       ) : (
         <div className={viewMode === "list" ? "bg-navbarBg rounded-xl border border-border overflow-hidden" : ""}>
@@ -456,6 +281,18 @@ const MyContent = () => {
       )}
 
       {open && <CreateFolderDialog open={open} setOpen={setOpen} />}
+
+      {/* Move to Folder dialog - reuse FolderOpenDialog component */}
+      {selectedItem && (
+        <>
+          <FolderOpenDialog
+            item={selectedItem as any}
+            openFolder={openMoveFolder}
+            setOpenFolder={setOpenMoveFolder}
+            folders={contentItems.filter(i => i.type === "folder").map(f => ({ id: f.id, name: f.title }))}
+          />
+        </>
+      )}
     </div>
   );
 };
