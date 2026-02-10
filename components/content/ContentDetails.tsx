@@ -15,7 +15,7 @@ import {
   CloudUpload,
   Loader2,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import AudioPlayer from "react-h5-audio-player";
@@ -31,36 +31,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { sortByName, allContent } from "./MyContent";
-import { useUploadFileMutation } from "@/redux/api/users/content/content.api";
 import { toast } from "sonner";
-
-export interface ContentItem {
-  id: string;
-  title: string;
-  type: "folder" | "playlist" | "video" | "image";
-  size?: string;
-  duration?: string;
-  thumbnail?: string;
-  video?: string;
-  audio?: string;
-  fileCount?: number;
-  assignedTo?: string[];
-  assignedDevices?: string[];
-  assignedPlaylists?: string[];
-  schedules?: string[];
-  uploadedDate?: string;
-  updatedAt?: string;
-  fileExtension?: "mp4" | "mp3" | "jpg" | "png" | "folder" | string;
-  children?: ContentItem[];
-}
+import { ContentItem } from "@/types/content";
+import { sortByName, allContent } from "./MyContent";
+import { useUploadFileMutation, useGetSingleContentFolderDataQuery } from "@/redux/api/users/content/content.api";
+import { transformFile } from "@/lib/content-utils";
+import CommonLoader from "@/common/CommonLoader";
 
 interface ContentDetailsProps {
   content: ContentItem;
 }
 
-const ContentDetails = ({ content }: ContentDetailsProps) => {
-  const [uploadFile, { isLoading }] = useUploadFileMutation();
+const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
+  const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -68,8 +51,29 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [openRename, setOpenRename] = useState(false);
   const [openAssign, setOpenAssign] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const isFolder = content.type === "folder";
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const isFolder = initialContent.type === "folder";
+
+  // Fetch folder contents only if it's a folder
+  const { data: folderData, isLoading: isFolderLoading } = useGetSingleContentFolderDataQuery(initialContent.id, {
+    skip: !isFolder,
+  });
+
+  const content = useMemo(() => {
+    if (!isFolder) return initialContent;
+    if (folderData?.data && isMounted) {
+      return {
+        ...initialContent,
+        children: folderData.data.map((f: any) => transformFile(f, isMounted)),
+      };
+    }
+    return initialContent;
+  }, [initialContent, folderData, isFolder, isMounted]);
 
   // Filter children if it's a folder
   const filteredChildren = (content.children || [])
@@ -109,7 +113,7 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
-    if (isLoading) return; // prevent opening picker while uploading
+    if (isUploading) return; // prevent opening picker while uploading
     fileInputRef.current?.click();
   };
 
@@ -187,18 +191,18 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setOpenRename(true)}
-              className="group flex items-center gap-2 px-6 py-2.5 border border-[#3CA9F3] text-[#3CA9F3] rounded-lg text-base font-semibold transition-all hover:bg-[#3CA9F3] hover:text-white shadow-customShadow bg-white cursor-pointer outline-none"
+              className="group flex items-center gap-2 px-6 py-2.5 border border-[#3CA9F3] text-[#3CA9F3] rounded-lg text-base font-semibold transition-all hover:bg-[#3CA9F3] hover:text-white shadow-customShadow bg-White cursor-pointer outline-none"
             >
               <PencilLine className="w-5 h-5 transition-colors group-hover:text-white text-bgBlue" /> Rename
             </button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-6 py-2.5 border border-border text-[#171717] rounded-lg text-base font-semibold transition-all hover:bg-gray-50 shadow-customShadow bg-white cursor-pointer outline-none">
-                  <Plus className="w-5 h-5 text-[#171717]" /> Add <ChevronDown className="w-4 h-4 ml-1" />
+                <button className="group flex items-center gap-2 px-6 py-2.5 border border-border text-headings rounded-lg text-base font-semibold transition-all hover:bg-bgBlue hover:text-white shadow-customShadow bg-White cursor-pointer outline-none">
+                  <Plus className="w-5 h-5 text-headings transition-colors group-hover:text-white" /> Add <ChevronDown className="w-4 h-4 ml-1 transition-colors group-hover:text-white" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white shadow-lg p-1 z-50">
+              <DropdownMenuContent align="end" className="w-48 bg-White shadow-lg p-1 z-50">
                 <DropdownMenuItem
                   onClick={() => console.log("Add Existing")}
                   className="group flex items-center gap-3 px-4 py-3 text-sm hover:bg-bgBlue hover:text-white transition-colors cursor-pointer rounded-lg focus:bg-bgBlue focus:text-black outline-none"
@@ -207,10 +211,10 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleUploadClick}
-                  disabled={isLoading}
-                  className={`group flex items-center gap-3 px-4 py-3 text-sm text-headings border-t border-border transition-colors cursor-pointer rounded-lg focus:bg-bgBlue focus:text-white outline-none ${isLoading ? "opacity-60 pointer-events-none" : "hover:bg-bgBlue hover:text-white"}`}
+                  disabled={isUploading}
+                  className={`group flex items-center gap-3 px-4 py-3 text-sm text-headings border-t border-border transition-colors cursor-pointer rounded-lg focus:bg-bgBlue focus:text-white outline-none ${isUploading ? "opacity-60 pointer-events-none" : "hover:bg-bgBlue hover:text-white"}`}
                 >
-                  {isLoading ? (
+                  {isUploading ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin text-bgBlue" />
                       <span>Uploading</span>
@@ -282,7 +286,7 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
                 <div className="w-[100px] flex gap-2 items-center bg-bgGray dark:bg-gray-800 p-1.5 rounded-lg">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`flex-1 flex items-center justify-center p-2 rounded-md transition shadow-customShadow cursor-pointer ${viewMode === "grid" ? "bg-white dark:bg-gray-700" : ""}`}
+                    className={`flex-1 flex items-center justify-center p-2 rounded-md transition shadow-customShadow cursor-pointer ${viewMode === "grid" ? "bg-White dark:bg-gray-700" : ""}`}
                   >
                     <Grid2X2
                       className={`w-5 h-5 ${viewMode === "grid" ? "text-bgBlue" : "text-textGray dark:text-gray-400"}`}
@@ -291,7 +295,7 @@ const ContentDetails = ({ content }: ContentDetailsProps) => {
 
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`flex-1 flex items-center justify-center p-2 rounded-md transition shadow-customShadow cursor-pointer ${viewMode === "list" ? "bg-white dark:bg-gray-700" : ""}`}
+                    className={`flex-1 flex items-center justify-center p-2 rounded-md transition shadow-customShadow cursor-pointer ${viewMode === "list" ? "bg-White dark:bg-gray-700" : ""}`}
                   >
                     <List
                       className={`w-5 h-5 ${viewMode === "list" ? "text-bgBlue" : "text-textGray dark:text-gray-400"}`}

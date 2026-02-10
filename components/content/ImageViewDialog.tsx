@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { X } from "lucide-react";
-import { ContentItem } from "./MyContent";
+import { ContentItem } from "@/types/content";
 
 interface ImageViewDialogProps {
     item: ContentItem;

@@ -18,29 +18,21 @@ interface ContentItem {
   audio?: string;
 }
 
-interface FolderDialogProps {
-  item: ContentItem;
-  openFolder: boolean;
-  setOpenFolder: (open: boolean) => void;
-}
-
 interface Folder {
   id: string;
   name: string;
 }
 
-const FolderOpenDialog = ({ item, openFolder, setOpenFolder }: FolderDialogProps) => {
+interface FolderDialogProps {
+  item: ContentItem;
+  openFolder: boolean;
+  setOpenFolder: (open: boolean) => void;
+  folders: Folder[];
+}
+
+const FolderOpenDialog = ({ item, openFolder, setOpenFolder, folders }: FolderDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
-
-  // Mock folder data
-  const folders: Folder[] = [
-    { id: "1", name: "Work Projects" },
-    { id: "2", name: "Personal" },
-    { id: "3", name: "Archive" },
-    { id: "4", name: "Favorites" },
-    { id: "5", name: "Client Work" },
-  ];
 
   const filteredFolders = folders.filter((folder) =>
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -93,8 +85,8 @@ const FolderOpenDialog = ({ item, openFolder, setOpenFolder }: FolderDialogProps
                     key={folder.id}
                     onClick={() => setSelectedFolder(folder.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-border transition-all cursor-pointer ${selectedFolder === folder.id
-                        ? "bg-blue-50 border-blue-500 shadow-sm"
-                        : "bg-navbarBg text-headings hover:bg-gray-100 border-gray-200 hover:border-gray-300"
+                      ? "bg-blue-50 border-blue-500 shadow-sm"
+                      : "bg-navbarBg text-headings hover:bg-gray-100 border-gray-200 hover:border-gray-300"
                       }`}
                   >
                     <Folder
