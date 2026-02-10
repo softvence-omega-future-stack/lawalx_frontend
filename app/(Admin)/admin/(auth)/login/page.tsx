@@ -23,6 +23,7 @@ export default function LoginPage() {
     try {
       const res = await login({ email, password }).unwrap();
       console.log("Admin Login Response:", res);
+      console.log(res)
       if (res.success) {
         const { accessToken, refreshToken } = res.data;
 
