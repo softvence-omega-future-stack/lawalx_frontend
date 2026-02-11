@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
-import { ContentItem } from "./MyContent";
+import { ContentItem } from "@/types/content";
 import { X } from "lucide-react";
 
 interface AudioPlayerDialogProps {

@@ -1,6 +1,4 @@
-"use client";
-
-import { ContentItem } from "./MyContent";
+import { ContentItem } from "@/types/content";
 import MyContentCard from "./MyContentCard";
 
 interface ContentGridProps {

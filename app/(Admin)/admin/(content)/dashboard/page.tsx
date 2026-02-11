@@ -1,20 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Calendar, Users, MousePointer, Clock, CheckSquare, FileText, Headphones, RefreshCw, AlertCircle, MoreVertical, ChevronDown, Plus, Crown, DollarSign, Shield, Webhook, TvMinimal, FileVideo } from 'lucide-react';
 import AddUserModal from '@/components/Admin/usermanagement/AddUserModal';
+import {
+  useGetDashboardOverviewQuery,
+  useGetSubscriptionDistributionQuery,
+  useGetActivityTrendQuery,
+  useGetRealTimeMetricsQuery,
+  useGetRecentSupportTicketsQuery,
+  useGetContentUsageBreakdownQuery,
+  useGetPaymentBreakdownQuery,
+} from '@/redux/api/admin/dashbaordApi';
 
-type DateRange = '1day' | '7days' | '1month' | '1year';
+type DateRange = '1d' | '7d' | '1m' | '1y';
 
 interface MetricCardProps {
   icon: React.ReactNode;
   title: string;
   value: string | number;
   change: string;
-  changeValue: string;
+  changeValue?: string;
   isPositive: boolean;
   subtitle?: string;
+  isLoading?: boolean;
 }
 
 interface ActivityItem {
@@ -26,203 +36,46 @@ interface ActivityItem {
 }
 
 interface SupportTicket {
+  id: string;
   title: string;
   description: string;
   priority: string;
   status: string;
 }
 
-const getMetricsData = (range: DateRange) => {
-  const multipliers = {
-    '1day': 0.03,
-    '7days': 1,
-    '1month': 4.3,
-    '1year': 52
-  };
 
-  const mult = multipliers[range];
 
-  return {
-    totalUsers: Math.round(12458 * mult),
-    totalUsersChange: range === '1day' ? '+0.1%' : range === '7days' ? '+4.3%' : range === '1month' ? '+18.2%' : '+156%',
-    totalUsersValue: range === '1day' ? '+12' : range === '7days' ? '+421' : range === '1month' ? '+1,820' : '+78,450',
-    totalUsersPositive: true,
 
-    activeSubscriptions: Math.round(1100 * (range === '1day' ? 0.95 : range === '7days' ? 1 : range === '1month' ? 1.05 : 1.2)),
-    subscriptionsChange: range === '1day' ? '-0.2%' : range === '7days' ? '-8.2%' : range === '1month' ? '+5.3%' : '+20.1%',
-    subscriptionsValue: range === '1day' ? '-2' : range === '7days' ? '-98' : range === '1month' ? '+58' : '+184',
-    subscriptionsPositive: range === '1month' || range === '1year',
-
-    mrr: range === '1day' ? '$0.9K' : range === '7days' ? '$28.1K' : range === '1month' ? '$112K' : '$1.35M',
-    mrrChange: range === '1day' ? '+2.1%' : range === '7days' ? '+137%' : range === '1month' ? '+22.5%' : '+285%',
-    mrrValue: range === '1day' ? '+$19' : range === '7days' ? '+$16.6K' : range === '1month' ? '+$20.6K' : '+$1.05M',
-    mrrPositive: true,
-
-    uptime: range === '1day' ? '100%' : range === '7days' ? '99.8%' : range === '1month' ? '99.7%' : '99.5%',
-    uptimeChange: range === '1day' ? '+0.2%' : range === '7days' ? '-0.2%' : range === '1month' ? '-0.3%' : '-0.5%',
-    uptimePositive: range === '1day',
-
-    responseTime: range === '1day' ? '165ms' : range === '7days' ? '189ms' : range === '1month' ? '198ms' : '215ms',
-    responseChange: range === '1day' ? '-12.7%' : range === '7days' ? '+14.5%' : range === '1month' ? '+20.1%' : '+31.5%',
-    responsePositive: range === '1day',
-
-    devices: Math.round(1100 * (range === '1day' ? 0.98 : range === '7days' ? 1 : range === '1month' ? 1.08 : 1.25)),
-    devicesChange: range === '1day' ? '-2.0%' : range === '7days' ? '-14.7%' : range === '1month' ? '+8.2%' : '+25.0%',
-    devicesValue: range === '1day' ? '-22' : range === '7days' ? '-189' : range === '1month' ? '+84' : '+220',
-    devicesPositive: range === '1month' || range === '1year',
-
-    contentItems: Math.round(1100 * (range === '1day' ? 1.01 : range === '7days' ? 1 : range === '1month' ? 1.15 : 1.8)),
-    contentChange: range === '1day' ? '+1.1%' : range === '7days' ? '+6.3%' : range === '1month' ? '+15.0%' : '+80.0%',
-    contentValue: range === '1day' ? '+11' : range === '7days' ? '+65' : range === '1month' ? '+144' : '+488',
-    contentPositive: true,
-
-    tickets: range === '1day' ? 3 : range === '7days' ? 12 : range === '1month' ? 48 : 580,
-    ticketsChange: range === '1day' ? '+50%' : range === '7days' ? '-3.5%' : range === '1month' ? '+12.5%' : '+33.3%',
-    ticketsValue: range === '1day' ? '+1' : range === '7days' ? '-1' : range === '1month' ? '+5' : '+145',
-    ticketsPositive: range === '7days'
-  };
-};
-
-const getChartData = (range: DateRange) => {
-  if (range === '1day') {
-    return [
-      { label: '12 AM', value1: 850, value2: 720, value3: 580 },
-      { label: '3 AM', value1: 680, value2: 620, value3: 480 },
-      { label: '6 AM', value1: 920, value2: 850, value3: 650 },
-      { label: '9 AM', value1: 1150, value2: 980, value3: 820 },
-      { label: '12 PM', value1: 1280, value2: 1100, value3: 920 },
-      { label: '3 PM', value1: 1220, value2: 1050, value3: 880 },
-      { label: '6 PM', value1: 1180, value2: 1020, value3: 850 },
-      { label: '9 PM', value1: 1080, value2: 920, value3: 750 }
-    ];
-  } else if (range === '7days') {
-    return [
-      { label: 'Mon', value1: 1000, value2: 850, value3: 600 },
-      { label: 'Tue', value1: 1100, value2: 950, value3: 700 },
-      { label: 'Wed', value1: 1050, value2: 900, value3: 650 },
-      { label: 'Thu', value1: 1150, value2: 1000, value3: 800 },
-      { label: 'Fri', value1: 1200, value2: 1080, value3: 920 },
-      { label: 'Sat', value1: 980, value2: 820, value3: 580 },
-      { label: 'Sun', value1: 920, value2: 780, value3: 520 }
-    ];
-  } else if (range === '1month') {
-    return [
-      { label: 'Week 1', value1: 7200, value2: 6100, value3: 4200 },
-      { label: 'Week 2', value1: 7800, value2: 6650, value3: 4900 },
-      { label: 'Week 3', value1: 7500, value2: 6400, value3: 4600 },
-      { label: 'Week 4', value1: 8100, value2: 6900, value3: 5600 }
-    ];
-  } else {
-    return [
-      { label: 'Jan', value1: 1000, value2: 850, value3: 600 },
-      { label: 'Feb', value1: 1050, value2: 900, value3: 650 },
-      { label: 'Mar', value1: 980, value2: 920, value3: 680 },
-      { label: 'Apr', value1: 1100, value2: 950, value3: 700 },
-      { label: 'May', value1: 1080, value2: 980, value3: 750 },
-      { label: 'Jun', value1: 1150, value2: 1000, value3: 800 },
-      { label: 'Jul', value1: 1120, value2: 1020, value3: 850 },
-      { label: 'Aug', value1: 1180, value2: 1050, value3: 880 },
-      { label: 'Sep', value1: 1200, value2: 1080, value3: 920 },
-      { label: 'Oct', value1: 1150, value2: 1100, value3: 950 },
-      { label: 'Nov', value1: 1220, value2: 1120, value3: 980 },
-      { label: 'Dec', value1: 1180, value2: 1150, value3: 1000 }
-    ];
-  }
-};
-
-const getBarChartData = (range: DateRange, type: 'uploaded' | 'payments') => {
-  if (type === 'uploaded') {
-    const base = [
-      { label: 'Image', uploaded: 250, views: 120 },
-      { label: 'Audio', uploaded: 380, views: 180 },
-      { label: 'Video', uploaded: 220, views: 100 },
-      { label: 'Template', uploaded: 320, views: 150 }
-    ];
-
-    const mult = range === '1day' ? 0.05 : range === '7days' ? 1 : range === '1month' ? 4 : 48;
-    return base.map(item => ({
-      ...item,
-      uploaded: Math.round(item.uploaded * mult),
-      views: Math.round(item.views * mult)
-    }));
-  } else {
-    if (range === '1day') {
-      return [
-        { label: '12AM', failed: 0, recurring: 0 },
-        { label: '6AM', failed: 1, recurring: 0 },
-        { label: '12PM', failed: 2, recurring: 1 },
-        { label: '6PM', failed: 1, recurring: 0 }
-      ];
-    } else if (range === '7days') {
-      return [
-        { label: 'Mon', failed: 5, recurring: 2 },
-        { label: 'Tue', failed: 7, recurring: 3 },
-        { label: 'Wed', failed: 4, recurring: 2 },
-        { label: 'Thu', failed: 8, recurring: 4 },
-        { label: 'Fri', failed: 6, recurring: 3 },
-        { label: 'Sat', failed: 3, recurring: 1 },
-        { label: 'Sun', failed: 2, recurring: 1 }
-      ];
-    } else if (range === '1month') {
-      return [
-        { label: 'Week 1', failed: 28, recurring: 12 },
-        { label: 'Week 2', failed: 35, recurring: 18 },
-        { label: 'Week 3', failed: 32, recurring: 15 },
-        { label: 'Week 4', failed: 42, recurring: 22 }
-      ];
-    } else {
-      return [
-        { label: 'Jan', failed: 15, recurring: 8 },
-        { label: 'Feb', failed: 20, recurring: 12 },
-        { label: 'Mar', failed: 15, recurring: 10 },
-        { label: 'Apr', failed: 35, recurring: 22 },
-        { label: 'May', failed: 30, recurring: 18 },
-        { label: 'Jun', failed: 28, recurring: 15 },
-        { label: 'Jul', failed: 38, recurring: 48 },
-        { label: 'Aug', failed: 32, recurring: 25 },
-        { label: 'Sep', failed: 40, recurring: 30 },
-        { label: 'Oct', failed: 35, recurring: 22 },
-        { label: 'Nov', failed: 45, recurring: 60 },
-        { label: 'Dec', failed: 42, recurring: 52 }
-      ];
-    }
-  }
-};
-
-const getSubscriptionData = (range: DateRange) => {
-  const base = [
-    { name: 'Starter', value: 12, color: '#3B82F6' },
-    { name: 'Business', value: 28, color: '#FB923C' },
-    { name: 'Enterprise', value: 10, color: '#FDE047' }
-  ];
-
-  const mult = range === '1day' ? 0.95 : range === '7days' ? 1 : range === '1month' ? 1.15 : 1.5;
-  return base.map(item => ({
-    ...item,
-    value: Math.round(item.value * mult)
-  }));
-};
-
-const MetricCard: React.FC<MetricCardProps> = ({ icon, title, value, change, isPositive, subtitle }) => (
+const MetricCard: React.FC<MetricCardProps> = ({ icon, title, value, change, isPositive, subtitle, isLoading }) => (
   <div className="bg-navbarBg rounded-lg p-5 shadow-sm border border-border">
-    <div className="flex items-start justify-between mb-3">
-      <div className="flex items-center gap-2">
-        <div className="text-gray-500 dark:text-gray-400 p-2 rounded-full border border-border">{icon}</div>
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{title}</span>
+    {isLoading ? (
+      <div className="animate-pulse space-y-3">
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
       </div>
-    </div>
-    <div className="space-y-0.5">
-      <div className="text-2xl font-bold text-gray-900 dark:text-white">{value}</div>
-      <div className="flex items-center gap-1.5 text-xs">
-        {isPositive ? (
-          <span className="text-green-600 dark:text-green-400">{change}</span>
-        ) : (
-          <span className="text-red-600 dark:text-red-400">{change}</span>
-        )}
-        <span className="text-gray-500 dark:text-gray-400">From Last Period</span>
-      </div>
-      {subtitle && <div className="text-[10px] text-gray-400 dark:text-gray-500 pt-0.5">{subtitle}</div>}
-    </div>
+    ) : (
+      <>
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="text-gray-500 dark:text-gray-400 p-2 rounded-full border border-border">{icon}</div>
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{title}</span>
+          </div>
+        </div>
+        <div className="space-y-0.5">
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">{value}</div>
+          <div className="flex items-center gap-1.5 text-xs">
+            {isPositive ? (
+              <span className="text-green-600 dark:text-green-400">{change}</span>
+            ) : (
+              <span className="text-red-600 dark:text-red-400">{change}</span>
+            )}
+            <span className="text-gray-500 dark:text-gray-400">From Last Period</span>
+          </div>
+          {subtitle && <div className="text-[10px] text-gray-400 dark:text-gray-500 pt-0.5">{subtitle}</div>}
+        </div>
+      </>
+    )}
   </div>
 );
 
@@ -266,10 +119,10 @@ const DateSelector: React.FC<{ dateRange: DateRange; onDateRangeChange: (range: 
   const [isOpen, setIsOpen] = useState(false);
 
   const dateRangeOptions: { value: DateRange; label: string }[] = [
-    { value: '1day', label: '1 Day' },
-    { value: '7days', label: '7 Days' },
-    { value: '1month', label: '1 Month' },
-    { value: '1year', label: '1 Year' }
+    { value: '1d', label: '1 Day' },
+    { value: '7d', label: '7 Days' },
+    { value: '1m', label: '1 Month' },
+    { value: '1y', label: '1 Year' }
   ];
 
   const currentDate = new Date().toLocaleDateString('en-US', {
@@ -323,8 +176,26 @@ const DateSelector: React.FC<{ dateRange: DateRange; onDateRangeChange: (range: 
 };
 
 const SubscriptionDistribution: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
-  const data = getSubscriptionData(dateRange);
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const { data: apiData, isLoading } = useGetSubscriptionDistributionQuery(dateRange);
+
+  const data = useMemo(() => {
+    if (!apiData?.success || !apiData.data?.plans) {
+      return [
+        { name: 'Starter', value: 0, color: '#3B82F6' },
+        { name: 'Business', value: 0, color: '#FB923C' },
+        { name: 'Enterprise', value: 0, color: '#FDE047' }
+      ];
+    }
+
+    const colors = ['#3B82F6', '#FB923C', '#FDE047', '#10B981', '#A78BFA'];
+    return apiData.data.plans.map((plan: any, index: number) => ({
+      name: plan.planName,
+      value: plan.count,
+      color: colors[index % colors.length]
+    }));
+  }, [apiData]);
+
+  const total = useMemo(() => data.reduce((sum: number, item: any) => sum + item.value, 0), [data]);
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border h-full">
@@ -336,48 +207,56 @@ const SubscriptionDistribution: React.FC<{ dateRange: DateRange }> = ({ dateRang
         <MoreVertical className="w-4 h-4 text-gray-300 dark:text-gray-600 cursor-pointer" />
       </div>
 
-      <div className="flex items-center justify-center my-4">
-        <div className="relative" style={{ width: '180px', height: '180px' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={55}
-                outerRadius={75}
-                paddingAngle={3}
-                dataKey="value"
-                startAngle={90}
-                endAngle={-270}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">{total}</div>
-              <div className="text-[10px] text-gray-500 dark:text-gray-400">Total</div>
-            </div>
-          </div>
+      {isLoading ? (
+        <div className="h-[200px] flex items-center justify-center">
+          <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
         </div>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        {data.map((item, idx) => (
-          <div key={idx} className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></div>
-              <span className="text-gray-700 dark:text-gray-300">{item.name} ({item.value})</span>
+      ) : (
+        <>
+          <div className="flex items-center justify-center my-4">
+            <div className="relative" style={{ width: '180px', height: '180px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={75}
+                    paddingAngle={3}
+                    dataKey="value"
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    {data.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{total}</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400">Total</div>
+                </div>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      <div className="flex justify-end">
+          <div className="mt-4 space-y-2">
+            {data.map((item: any, idx: number) => (
+              <div key={idx} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></div>
+                  <span className="text-gray-700 dark:text-gray-300">{item.name} ({item.value})</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="flex justify-end mt-4">
         <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
       </div>
 
@@ -386,7 +265,17 @@ const SubscriptionDistribution: React.FC<{ dateRange: DateRange }> = ({ dateRang
 };
 
 const PlatformActivityTrend: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
-  const data = getChartData(dateRange);
+  const { data: apiData, isLoading } = useGetActivityTrendQuery(dateRange);
+
+  const data = useMemo(() => {
+    if (!apiData?.success || !apiData.data?.data) return [];
+    return apiData.data.data.map((item: any) => ({
+      label: item.label,
+      dailyLogins: item.dailyLogins,
+      totalProgress: item.totalProgress,
+      totalRevenue: item.totalRevenue
+    }));
+  }, [apiData]);
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border h-full">
@@ -413,73 +302,101 @@ const PlatformActivityTrend: React.FC<{ dateRange: DateRange }> = ({ dateRange }
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={240}>
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-          <defs>
-            <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22D3EE" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#22D3EE" stopOpacity={0.05} />
-            </linearGradient>
-            <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#A78BFA" stopOpacity={0.05} />
-            </linearGradient>
-            <linearGradient id="colorLogins" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#10B981" stopOpacity={0.05} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-          <XAxis
-            dataKey="label"
-            tick={{ fontSize: 10, fill: '#9CA3AF' }}
-            stroke="#E5E7EB"
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fontSize: 10, fill: '#9CA3AF' }}
-            stroke="#E5E7EB"
-            tickLine={false}
-          />
-          <Tooltip
-            contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #E5E7EB', backgroundColor: '#fff' }}
-            labelStyle={{ color: '#374151' }}
-          />
-          <Area
-            type="monotone"
-            dataKey="value3"
-            stroke="#22D3EE"
-            strokeWidth={2}
-            fillOpacity={1}
-            fill="url(#colorRevenue)"
-          />
-          <Area
-            type="monotone"
-            dataKey="value2"
-            stroke="#A78BFA"
-            strokeWidth={2}
-            fillOpacity={1}
-            fill="url(#colorProgress)"
-          />
-          <Area
-            type="monotone"
-            dataKey="value1"
-            stroke="#10B981"
-            strokeWidth={2}
-            fillOpacity={1}
-            fill="url(#colorLogins)"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      {isLoading ? (
+        <div className="h-[240px] flex items-center justify-center">
+          <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={240}>
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#22D3EE" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#22D3EE" stopOpacity={0.05} />
+              </linearGradient>
+              <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#A78BFA" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#A78BFA" stopOpacity={0.05} />
+              </linearGradient>
+              <linearGradient id="colorLogins" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#10B981" stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 10, fill: '#9CA3AF' }}
+              stroke="#E5E7EB"
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 10, fill: '#9CA3AF' }}
+              stroke="#E5E7EB"
+              tickLine={false}
+            />
+            <Tooltip
+              contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #E5E7EB', backgroundColor: '#fff' }}
+              labelStyle={{ color: '#374151' }}
+            />
+            <Area
+              type="monotone"
+              dataKey="totalRevenue"
+              stroke="#22D3EE"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorRevenue)"
+            />
+            <Area
+              type="monotone"
+              dataKey="totalProgress"
+              stroke="#A78BFA"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorProgress)"
+            />
+            <Area
+              type="monotone"
+              dataKey="dailyLogins"
+              stroke="#10B981"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorLogins)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 };
 
 const ContentUsageBreakdown: React.FC<{ title: string; subtitle: string; type: 'uploaded' | 'payments'; dateRange: DateRange }> = ({ title, subtitle, type, dateRange }) => {
-  const data = getBarChartData(dateRange, type);
-  const keys = type === 'uploaded' ? ['uploaded', 'views'] : ['failed', 'recurring'];
+  const { data: contentData, isLoading: isContentLoading } = useGetContentUsageBreakdownQuery(dateRange, { skip: type !== 'uploaded' });
+  const { data: paymentData, isLoading: isPaymentLoading } = useGetPaymentBreakdownQuery(dateRange, { skip: type !== 'payments' });
+
+  const data = useMemo(() => {
+    if (type === 'uploaded') {
+      if (!contentData?.success || !contentData.data?.byType) return [];
+      return contentData.data.byType.map((item: any) => ({
+        label: item.type,
+        uploaded: item.uploaded,
+        views: item.viewed || 0
+      }));
+    } else {
+      if (!paymentData?.success || !paymentData.data?.breakdown) return [];
+      // Flatten payment status into an object per label for comparison or just use as is
+      return paymentData.data.breakdown.map((item: any) => ({
+        label: item.status,
+        count: item.count,
+        percentage: item.percentage
+      }));
+    }
+  }, [type, contentData, paymentData]);
+
+  const keys = type === 'uploaded' ? ['uploaded', 'views'] : ['count', 'percentage'];
   const colors = type === 'uploaded' ? ['#3B82F6', '#93C5FD'] : ['#3B82F6', '#FB923C'];
-  const labels = type === 'uploaded' ? ['Uploaded', 'Views'] : ['Failed Payments', 'Recurring Bans (%)'];
+  const labels = type === 'uploaded' ? ['Uploaded', 'Views'] : ['Count', 'Percentage (%)'];
+  const isLoading = type === 'uploaded' ? isContentLoading : isPaymentLoading;
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border">
@@ -491,38 +408,35 @@ const ContentUsageBreakdown: React.FC<{ title: string; subtitle: string; type: '
         <MoreVertical className="w-4 h-4 text-gray-300 dark:text-gray-600 cursor-pointer" />
       </div>
 
-      <div className="flex items-center justify-end gap-4 mb-3 text-[10px]">
-        {labels.map((label, idx) => (
-          <div key={idx} className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: colors[idx] }}></div>
-            <span className="text-gray-600 dark:text-gray-400">{label}</span>
-          </div>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="h-[180px] flex items-center justify-center">
+          <RefreshCw className="w-6 h-6 animate-spin text-gray-400" />
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={180}>
+          <BarChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 10, fill: '#9CA3AF' }}
+              stroke="#E5E7EB"
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fontSize: 10, fill: '#9CA3AF' }}
+              stroke="#E5E7EB"
+              tickLine={false}
+            />
+            <Tooltip
+              contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #E5E7EB' }}
+            />
+            <Bar dataKey={keys[0]} fill={colors[0]} radius={[3, 3, 0, 0]} barSize={type === 'uploaded' ? 40 : 20} />
+            <Bar dataKey={keys[1]} fill={colors[1]} radius={[3, 3, 0, 0]} barSize={type === 'uploaded' ? 40 : 20} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
 
-      <ResponsiveContainer width="100%" height={180}>
-        <BarChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-          <XAxis
-            dataKey="label"
-            tick={{ fontSize: 10, fill: '#9CA3AF' }}
-            stroke="#E5E7EB"
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fontSize: 10, fill: '#9CA3AF' }}
-            stroke="#E5E7EB"
-            tickLine={false}
-          />
-          <Tooltip
-            contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #E5E7EB' }}
-          />
-          <Bar dataKey={keys[0]} fill={colors[0]} radius={[3, 3, 0, 0]} barSize={type === 'uploaded' ? 40 : 20} />
-          <Bar dataKey={keys[1]} fill={colors[1]} radius={[3, 3, 0, 0]} barSize={type === 'uploaded' ? 40 : 20} />
-        </BarChart>
-      </ResponsiveContainer>
-
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-4">
         <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View Details</button>
       </div>
 
@@ -531,90 +445,77 @@ const ContentUsageBreakdown: React.FC<{ title: string; subtitle: string; type: '
 };
 
 const RecentCriticalActivity: React.FC = () => {
-  const activities: ActivityItem[] = [
-    {
-      user: 'Sarah Wilson',
-      action: 'Suspended user account due to payment failure',
-      details: '',
-      time: '3 hours ago',
-      badge: 'High'
-    },
-    {
-      user: 'Sarah Wilson',
-      action: 'Permanently banned user account (User_id: 34520)',
-      details: '',
-      time: '5 hours ago',
-      badge: 'Critical'
-    },
-    {
-      user: 'Device TV-0045',
-      action: 'Device was offline - No heartbeat received',
-      details: '',
-      time: '1 day ago',
-      badge: 'Critical'
-    }
-  ];
+  const { data: apiData, isLoading } = useGetRealTimeMetricsQuery({});
+
+  const activities = useMemo(() => {
+    if (!apiData?.success || !apiData.data?.recentActivities) return [];
+    return apiData.data.recentActivities.map((activity: any) => ({
+      user: activity.userName || activity.userId,
+      action: activity.action,
+      details: activity.details || '',
+      time: activity.time || 'recent',
+      badge: activity.severity || 'Info'
+    }));
+  }, [apiData]);
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border">
       <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
         <div>
           <h3 className="text-xs font-semibold text-gray-900 dark:text-white">Recent Critical Activity</h3>
-          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Showing 3 high-impact changes</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Showing {activities.length} activities</p>
         </div>
         <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View All</button>
       </div>
 
-      <div className="space-y-3">
-        {activities.map((activity, idx) => (
-          <div key={idx} className="pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
-            <div className="flex items-start justify-between mb-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-gray-900 dark:text-white">{activity.user}</span>
-                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${activity.badge === 'Critical' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+      {isLoading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="animate-pulse h-12 bg-gray-100 dark:bg-gray-800 rounded"></div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {activities.map((activity: any, idx: number) => (
+            <div key={idx} className="pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
+              <div className="flex items-start justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-gray-900 dark:text-white">{activity.user}</span>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${activity.badge === 'Critical' || activity.badge === 'High' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
                     'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
-                  }`}>
-                  {activity.badge}
-                </span>
+                    }`}>
+                    {activity.badge}
+                  </span>
+                </div>
+                <MoreVertical className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 cursor-pointer" />
               </div>
-              <MoreVertical className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 cursor-pointer" />
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{activity.action}</p>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500">{activity.time}</span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{activity.action}</p>
-            <span className="text-[10px] text-gray-400 dark:text-gray-500">{activity.time}</span>
-          </div>
-        ))}
-      </div>
+          ))}
+          {activities.length === 0 && (
+            <div className="text-center py-4 text-xs text-gray-500">No recent activities found</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-const RecentSupportTickets: React.FC = () => {
-  const tickets: SupportTicket[] = [
-    {
-      title: 'Billing error - payment method declined',
-      description: '',
-      priority: 'High',
-      status: 'Open'
-    },
-    {
-      title: 'Device sync failed - unable to connect',
-      description: '',
-      priority: 'High',
-      status: 'Open'
-    },
-    {
-      title: 'Content not displaying on screen',
-      description: '',
-      priority: 'High',
-      status: 'New'
-    },
-    {
-      title: 'Content not displaying on screen',
-      description: '',
-      priority: 'High',
-      status: 'New'
-    }
-  ];
+const RecentSupportTickets: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
+  const { data: apiData, isLoading } = useGetRecentSupportTicketsQuery({ limit: 4, filter: dateRange });
+
+  const tickets = useMemo(() => {
+    if (!apiData?.success || !apiData.data) return [];
+    // The API might return tickets differently, adjusting based on provided types
+    return (apiData.data.tickets || []).map((ticket: any) => ({
+      id: ticket.id,
+      title: ticket.subject || ticket.title,
+      description: ticket.description || '',
+      priority: ticket.priority || 'Medium',
+      status: ticket.status || 'Open'
+    }));
+  }, [apiData]);
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border">
@@ -626,30 +527,48 @@ const RecentSupportTickets: React.FC = () => {
         <button className="text-xs text-black dark:text-white hover:text-blue-400 dark:hover:text-blue-300 cursor-pointer font-medium px-3 py-1.5 border border-border shadow-customShadow rounded-md">View All</button>
       </div>
 
-      <div className="space-y-2">
-        {tickets.map((ticket, idx) => (
-          <div key={idx} className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-800 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group">
-            <span className="text-xs text-gray-700 dark:text-gray-300">{ticket.title}</span>
-            <div className="flex items-center gap-1.5">
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400">
-                {ticket.priority}
-              </span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                {ticket.status}
-              </span>
-              <MoreVertical className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" />
+      {isLoading ? (
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="animate-pulse h-10 bg-gray-100 dark:bg-gray-800 rounded"></div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {tickets.map((ticket: any, idx: number) => (
+            <div key={idx} className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-800 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group">
+              <span className="text-xs text-gray-700 dark:text-gray-300">{ticket.title}</span>
+              <div className="flex items-center gap-1.5">
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${ticket.priority === 'High' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'}`}>
+                  {ticket.priority}
+                </span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                  {ticket.status}
+                </span>
+                <MoreVertical className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+          {tickets.length === 0 && (
+            <div className="text-center py-4 text-xs text-gray-500">No support tickets found</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
 const Dashboard: React.FC = () => {
-  const [dateRange, setDateRange] = useState<DateRange>('7days');
-  const metrics = getMetricsData(dateRange);
+  const [dateRange, setDateRange] = useState<DateRange>('7d');
   const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
+
+  // Fetch Overview Data
+  const { data: overviewData, isLoading: isOverviewLoading } = useGetDashboardOverviewQuery(dateRange);
+
+  const stats = useMemo(() => {
+    if (!overviewData?.success || !overviewData.data) return null;
+    return overviewData.data;
+  }, [overviewData]);
 
   const handleExport = () => {
     window.print();
@@ -676,39 +595,35 @@ const Dashboard: React.FC = () => {
           <MetricCard
             icon={<Users className="w-4 h-4" />}
             title="Total Users"
-            value={metrics.totalUsers.toLocaleString()}
-            change={metrics.totalUsersChange}
-            changeValue={metrics.totalUsersValue}
-            isPositive={metrics.totalUsersPositive}
-            subtitle="Active: 11,863 | Inactive: 595"
+            value={stats?.totalUsers?.toLocaleString() || '0'}
+            change={`${stats?.usersGrowth || 0}%`}
+            isPositive={(stats?.usersGrowth || 0) >= 0}
+            subtitle={`Active: ${stats?.activeUsers || 0} | Inactive: ${stats?.inactiveUsers || 0}`}
+            isLoading={isOverviewLoading}
           />
           <MetricCard
             icon={<Crown className="w-4 h-4" />}
             title="Active Subscriptions"
-            value={metrics.activeSubscriptions.toLocaleString()}
-            change={metrics.subscriptionsChange}
-            changeValue={metrics.subscriptionsValue}
-            isPositive={metrics.subscriptionsPositive}
-            subtitle="Active: 1,023 | Paused: 77"
+            value={stats?.activeSubscriptions?.toLocaleString() || '0'}
+            change={`${stats?.subscriptionGrowth || 0}%`}
+            isPositive={(stats?.subscriptionGrowth || 0) >= 0}
+            isLoading={isOverviewLoading}
           />
           <MetricCard
-            icon={
-              <DollarSign className="w-4 h-4" />}
+            icon={<DollarSign className="w-4 h-4" />}
             title="Monthly Recurring Revenue"
-            value={metrics.mrr}
-            change={metrics.mrrChange}
-            changeValue={metrics.mrrValue}
-            isPositive={metrics.mrrPositive}
-            subtitle="+60.12%"
+            value={`$${stats?.totalRevenue?.toLocaleString() || '0'}`}
+            change={`${stats?.revenueGrowth || 0}%`}
+            isPositive={(stats?.revenueGrowth || 0) >= 0}
+            isLoading={isOverviewLoading}
           />
           <MetricCard
             icon={<Shield className="w-4 h-4" />}
             title="System Uptime"
-            value={metrics.uptime}
-            change={metrics.uptimeChange}
-            changeValue=""
-            isPositive={metrics.uptimePositive}
-            subtitle="Current week: 167h 55m"
+            value={`${stats?.systemUptime || 0}%`}
+            change={`${stats?.uptimeGrowth || 0}%`}
+            isPositive={(stats?.uptimeGrowth || 0) >= 0}
+            isLoading={isOverviewLoading}
           />
         </div>
 
@@ -717,38 +632,34 @@ const Dashboard: React.FC = () => {
           <MetricCard
             icon={<Webhook className="w-4 h-4" />}
             title="Avg API Response Time"
-            value={metrics.responseTime}
-            change={metrics.responseChange}
-            changeValue="+24ms"
-            isPositive={metrics.responsePositive}
-            subtitle="Global: 212ms | Peak: 456ms"
+            value={`${stats?.avgApiResponseTime || 0}ms`}
+            change={`${stats?.apiResponseGrowth || 0}%`}
+            isPositive={(stats?.apiResponseGrowth || 0) >= 0}
+            isLoading={isOverviewLoading}
           />
           <MetricCard
             icon={<TvMinimal className="w-4 h-4" />}
             title="Active Devices"
-            value={metrics.devices.toLocaleString()}
-            change={metrics.devicesChange}
-            changeValue={metrics.devicesValue}
-            isPositive={metrics.devicesPositive}
-            subtitle="Online: 942 | Offline: 158"
+            value={stats?.activeDevices?.toLocaleString() || '0'}
+            change={`${stats?.deviceGrowth || 0}%`}
+            isPositive={(stats?.deviceGrowth || 0) >= 0}
+            isLoading={isOverviewLoading}
           />
           <MetricCard
             icon={<FileVideo className="w-4 h-4" />}
             title="Total Content Items"
-            value={metrics.contentItems.toLocaleString()}
-            change={metrics.contentChange}
-            changeValue={metrics.contentValue}
-            isPositive={metrics.contentPositive}
-            subtitle="Published: 987 | Drafts: 113"
+            value={stats?.totalContentItems?.toLocaleString() || '0'}
+            change={`${stats?.contentGrowth || 0}%`}
+            isPositive={(stats?.contentGrowth || 0) >= 0}
+            isLoading={isOverviewLoading}
           />
           <MetricCard
             icon={<Headphones className="w-4 h-4" />}
             title="Open Support Tickets"
-            value={metrics.tickets}
-            change={metrics.ticketsChange}
-            changeValue={metrics.ticketsValue}
-            isPositive={metrics.ticketsPositive}
-            subtitle="High Priority: 4 | Medium: 8"
+            value={stats?.openSupportTickets || 0}
+            change={`${stats?.ticketGrowth || 0}%`}
+            isPositive={(stats?.ticketGrowth || 0) >= 0}
+            isLoading={isOverviewLoading}
           />
         </div>
 
@@ -779,7 +690,7 @@ const Dashboard: React.FC = () => {
         {/* Activity and Tickets Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-5">
           <RecentCriticalActivity />
-          <RecentSupportTickets />
+          <RecentSupportTickets dateRange={dateRange} />
         </div>
       </div>
 

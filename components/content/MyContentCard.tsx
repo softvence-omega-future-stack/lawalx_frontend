@@ -14,7 +14,7 @@ import {
   Folder,
   Eye,
 } from "lucide-react";
-import { ContentItem } from "./MyContent";
+import { ContentItem } from "@/types/content";
 import { Checkbox } from "../ui/checkbox";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,9 +22,9 @@ import { useRouter } from "next/navigation";
 import folder from "@/public/icons/folder.svg";
 import MenuDropdown from "@/common/MenuDropdown";
 import VideoPlayDialog from "./VideoPlayDialog";
+import ImageViewDialog from "./ImageViewDialog";
 import AudioPlayerDialog from "./AudioPlayerDialog";
 import FolderOpenDialog from "./FolderOepnDialog";
-import ActionButton from "../ActionButton";
 import RenameDialog from "./RenameDialog";
 import DeleteConfirmationModal from "@/components/Admin/modals/DeleteConfirmationModal";
 import { useDeleteFileMutation } from "@/redux/api/users/content/content.api";
@@ -45,7 +45,7 @@ const MyContentCard = ({
   onMenuClick,
   onAssignClick,
 }: ContentCardProps) => {
-  const [fileDelete, { isLoading: isDeleting }] = useDeleteFileMutation();
+  const [fileDelete] = useDeleteFileMutation();
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
@@ -53,6 +53,7 @@ const MyContentCard = ({
   const [openFolder, setOpenFolder] = useState(false);
   const [openRename, setOpenRename] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openImage, setOpenImage] = useState(false);
 
   const getTypeLabel = () => {
     switch (item.type) {
@@ -76,11 +77,25 @@ const MyContentCard = ({
   const getThumbnailIcon = () => {
     if (item.thumbnail) {
       return (
-        <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-navbarBg shrink-0">
+        <div
+          className={`relative w-14 h-14 rounded-xl overflow-hidden bg-navbarBg shrink-0 ${item.type === "image" ? "cursor-pointer" : ""}`}
+          onClick={(e) => {
+            if (item.type === "image") {
+              e.stopPropagation();
+              setOpenImage(true);
+            }
+          }}
+          role={item.type === "image" ? "button" : undefined}
+        >
           <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
           {item.type === "video" && (
-            <button onClick={() => setOpen(true)} className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
+            <button onClick={(e) => { e.stopPropagation(); setOpen(true); }} className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
               <Play className="w-5 h-5 text-white fill-white" />
+            </button>
+          )}
+          {item.type === "image" && (
+            <button onClick={(e) => { e.stopPropagation(); setOpenImage(true); }} className="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors">
+              <Eye className="w-5 h-5 text-white fill-white" />
             </button>
           )}
         </div>
@@ -177,8 +192,9 @@ const MyContentCard = ({
   return (
     <>
       {open && <VideoPlayDialog item={item} open={open} setOpen={setOpen} />}
+      {openImage && <ImageViewDialog item={item} open={openImage} setOpen={setOpenImage} />}
       {openAudio && <AudioPlayerDialog item={item} open={openAudio} setOpen={setOpenAudio} />}
-      {openFolder && <FolderOpenDialog item={item} openFolder={openFolder} setOpenFolder={setOpenFolder} />}
+      {openFolder && <FolderOpenDialog item={item} openFolder={openFolder} setOpenFolder={setOpenFolder} folders={[]} />}
       {openRename && (
         <RenameDialog
           open={openRename}
@@ -283,7 +299,7 @@ const MyContentCard = ({
                 )}
                 {item.type === "image" && (
                   <button
-                    onClick={() => router.push(`/content/${item.id}`)}
+                    onClick={() => setOpenImage(true)}
                     className="px-6 py-2 bg-bgBlue hover:bg-blue-500 text-white text-sm font-semibold rounded-lg flex items-center gap-2 shadow-customShadow transition-all cursor-pointer"
                   >
                     <Eye className="w-4 h-4" /> View
@@ -320,13 +336,15 @@ const MyContentCard = ({
             </div>
 
             {item.thumbnail ? (
-              <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
+              <div className="relative w-full h-full cursor-pointer" onClick={() => item.type === "image" && setOpenImage(true)}>
+                <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
+              </div>
             ) : item.type === "folder" ? (
               <Image className="cursor-pointer" onClick={() => router.push(`/content/${item.id}`)} src={folder} alt="folder" />
             ) : (
               <div className="relative flex flex-col items-center gap-3">
                 <AudioLines className="w-20 h-20 text-bgBlue stroke-[1.5]" />
-                <button className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 mt-4 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer" onClick={() => setOpenAudio(true)}>
+                <button className="absolute bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 mt-4 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); setOpenAudio(true); }}>
                   <Play className="w-8 h-8 text-gray-400 dark:text-gray-300 fill-[rgba(255,255,255,0.7)]" />
                 </button>
               </div>
@@ -335,10 +353,20 @@ const MyContentCard = ({
             {item.type === "video" && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
-                  onClick={() => setOpen(true)}
+                  onClick={(e) => { e.stopPropagation(); setOpen(true); }}
                   className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
                 >
                   <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
+                </button>
+              </div>
+            )}
+            {item.type === "image" && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setOpenImage(true); }}
+                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
+                >
+                  <Eye className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
                 </button>
               </div>
             )}
