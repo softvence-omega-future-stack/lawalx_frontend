@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   BaseQueryFn,
   FetchArgs,
@@ -59,5 +60,5 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: ["User", "NotificationPermission", "Notification", "Activity", "Content", "Devices", "Programs", "Schedules"],
+  tagTypes: ["User", "NotificationPermission", "Notification", "Activity", "Content", "Programs", "Schedules", "Devices"],
 });
