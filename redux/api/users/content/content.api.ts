@@ -1,5 +1,5 @@
 import { baseApi } from "../../baseApi";
-import { CreateFolderPayload, FileItemSingle, GetAllDataResponse, GetSingleFilesResponse, GetSingleFolderFilesResponse, MyContentResponse, SuccessResponse, UploadFilePayload } from "./content.type";
+import { CreateFolderPayload, GetAllDataResponse, GetSingleFilesResponse, GetSingleFolderFilesResponse, MyContentResponse, SuccessResponse, UploadFilePayload } from "./content.type";
 
 const contentAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -12,11 +12,16 @@ const contentAPI = baseApi.injectEndpoints({
       invalidatesTags: ["Content"],
     }),
     uploadFile: build.mutation<any, UploadFilePayload>({
-      query: (data) => ({
-        url: "/content/upload-file",
-        method: "POST",
-        body: data,
-      }),
+      query: (arg) => {
+        const isObject = !(arg instanceof FormData);
+        const body = isObject ? (arg as any).formData : arg;
+        const folderId = isObject ? (arg as any).folderId : undefined;
+        return {
+          url: `/content/upload-file${folderId ? `?folderId=${folderId}` : ""}`,
+          method: "POST",
+          body,
+        };
+      },
       invalidatesTags: ["Content"],
     }),
     getAllContentData: build.query<GetAllDataResponse, void>({
@@ -47,10 +52,19 @@ const contentAPI = baseApi.injectEndpoints({
       }),
       providesTags: ["Content"],
     }),
-    updateFile: build.mutation<any, SuccessResponse>({
-      query: (id) => ({
-        url: `/file/update/${id}`,
+    updateFileName: build.mutation<any, { name: string; id: string }>({
+      query: ({ id, name }) => ({
+        url: `/content/content/${id}/rename`,
         method: "PATCH",
+        body: { name },
+      }),
+      invalidatesTags: ["Content"],
+    }),
+    updateFolderName: build.mutation<any, { name: string; id: string }>({
+      query: ({ id, name }) => ({
+        url: `/content/update-folder-name/${id}`,
+        method: "PATCH",
+        body: { name },
       }),
       invalidatesTags: ["Content"],
     }),
@@ -68,7 +82,14 @@ const contentAPI = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Content"],
     }),
+    deleteFolder: build.mutation<any, SuccessResponse>({
+      query: (id) => ({
+        url: `/content/delete-folder/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Content"],
+    }),
   }),
 });
 
-export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentDataQuery, useGetSingleContentFolderDataQuery, useGetSingleFilesDataQuery, useGetSingleFileDetailsQuery, useUpdateFileMutation, useAssignProgramMutation, useDeleteFileMutation } = contentAPI;
+export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentDataQuery, useGetSingleContentFolderDataQuery, useGetSingleFilesDataQuery, useGetSingleFileDetailsQuery, useUpdateFileNameMutation, useUpdateFolderNameMutation, useAssignProgramMutation, useDeleteFileMutation, useDeleteFolderMutation } = contentAPI;
