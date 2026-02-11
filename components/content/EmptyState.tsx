@@ -1,4 +1,3 @@
-import React from "react";
 import { Folder, ListMusic, FileVideo, CloudUpload, FolderPlus, Video } from "lucide-react";
 import ContentButton from "@/common/ContentButton";
 

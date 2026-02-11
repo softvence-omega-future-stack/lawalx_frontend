@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -360,16 +361,7 @@ const MyContentCard = ({
                 </button>
               </div>
             )}
-            {item.type === "image" && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button
-                  onClick={(e) => { e.stopPropagation(); setOpenImage(true); }}
-                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
-                >
-                  <Eye className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
-                </button>
-              </div>
-            )}
+
           </div>
 
           <div className="p-4">

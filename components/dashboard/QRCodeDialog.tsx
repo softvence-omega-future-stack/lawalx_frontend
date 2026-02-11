@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
     Dialog,
     DialogContent,
@@ -8,7 +7,6 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { QrCode } from "lucide-react";
 import Image from "next/image";
 
 interface QRCodeDialogProps {
