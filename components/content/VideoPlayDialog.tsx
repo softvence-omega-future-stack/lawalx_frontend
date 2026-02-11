@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import BaseVideoPlayer from "@/common/BaseVideoPlayer";
-import { ContentItem } from "./MyContent";
+import { ContentItem } from "@/types/content";
 import { X } from "lucide-react";
 
 interface VideoPlayDialogProps {
@@ -64,7 +64,7 @@ const VideoPlayDialog = ({ item, open, setOpen }: VideoPlayDialogProps) => {
                 className="absolute top-3 right-3 text-white rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer hover:bg-red-500"
                 onClick={() => setOpen(false)}
               >
-                <X/>
+                <X />
               </button>
             </div>
 

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useGetNotificationPermissionQuery, useUpdateNotificationPermissionMutation } from "@/redux/api/users/notificationPermisstionApi";
 import { toast } from "sonner";
 

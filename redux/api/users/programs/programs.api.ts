@@ -8,7 +8,7 @@ const programsAPI = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Content"],
+      invalidatesTags: ["Programs"],
     }),
   }),
 });

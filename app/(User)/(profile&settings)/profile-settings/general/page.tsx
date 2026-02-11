@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Upload } from "lucide-react";
 import BaseSelect from "@/common/BaseSelect";
 import profile from "../../../../../public/images/profile-settings.png";
-import { useGetProfileQuery, useUpdateProfileMutation } from "@/redux/api/users/settings/personalApi";
-import { useGetPreferencesQuery, useUpdatePreferencesMutation } from "@/redux/api/users/settings/preferencesApi";
+import { useGetUserProfileQuery } from "@/redux/api/users/userProfileApi";
 import { toast } from "sonner";
+import { useGetPreferencesQuery, useUpdatePreferencesMutation } from "@/redux/api/users/settings/preferencesApi";
+import { useUpdateProfileMutation } from "@/redux/api/users/settings/personalApi";
 
 export default function General() {
     const [mounted, setMounted] = useState(false);
@@ -25,9 +26,11 @@ export default function General() {
     const [dateFormat, setDateFormat] = useState("DMY");
     const [emailNotification, setEmailNotification] = useState(true);
     const [pushNotification, setPushNotification] = useState(false);
+    const [region, setRegion] = useState("USA");
+    const [timeZone, setTimeZone] = useState("Pacific Standard Time (PST)");
 
     // API hooks
-    const { data: profileData, isLoading: profileLoading } = useGetProfileQuery();
+    const { data: profileData, isLoading: profileLoading } = useGetUserProfileQuery();
     const { data: preferencesData, isLoading: preferencesLoading } = useGetPreferencesQuery();
     const [updateProfile, { isLoading: updatingProfile }] = useUpdateProfileMutation();
     const [updatePreferences, { isLoading: updatingPreferences }] = useUpdatePreferencesMutation();
@@ -95,7 +98,7 @@ export default function General() {
         }
     };
 
-    const userInfo = profileData?.data;
+    const info = profileData?.data;
 
     // Prevent hydration mismatch by showing loading state
     if (!mounted || profileLoading || preferencesLoading) {
@@ -107,6 +110,8 @@ export default function General() {
             </div>
         );
     }
+
+    const userInfo = profileData?.data;
 
     return (
         <div className="space-y-8 border border-border bg-navbarBg rounded-xl p-4 md:p-6">
@@ -128,21 +133,12 @@ export default function General() {
                         <label className="w-full md:w-1/3 text-sm font-semibold text-body">Profile Photo</label>
                         <div className="flex items-center gap-6">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                                {imageUrl && imageUrl.startsWith('http') ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={imageUrl}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <Image
-                                        src={imageUrl || profile}
-                                        alt="Profile"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                )}
+                                <Image
+                                    src={profile}
+                                    alt="Profile"
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
                             <div className="flex-1 border border-border bg-navbarBg rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                                 <div className="w-8 h-8 mb-2 bg-navbarBg rounded-lg flex items-center justify-center border border-border">
@@ -158,37 +154,27 @@ export default function General() {
 
                     {/* Image URL */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Image URL</label>
-                        <input
-                            type="text"
-                            placeholder="Enter image URL"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue bg-navbarBg text-body"
-                        />
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Name</label>
+                        <div className="flex-1 flex gap-4">
+                            <input
+                                type="text"
+                                placeholder="Full Name"
+                                value={userInfo?.full_name ?? "null"}
+                                readOnly
+                                className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-70 text-gray-500"
+                            />
+                        </div>
                     </div>
 
                     {/* Name */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Full Name</label>
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Email</label>
                         <input
-                            type="text"
-                            placeholder="Full Name"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue bg-navbarBg text-body"
-                        />
-                    </div>
-
-                    {/* Username/Email */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
-                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Username</label>
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            value={username}
+                            type="email"
+                            placeholder="Email"
+                            value={userInfo?.username ?? "null"}
                             readOnly
-                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-navbarBg text-body opacity-70 cursor-not-allowed"
+                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-70 text-gray-500"
                         />
                     </div>
 
@@ -198,10 +184,43 @@ export default function General() {
                         <input
                             type="text"
                             placeholder="Designation"
-                            value={designation}
+                            value={userInfo?.designation ?? "null"}
                             readOnly
-                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-navbarBg text-body opacity-70 cursor-not-allowed"
+                            className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-70 text-gray-500"
                         />
+                    </div>
+
+                    {/* Region */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Region</label>
+                        <div className="flex-1">
+                            <BaseSelect
+                                value={region}
+                                onChange={setRegion}
+                                options={[{ value: "USA", label: "USA" }, { value: "UK", label: "UK" }, { value: "Canada", label: "Canada" }]}
+                                placeholder="Select Region"
+                                showLabel={false}
+                                className="w-full"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Time Zone */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
+                        <label className="w-full md:w-1/3 text-sm font-semibold text-body">Time Zone</label>
+                        <div className="flex-1">
+                            <BaseSelect
+                                value={timeZone}
+                                onChange={setTimeZone}
+                                options={[
+                                    { value: "Pacific Standard Time (PST)", label: "Pacific Standard Time (PST) UTC-08:00" },
+                                    { value: "Eastern Standard Time (EST)", label: "Eastern Standard Time (EST) UTC-05:00" }
+                                ]}
+                                placeholder="Select Time Zone"
+                                showLabel={false}
+                                className="w-full"
+                            />
+                        </div>
                     </div>
                 </div>
             </section>
