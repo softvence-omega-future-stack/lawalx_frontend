@@ -1,8 +1,54 @@
 "use client";
 
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useChangePasswordMutation } from "@/redux/api/users/settings/settingsApi";
+import { toast } from "sonner";
+import { useAppSelector } from "@/redux/store/hook";
 
 export default function Account() {
+    const { user } = useAppSelector((state) => state.auth);
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [changePassword, { isLoading }] = useChangePasswordMutation();
+
+    const handlePasswordChange = async () => {
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            toast.error("Please fill in all password fields");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error("New passwords do not match");
+            return;
+        }
+
+        if (newPassword.length < 8) {
+            toast.error("Password must be at least 8 characters");
+            return;
+        }
+
+        try {
+            const res = await changePassword({ oldPassword, newPassword }).unwrap();
+            if (res.success) {
+                toast.success(res.message || "Password changed successfully");
+                setOldPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Failed to change password");
+        }
+    };
+
+    const handleCancel = () => {
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+    };
+
     return (
         <div className="space-y-8 border border-border bg-navbarBg  rounded-xl p-4 md:p-6">
             {/* Password Section */}
@@ -11,35 +57,61 @@ export default function Account() {
                 <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
                         <label className="w-48 text-sm font-medium text-body">Old Password</label>
-                        <input type="password" placeholder="***********" className="flex-1 px-4 py-2.5 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20" />
+                        <input
+                            type="password"
+                            placeholder="***********"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                            className="flex-1 px-4 py-2.5 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20"
+                        />
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-start gap-6 pb-6 border-b border-border">
                         <label className="w-48 text-sm font-medium text-body pt-2.5">New Password</label>
                         <div className="flex-1 space-y-2">
-                            <input type="password" placeholder="***********" className="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20" />
+                            <input
+                                type="password"
+                                placeholder="***********"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="w-full px-4 py-2.5 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20"
+                            />
                             <p className="text-xs text-muted">Your Password must be more than 8 characters</p>
                         </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6 pb-6 border-b border-border">
                         <label className="w-48 text-sm font-medium text-body">Retype New Password</label>
-                        <input type="password" placeholder="***********" className="flex-1 px-4 py-2.5 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20" />
+                        <input
+                            type="password"
+                            placeholder="***********"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="flex-1 px-4 py-2.5 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-bgBlue/20"
+                        />
                     </div>
 
                     <div className="flex justify-end gap-3 pt-2">
-                        <button className="px-6 py-2.5 bg-White border border-border text-body font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-customShadow cursor-pointer">
+                        <button
+                            onClick={handleCancel}
+                            className="px-6 py-2.5 bg-White border border-border text-body font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-customShadow cursor-pointer"
+                        >
                             Cancel
                         </button>
-                        <button className="px-6 py-2.5 bg-bgBlue text-white font-medium rounded-lg hover:bg-blue-500 transition-colors shadow-customShadow cursor-pointer ">
+                        <button
+                            onClick={handlePasswordChange}
+                            disabled={isLoading}
+                            className="px-6 py-2.5 bg-bgBlue text-white font-medium rounded-lg hover:bg-blue-500 transition-colors shadow-customShadow cursor-pointer flex items-center gap-2"
+                        >
+                            {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                             Change Password
                         </button>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-6 border-t border-border">
+                    {/* <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-6 border-t border-border">
                         <label className="w-48 text-sm font-medium text-body">Email</label>
-                        <input type="email" defaultValue="jacob@tape.io" disabled className="flex-1 px-4 py-2.5 bg-input border border-border rounded-lg text-sm text-gray-500" />
-                    </div>
+                        <input type="email" value={user?.email || ""} disabled className="flex-1 px-4 py-2.5 bg-input border border-border rounded-lg text-sm text-gray-500" />
+                    </div> */}
                 </div>
             </section>
 
@@ -79,7 +151,7 @@ export default function Account() {
             </section>
 
             {/* Account Deletion */}
-            <section>
+            {/* <section>
                 <h2 className="text-lg md:text-xl font-bold text-headings mb-6">Account Deletion</h2>
 
                 <div className="bg-[#FFF1F2] dark:bg-red-900/10 border border-[#FECDD3] dark:border-red-900/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -93,7 +165,7 @@ export default function Account() {
                         Delete Account
                     </button>
                 </div>
-            </section>
+            </section> */}
 
         </div>
     );

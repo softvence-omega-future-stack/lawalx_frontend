@@ -14,4 +14,4 @@ const programsAPI = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateFolderMutation } = programsAPI;
+export const { useCreateFolderMutation, useUpdateSingleProgramMutation, useUpdateSingleProgramTagsMutation } = programsAPI;

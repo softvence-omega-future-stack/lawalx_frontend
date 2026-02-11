@@ -35,6 +35,10 @@ const SignInEmailStep: React.FC<SignInEmailStepProps> = ({ onNext }) => {
         onNext(data.email);
     };
 
+    const handleGoogleLogin = () => {
+        window.location.href = "https://lawaltwo.sakibalhasa.xyz/api/v1/otp/google";
+    };
+
     return (
         <div className="w-full space-y-8">
             <div className="space-y-2">
@@ -80,6 +84,7 @@ const SignInEmailStep: React.FC<SignInEmailStepProps> = ({ onNext }) => {
 
                 <button
                     type="button"
+                    onClick={handleGoogleLogin}
                     className="w-full h-12 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors shadow-customShadow cursor-pointer"
                 >
                     <Image

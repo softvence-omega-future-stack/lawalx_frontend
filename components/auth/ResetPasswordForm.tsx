@@ -32,7 +32,7 @@ const ResetPasswordForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const id = searchParams.get("id");
+  const email = searchParams.get("email");
 
   const {
     register,
@@ -55,13 +55,13 @@ const ResetPasswordForm = () => {
   }, [password]);
 
   const onSubmit = async (data: ResetPasswordFormData) => {
-    if (!token || !id) {
+    if (!token) {
       toast.error("Reset link is invalid or incomplete. Please check your email.");
       return;
     }
 
     try {
-      const res = await resetPassword({ password: data.password, token, id }).unwrap();
+      const res = await resetPassword({ password: data.password, token }).unwrap();
       if (res.success) {
         setIsSuccess(true);
       }
