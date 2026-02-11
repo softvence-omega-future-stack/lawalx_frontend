@@ -46,7 +46,7 @@ export default function General() {
             setFullName(profileData.data.full_name || "");
             setImageUrl(profileData.data.image_url || "");
             setUsername(profileData.data.username || "");
-            setDesignation(profileData.data.designation || "");
+            setDesignation(profileData.data.role || "");
         }
     }, [profileData]);
 
