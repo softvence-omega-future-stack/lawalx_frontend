@@ -162,7 +162,7 @@ const MyContent = () => {
           {/* UPLOAD BUTTON */}
           <button
             onClick={handleUploadClick}
-            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center justify-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow min-w-[160px]"
+            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center justify-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow min-w-40"
             disabled={isLoading}
             aria-busy={isLoading}
           >
