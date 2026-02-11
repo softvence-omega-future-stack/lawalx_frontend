@@ -28,7 +28,7 @@ import AudioPlayerDialog from "./AudioPlayerDialog";
 import FolderOpenDialog from "./FolderOepnDialog";
 import RenameDialog from "./RenameDialog";
 import DeleteConfirmationModal from "@/components/Admin/modals/DeleteConfirmationModal";
-import { useDeleteFileMutation } from "@/redux/api/users/content/content.api";
+import { useDeleteFileMutation, useDeleteFolderMutation } from "@/redux/api/users/content/content.api";
 import { toast } from "sonner";
 
 interface ContentCardProps {
@@ -47,6 +47,7 @@ const MyContentCard = ({
   onAssignClick,
 }: ContentCardProps) => {
   const [fileDelete] = useDeleteFileMutation();
+  const [folderDelete] = useDeleteFolderMutation();
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [open, setOpen] = useState(false);
@@ -136,7 +137,8 @@ const MyContentCard = ({
 
   const handleDelete = async () => {
     try {
-      const res = await fileDelete(item.id as any).unwrap();
+      const mutation = item.type === "folder" ? folderDelete : fileDelete;
+      const res = await mutation(item.id as any).unwrap();
       if (res?.success) {
         toast.success(res.message || "Deleted successfully.");
         router.refresh();
@@ -146,7 +148,7 @@ const MyContentCard = ({
         toast.error(res?.message || "Failed to delete. Please try again.");
       }
     } catch (err: any) {
-      console.error("Failed to delete file:", err);
+      console.error("Failed to delete:", err);
       const msg = err?.data?.message || err?.message || "Failed to delete. Please try again.";
       toast.error(msg);
     }
@@ -241,8 +243,11 @@ const MyContentCard = ({
                   <div className="flex-1 min-w-0">
                     <Link href={`/content/${item.id}`}>
                       <h3 className="font-semibold text-Heading dark:text-white text-sm md:text-base lg:text-lg truncate hover:text-bgBlue hover:underline">
-                        {item.title}{getFileExtension()}
+                        {item.title}
                       </h3>
+                      {/* <h3 className="font-semibold text-Heading dark:text-white text-sm md:text-base lg:text-lg truncate hover:text-bgBlue hover:underline">
+                        {item.title}{getFileExtension()}
+                      </h3> */}
                     </Link>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-textGray dark:text-gray-400 font-medium">{item.size}</span>
