@@ -3,9 +3,9 @@ import { baseApi } from "../../baseApi";
 
 const programsAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    createFolder: build.mutation<any, any>({
+    createProgram: build.mutation<any, any>({
       query: (data) => ({
-        url: "/file/create-folder",
+        url: "/program/create-program",
         method: "POST",
         body: data,
       }),
@@ -14,4 +14,4 @@ const programsAPI = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateFolderMutation } = programsAPI
+export const { useCreateProgramMutation } = programsAPI;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -11,6 +12,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useMoveToFolderMutation } from "@/redux/api/users/content/content.api";
+import { toast } from "sonner";
 
 interface ContentItem {
   id: string;
@@ -31,6 +34,7 @@ interface FolderDialogProps {
 }
 
 const FolderOpenDialog = ({ item, openFolder, setOpenFolder, folders }: FolderDialogProps) => {
+  const [moveToFolder, { isLoading }] = useMoveToFolderMutation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
 
@@ -38,12 +42,19 @@ const FolderOpenDialog = ({ item, openFolder, setOpenFolder, folders }: FolderDi
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleMoveToFolder = () => {
+  const handleMoveToFolder = async () => {
     if (selectedFolder) {
-      console.log(`Moving item ${item.id} to folder ${selectedFolder}`);
-      setOpenFolder(false);
-      setSelectedFolder(null);
-      setSearchQuery("");
+      try {
+        const res = await moveToFolder({ id: item.id, targetFolderId: selectedFolder }).unwrap();
+        if (res.success) {
+          toast.success(res.message || "Moved to folder successfully");
+          setOpenFolder(false);
+          setSelectedFolder(null);
+          setSearchQuery("");
+        }
+      } catch (error: any) {
+        toast.error(error?.data?.message || "Something went wrong");
+      }
     }
   };
 
@@ -62,7 +73,7 @@ const FolderOpenDialog = ({ item, openFolder, setOpenFolder, folders }: FolderDi
         </DialogHeader>
 
         {/* Search Bar */}
-        <div className="relative mb-6 px-0.5 px-6">
+        <div className="relative mb-6 px-6">
           <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
@@ -123,10 +134,10 @@ const FolderOpenDialog = ({ item, openFolder, setOpenFolder, folders }: FolderDi
 
           <Button
             onClick={handleMoveToFolder}
-            disabled={!selectedFolder}
+            disabled={!selectedFolder || isLoading}
             className="flex-1 h-12 rounded-lg text-base font-bold bg-bgBlue hover:bg-[#0095FF] text-white transition-colors shadow-customShadow"
           >
-            Move to Folder
+            {isLoading ? "Moving..." : "Move to Folder"}
           </Button>
         </DialogFooter>
       </DialogContent>
