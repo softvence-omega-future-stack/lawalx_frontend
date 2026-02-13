@@ -14,6 +14,10 @@ import Image from "next/image";
 import MenuDropdown from "@/common/MenuDropdown";
 import VideoPlayDialog from "./VideoPlayDialog";
 import RenameDialog from "./RenameDialog";
+import DeleteConfirmationModal from "@/components/Admin/modals/DeleteConfirmationModal";
+import { useUpdateFileNameMutation, useDeleteFileMutation } from "@/redux/api/users/content/content.api";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface TemplateItem {
     id: string;
@@ -31,8 +35,37 @@ interface TemplateCardProps {
 }
 
 const TemplateCard = ({ item }: TemplateCardProps) => {
+    const router = useRouter();
+    const [updateFileName] = useUpdateFileNameMutation();
+    const [deleteFile] = useDeleteFileMutation();
     const [openVideo, setOpenVideo] = useState(false);
     const [openRename, setOpenRename] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+
+    const handleRename = async (newName: string) => {
+        try {
+            const res = await updateFileName({ id: item.id, name: newName }).unwrap();
+            if (res.success) {
+                toast.success(res.message || "Renamed successfully");
+                setOpenRename(false);
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Rename failed");
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            const res = await deleteFile({ id: item.id }).unwrap();
+            if (res.success) {
+                toast.success(res.message || "Deleted successfully");
+                setOpenDelete(false);
+                router.refresh();
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Delete failed");
+        }
+    };
 
     // Template-specific dropdown options (based on image 5)
     const dropdownOptions = [
@@ -42,12 +75,12 @@ const TemplateCard = ({ item }: TemplateCardProps) => {
             icon: <ScreenShare className="w-5 h-5 text-headings" />,
             onClick: () => console.log("Assign to Program", item.id)
         },
-        {
-            label: "Edit",
-            value: "edit",
-            icon: <Pencil className="w-5 h-5" />,
-            onClick: () => console.log("Edit", item.id)
-        },
+        // {
+        //     label: "Edit",
+        //     value: "edit",
+        //     icon: <Pencil className="w-5 h-5" />,
+        //     onClick: () => console.log("Edit", item.id)
+        // },
         {
             label: "Schedule",
             value: "schedule",
@@ -65,7 +98,7 @@ const TemplateCard = ({ item }: TemplateCardProps) => {
             value: "delete",
             icon: <Trash2 className="w-5 h-5 text-red-500" />,
             danger: true,
-            onClick: () => console.log("Delete", item.id)
+            onClick: () => setOpenDelete(true)
         },
     ];
 
@@ -95,30 +128,54 @@ const TemplateCard = ({ item }: TemplateCardProps) => {
                     setOpen={setOpenRename}
                     itemName={item.title}
                     itemType={item.type}
-                    onRename={(newName) => console.log(`Renaming template ${item.id} to ${newName}`)}
+                    onRename={handleRename}
                 />
             )}
 
+            <DeleteConfirmationModal
+                isOpen={openDelete}
+                onClose={() => setOpenDelete(false)}
+                onConfirm={handleDelete}
+                title="Delete Template"
+                description="Are you sure you want to delete this template? This action cannot be undone."
+                itemName={item.title}
+            />
 
             <div className="bg-navbarBg border border-border rounded-xl overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-shadow">
-                <div className="relative bg-[#F0FAFF] dark:bg-gray-800 h-48 flex items-center justify-center group"
+                <div className="relative bg-[#F0FAFF] dark:bg-gray-800 h-48 flex items-center justify-center group overflow-hidden"
                     onClick={() => item.type === "video" && setOpenVideo(true)}
                 >
-                    {item.thumbnail ? (
-                        <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
-                    ) : null}
-
-                    {item.type === "video" && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setOpenVideo(true);
+                    {item.type === "image" && item.thumbnail ? (
+                        <Image src={item.thumbnail} alt={item.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                    ) : item.type === "video" && item.video ? (
+                        <>
+                            <video
+                                src={item.video}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                muted
+                                playsInline
+                                onMouseOver={(e) => e.currentTarget.play()}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.pause();
+                                    e.currentTarget.currentTime = 0;
                                 }}
-                                className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
-                            >
-                                <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
-                            </button>
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenVideo(true);
+                                    }}
+                                    className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
+                                >
+                                    <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center gap-2 text-gray-400">
+                            <Eye className="w-12 h-12 stroke-[1]" />
+                            <span className="text-sm font-medium">No Preview</span>
                         </div>
                     )}
                 </div>

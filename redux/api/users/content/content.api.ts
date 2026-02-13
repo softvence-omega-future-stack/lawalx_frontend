@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../baseApi";
-import { CreateFolderPayload, GetAllDataResponse, GetSingleFilesResponse, GetSingleFolderFilesResponse, MyContentResponse, SuccessResponse, UploadFilePayload } from "./content.type";
+import { CreateFolderPayload, GetAllDataResponse, GetFilesResponse, GetSingleFilesResponse, GetSingleFolderFilesResponse, MyContentResponse, SuccessResponse, UploadFilePayload } from "./content.type";
 
 const contentAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -27,6 +28,13 @@ const contentAPI = baseApi.injectEndpoints({
     getAllContentData: build.query<GetAllDataResponse, void>({
       query: () => ({
         url: "/content/all",
+        method: "GET",
+      }),
+      providesTags: ["Content"],
+    }),
+    getAllFiles: build.query<GetFilesResponse, void>({
+      query: () => ({
+        url: "/content/files",
         method: "GET",
       }),
       providesTags: ["Content"],
@@ -68,15 +76,24 @@ const contentAPI = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Content"],
     }),
-    assignProgram: build.mutation<any, SuccessResponse>({
-      query: (id) => ({
+    assignProgram: build.mutation<any, { id: string; programId: string }>({
+      query: ({ id, programId }) => ({
         url: `/file/${id}/assign-program`,
         method: "PATCH",
+        body: { programId },
       }),
       invalidatesTags: ["Content"],
     }),
-    deleteFile: build.mutation<any, SuccessResponse>({
-      query: (id) => ({
+    moveToFolder: build.mutation<any, { id: string; targetFolderId: string }>({
+      query: ({ id, targetFolderId }) => ({
+        url: `/content/file/${id}/move`,
+        method: "PATCH",
+        body: { targetFolderId },
+      }),
+      invalidatesTags: ["Content"],
+    }),
+    deleteFile: build.mutation<any, { id: string }>({
+      query: ({ id }) => ({
         url: `/content/delete-file/${id}`,
         method: "DELETE",
       }),
@@ -92,4 +109,4 @@ const contentAPI = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentDataQuery, useGetSingleContentFolderDataQuery, useGetSingleFilesDataQuery, useGetSingleFileDetailsQuery, useUpdateFileNameMutation, useUpdateFolderNameMutation, useAssignProgramMutation, useDeleteFileMutation, useDeleteFolderMutation } = contentAPI;
+export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentDataQuery, useGetAllFilesQuery, useGetSingleContentFolderDataQuery, useGetSingleFilesDataQuery, useGetSingleFileDetailsQuery, useUpdateFileNameMutation, useUpdateFolderNameMutation, useAssignProgramMutation, useDeleteFileMutation, useDeleteFolderMutation, useMoveToFolderMutation } = contentAPI;

@@ -42,8 +42,6 @@ export const allContent: SelectOption[] = [
   { label: "Files", value: "files" },
 ];
 
-
-
 const MyContent = () => {
   const [uploadFile, { isLoading }] = useUploadFileMutation();
   const [updateFolderName] = useUpdateFolderNameMutation();
