@@ -1,51 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Search, Plus } from "lucide-react";
 import DashboardHeading from "@/common/DashboardHeading";
 import TemplateCard from "@/components/content/TemplateCard";
-
-// Template data - using video content
-const mockTemplateData = [
-    {
-        id: "t1",
-        title: "Company Update Q3",
-        type: "video" as const,
-        resolution: "1920 x 1080",
-        duration: "120 sec",
-        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-        video: "/detailsVideo.mp4",
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
-    },
-    {
-        id: "t2",
-        title: "Company Update Q3",
-        type: "video" as const,
-        resolution: "1920 x 1080",
-        duration: "120 sec",
-        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-        video: "/detailsVideo.mp4",
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
-    },
-    {
-        id: "t3",
-        title: "Company Update Q3",
-        type: "video" as const,
-        resolution: "1920 x 1080",
-        duration: "120 sec",
-        thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-        video: "/detailsVideo.mp4",
-        assignedTo: ["Main Lobby Display", "Main Gate Entry"],
-    },
-];
+import { useGetAllFilesQuery } from "@/redux/api/users/content/content.api";
+import CommonLoader from "@/common/CommonLoader";
+import { transformFile } from "@/lib/content-utils";
 
 const TemplateContent = () => {
+    const { data: allFiles, isLoading } = useGetAllFilesQuery(undefined);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    const transformedTemplates = useMemo(() => {
+        if (!allFiles?.data) return [];
+        return allFiles.data
+            .filter((file: any) => file.type === "VIDEO" || file.type === "IMAGE")
+            .map((file: any) => {
+                const transformed = transformFile(file, isMounted);
+                return {
+                    ...transformed,
+                    type: transformed.type as "video" | "image", // Cast to match TemplateItem
+                    resolution: "1920 x 1080", // Placeholder for now or extract if available
+                };
+            });
+    }, [allFiles, isMounted]);
 
     // Filter templates based on search
-    const filteredTemplates = mockTemplateData.filter((item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredTemplates = useMemo(() => {
+        return transformedTemplates.filter((item) =>
+            item.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [transformedTemplates, searchQuery]);
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <CommonLoader size={48} text="Loading templates..." />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -56,9 +55,9 @@ const TemplateContent = () => {
                     <p className="text-sm text-textGray mt-1">Upload, create and manage your content</p>
                 </div>
 
-                <button className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out w-full sm:w-auto justify-center shadow-customShadow">
+                {/* <button className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out w-full sm:w-auto justify-center shadow-customShadow">
                     <Plus className="w-5 h-5" /> Create Content
-                </button>
+                </button> */}
             </div>
 
             {/* Search Bar */}
@@ -81,7 +80,7 @@ const TemplateContent = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredTemplates.map((item) => (
-                        <TemplateCard key={item.id} item={item} />
+                        <TemplateCard key={item.id} item={item as any} />
                     ))}
                 </div>
             )}

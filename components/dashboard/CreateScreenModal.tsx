@@ -14,10 +14,14 @@ import {
   QrCode,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import Dropdown from "@/common/Dropdown";
 import Image from "next/image";
 import QRCodeDialog from "./QRCodeDialog";
+import { useGetAllFilesQuery } from "@/redux/api/users/content/content.api";
+import { useMemo, useEffect } from "react";
+import { transformFile } from "@/lib/content-utils";
 
 interface CreateScreenModalProps {
   isOpen: boolean;
@@ -28,13 +32,17 @@ export default function CreateScreenModal({
   isOpen,
   onClose,
 }: CreateScreenModalProps) {
+  const { data: allFiles, isLoading: isFilesLoading } = useGetAllFilesQuery(undefined);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedType, setSelectedType] = useState("video");
   const [showQr, setShowQr] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
+
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
-    selectedVideos: number[];
+    selectedVideos: string[];
     selectedDevices: number[];
   }>({
     name: "",
@@ -43,16 +51,26 @@ export default function CreateScreenModal({
     selectedDevices: [],
   });
 
-  const videos = [
-    { id: 1, name: "Video 1", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-    { id: 2, name: "Video 2", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-    { id: 3, name: "Video 3", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-    { id: 4, name: "Video 4", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-    { id: 5, name: "Video 5", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-    { id: 6, name: "Video 6", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-    { id: 7, name: "Video 7", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-    { id: 8, name: "Video 8", size: "40 MB", thumbnail: "/userDashboard/modal_video.png" },
-  ];
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const transformedFiles = useMemo(() => {
+    if (!allFiles?.data) return [];
+    return allFiles.data.map((file: any) => transformFile(file, isMounted));
+  }, [allFiles, isMounted]);
+
+  const filteredFiles = useMemo(() => {
+    return transformedFiles.filter((file) => {
+      const matchesSearch = file.title.toLowerCase().includes(searchQuery.toLowerCase());
+      let matchesType = true;
+      if (selectedType === "video") matchesType = file.type === "video";
+      else if (selectedType === "image") matchesType = file.type === "image";
+      else if (selectedType === "audio") matchesType = file.type === "playlist";
+
+      return matchesSearch && matchesType;
+    });
+  }, [transformedFiles, searchQuery, selectedType]);
 
   const devices = [
     { id: 1, name: "LG UR75 43 Inch 4K UHD Smart LED TV", resolution: "3840 × 2160", online: true },
@@ -75,7 +93,7 @@ export default function CreateScreenModal({
     onClose();
   };
 
-  const toggleVideoSelection = (videoId: number) => {
+  const toggleVideoSelection = (videoId: string) => {
     setFormData((prev) => ({
       ...prev,
       selectedVideos: prev.selectedVideos.includes(videoId)
@@ -233,6 +251,8 @@ export default function CreateScreenModal({
                   <input
                     type="text"
                     placeholder="Search Content"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   />
                 </div>
@@ -252,36 +272,51 @@ export default function CreateScreenModal({
               </div>
 
               <div className="border border-borderGray dark:border-gray-600 rounded-lg max-h-76 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                {videos.map((video) => (
-                  <div
-                    key={video.id}
-                    className="flex items-center gap-4 p-4 border-b last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                    onClick={() => toggleVideoSelection(video.id)}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.selectedVideos.includes(video.id)}
-                      onChange={() => toggleVideoSelection(video.id)}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500 cursor-pointer"
-                    />
-                    <div className="w-20 h-14 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
-                      <Image
-                        src={video.thumbnail}
-                        alt={video.name}
-                        width={80}
-                        height={56}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 dark:text-white truncate">
-                        {video.name}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">{video.size}</div>
-                    </div>
+                {isFilesLoading ? (
+                  <div className="flex flex-col items-center justify-center p-8 text-gray-400">
+                    <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                    <span>Loading files...</span>
                   </div>
-                ))}
+                ) : filteredFiles.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                    No files found matching your search.
+                  </div>
+                ) : (
+                  filteredFiles.map((file) => (
+                    <div
+                      key={file.id}
+                      className="flex items-center gap-4 p-4 border-b last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                      onClick={() => toggleVideoSelection(file.id)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedVideos.includes(file.id)}
+                        onChange={() => toggleVideoSelection(file.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500 cursor-pointer"
+                      />
+                      <div className="w-20 h-14 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                        {file.thumbnail ? (
+                          <Image
+                            src={file.thumbnail}
+                            alt={file.title}
+                            width={80}
+                            height={56}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="text-xs text-gray-400">No Preview</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-gray-900 dark:text-white truncate">
+                          {file.title}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{file.size}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
