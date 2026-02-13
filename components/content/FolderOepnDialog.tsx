@@ -73,7 +73,7 @@ const FolderOpenDialog = ({ item, openFolder, setOpenFolder, folders }: FolderDi
         </DialogHeader>
 
         {/* Search Bar */}
-        <div className="relative mb-6 px-0.5 px-6">
+        <div className="relative mb-6 px-6">
           <Search className="absolute left-8 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"

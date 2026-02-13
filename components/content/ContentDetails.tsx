@@ -38,7 +38,6 @@ import { ContentItem } from "@/types/content";
 import { sortByName, allContent } from "./MyContent";
 import { useUploadFileMutation, useGetSingleContentFolderDataQuery, useUpdateFolderNameMutation, useUpdateFileNameMutation, useDeleteFileMutation, useDeleteFolderMutation } from "@/redux/api/users/content/content.api";
 import { transformFile, transformFolder } from "@/lib/content-utils";
-import CommonLoader from "@/common/CommonLoader";
 
 interface ContentDetailsProps {
   content: ContentItem;
@@ -67,7 +66,7 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
   const isFolder = initialContent.type === "folder";
 
   // Fetch folder contents only if it's a folder
-  const { data: folderData, isLoading: isFolderLoading } = useGetSingleContentFolderDataQuery(initialContent.id, {
+  const { data: folderData } = useGetSingleContentFolderDataQuery(initialContent.id, {
     skip: !isFolder,
   });
 
