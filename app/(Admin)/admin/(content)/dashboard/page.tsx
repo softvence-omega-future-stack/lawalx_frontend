@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Calendar, Users, MousePointer, Clock, CheckSquare, FileText, Headphones, RefreshCw, AlertCircle, MoreVertical, ChevronDown, Plus, Crown, DollarSign, Shield, Webhook, TvMinimal, FileVideo } from 'lucide-react';
 import AddUserModal from '@/components/Admin/usermanagement/AddUserModal';
+import { useGetActivityTrendQuery, useGetFilteredOverviewQuery } from '@/redux/api/admin/dashboardApi';
 
 type DateRange = '1day' | '7days' | '1month' | '1year';
+// type DateRange = '1day' | '7days' | '1month' | '1year';
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -386,7 +388,17 @@ const SubscriptionDistribution: React.FC<{ dateRange: DateRange }> = ({ dateRang
 };
 
 const PlatformActivityTrend: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
-  const data = getChartData(dateRange);
+  const { data: trendData } = useGetActivityTrendQuery({
+    days: dateRange === '1month' ? 30 : dateRange === '1year' ? 365 : dateRange === '1day' ? 1 : 7,
+    filter: dateRange === '1month' ? '1m' : dateRange === '1year' ? '1y' : dateRange === '1day' ? '1d' : '7d'
+  });
+
+  const data = trendData?.data?.data?.map((item: any) => ({
+    label: item.label,
+    value1: item.dailyLogins,
+    value2: item.totalProgress,
+    value3: item.totalRevenue
+  })) || [];
 
   return (
     <div className="bg-navbarBg rounded-xl p-5 shadow-sm border border-border h-full">
@@ -572,7 +584,7 @@ const RecentCriticalActivity: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-gray-900 dark:text-white">{activity.user}</span>
                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${activity.badge === 'Critical' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
-                    'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                  'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
                   }`}>
                   {activity.badge}
                 </span>
@@ -648,8 +660,51 @@ const RecentSupportTickets: React.FC = () => {
 
 const Dashboard: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRange>('7days');
-  const metrics = getMetricsData(dateRange);
   const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
+
+  // Fetch data based on the selected filter
+  const { data: overviewData } = useGetFilteredOverviewQuery(dateRange === '1month' ? '30d' : dateRange === '1year' ? '365d' : dateRange === '1day' ? '1d' : '7d');
+
+  // Mapping API data to metrics format expected by UI
+  const metrics = {
+    totalUsers: overviewData?.data?.totalUsers || 0,
+    totalUsersChange: `${overviewData?.data?.usersGrowth >= 0 ? '+' : ''}${overviewData?.data?.usersGrowth?.toFixed(1) || 0}%`,
+    totalUsersValue: '', // API does not provide absolute change value
+    totalUsersPositive: (overviewData?.data?.usersGrowth || 0) >= 0,
+
+    activeSubscriptions: overviewData?.data?.activeSubscriptions || 0,
+    subscriptionsChange: `${overviewData?.data?.subscriptionGrowth >= 0 ? '+' : ''}${overviewData?.data?.subscriptionGrowth?.toFixed(1) || 0}%`,
+    subscriptionsValue: '',
+    subscriptionsPositive: (overviewData?.data?.subscriptionGrowth || 0) >= 0,
+
+    mrr: `$${(overviewData?.data?.monthlyRecurringRevenue || overviewData?.data?.totalRevenue || 0).toLocaleString()}`,
+    mrrChange: `${overviewData?.data?.mrrGrowth || overviewData?.data?.revenueGrowth >= 0 ? '+' : ''}${(overviewData?.data?.mrrGrowth || overviewData?.data?.revenueGrowth || 0).toFixed(1)}%`,
+    mrrValue: '',
+    mrrPositive: (overviewData?.data?.mrrGrowth || overviewData?.data?.revenueGrowth || 0) >= 0,
+
+    uptime: `${overviewData?.data?.systemUptime || 0}%`,
+    uptimeChange: `${overviewData?.data?.uptimeGrowth >= 0 ? '+' : ''}${overviewData?.data?.uptimeGrowth?.toFixed(1) || 0}%`,
+    uptimePositive: (overviewData?.data?.uptimeGrowth || 0) >= 0,
+
+    responseTime: `${overviewData?.data?.avgApiResponseTime || 0}ms`,
+    responseChange: `${overviewData?.data?.apiResponseGrowth >= 0 ? '+' : ''}${overviewData?.data?.apiResponseGrowth?.toFixed(1) || 0}%`,
+    responsePositive: (overviewData?.data?.apiResponseGrowth || 0) <= 0, // Lower is better for response time usually, but keeping consistency with API sign
+
+    devices: overviewData?.data?.activeDevices || 0,
+    devicesChange: `${overviewData?.data?.deviceGrowth >= 0 ? '+' : ''}${overviewData?.data?.deviceGrowth?.toFixed(1) || 0}%`,
+    devicesValue: '',
+    devicesPositive: (overviewData?.data?.deviceGrowth || 0) >= 0,
+
+    contentItems: overviewData?.data?.totalContentItems || 0,
+    contentChange: `${overviewData?.data?.contentGrowth >= 0 ? '+' : ''}${overviewData?.data?.contentGrowth?.toFixed(1) || 0}%`,
+    contentValue: '',
+    contentPositive: (overviewData?.data?.contentGrowth || 0) >= 0,
+
+    tickets: overviewData?.data?.openSupportTickets || 0,
+    ticketsChange: `${overviewData?.data?.ticketGrowth >= 0 ? '+' : ''}${overviewData?.data?.ticketGrowth?.toFixed(1) || 0}%`,
+    ticketsValue: '',
+    ticketsPositive: (overviewData?.data?.ticketGrowth || 0) <= 0 // Fewer tickets usually better
+  };
 
   const handleExport = () => {
     window.print();
