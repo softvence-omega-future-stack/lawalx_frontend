@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../baseApi";
+import { CreateDevicePinPayload, SuccessResponse } from "./devices.type";
 
 const devicesAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    createFolder: build.mutation<any, any>({
+    createDevicePin: build.mutation<SuccessResponse, CreateDevicePinPayload>({
       query: (data) => ({
-        url: "/file/create-folder",
+        url: "/device/pin",
         method: "POST",
         body: data,
       }),
@@ -14,4 +15,4 @@ const devicesAPI = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateFolderMutation } = devicesAPI;
+export const { useCreateDevicePinMutation } = devicesAPI;

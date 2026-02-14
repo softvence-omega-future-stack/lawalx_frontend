@@ -24,6 +24,7 @@ import { useGetAllContentDataQuery, useUploadFileMutation, useUpdateFolderNameMu
 import CommonLoader from "@/common/CommonLoader";
 import { ContentItem, SelectOption } from "@/types/content";
 import { transformFile, transformFolder } from "@/lib/content-utils";
+import AssignToDialog from "./AssignToDialog";
 
 export const createNew: SelectOption[] = [
   { label: "New Folder", value: "new-folder", icon: <FolderPlus size={22} /> },
@@ -52,6 +53,8 @@ const MyContent = () => {
   const [contentFilter, setContentFilter] = useState("all-content");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [open, setOpen] = useState(false);
+  const [openAssignTo, setOpenAssignTo] = useState(false);
+  const [selectedAssignId, setSelectedAssignId] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   console.log("all content data", allContentData);
 
@@ -123,7 +126,10 @@ const MyContent = () => {
     }
   };
 
-  const handleAssignClick = (id: string) => console.log("Assign:", id);
+  const handleAssignClick = (id: string) => {
+    setSelectedAssignId(id);
+    setOpenAssignTo(true);
+  };
 
   // UPLOAD HANDLER
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -299,15 +305,24 @@ const MyContent = () => {
 
       {/* Move to Folder dialog - reuse FolderOpenDialog component */}
       {selectedItem && (
-        <>
-          <FolderOpenDialog
-            item={selectedItem as any}
-            openFolder={openMoveFolder}
-            setOpenFolder={setOpenMoveFolder}
-            folders={contentItems.filter(i => i.type === "folder").map(f => ({ id: f.id, name: f.title }))}
-          />
-        </>
+        <FolderOpenDialog
+          item={selectedItem as any}
+          openFolder={openMoveFolder}
+          setOpenFolder={setOpenMoveFolder}
+          folders={contentItems.filter(i => i.type === "folder").map(f => ({ id: f.id, name: f.title }))}
+        />
       )}
+
+      {/* Assign to Program Dialog */}
+      <AssignToDialog
+        open={openAssignTo}
+        setOpen={setOpenAssignTo}
+        onAssign={(selectedIds) => {
+          console.log(`Assigning content ${selectedAssignId} to screens:`, selectedIds);
+          // Handle assignment logic here if needed
+          setOpenAssignTo(false);
+        }}
+      />
     </div>
   );
 };
