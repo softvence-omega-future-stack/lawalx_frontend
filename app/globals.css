@@ -3,7 +3,6 @@
 /* @import "plyr/dist/plyr.css"; */
 
 
-
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -603,6 +602,7 @@ body {
 /* Track styling */
 .volume-slider,
 .brightness-slider {
+  appearance: none;
   -webkit-appearance: none;
   height: 8px;
   border-radius: 9999px;

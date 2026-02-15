@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from 'react';
@@ -11,7 +10,7 @@ interface GoogleMapModalProps {
     lat: number;
     lng: number;
     label: string;
-    device: any; // Using any for simplicity as types are local to page.tsx
+    device: any;
 }
 
 const containerStyle = {

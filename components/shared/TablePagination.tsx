@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 interface TablePaginationProps {
     currentPage: number;
     totalPages: number;
