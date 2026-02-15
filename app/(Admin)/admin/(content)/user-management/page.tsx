@@ -11,14 +11,14 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import EditUserModal from "@/components/Admin/modals/EditUserModal";
 import ResetPasswordModal from "@/components/Admin/modals/ResetPasswordModal";
 import SuspendUserModal from "@/components/Admin/modals/SuspendUserModal";
 import DeleteUserModal from "@/components/Admin/modals/DeleteUserModal";
 import AddUserModal from "@/components/Admin/usermanagement/AddUserModal";
-// Add LoginAsUserModal if you have one
 import {
   Users,
   UserCheck,
@@ -32,129 +32,166 @@ import {
   RotateCcw,
   UserX,
   Trash2,
-  X,
   Home,
   ChevronRight,
   UserRoundPlus,
   CloudDownload,
-  ChevronDown,
 } from "lucide-react";
 import Dropdown from "@/components/shared/Dropdown";
 import Link from "next/link";
+import {
+  useGetUsersQuery,
+  useGetUserStatsQuery,
+  useDeleteUserMutation,
+  useLoginAsUserMutation,
+  useAdminResetPasswordMutation,
+  useSuspendUserMutation,
+  useUnsuspendUserMutation,
+  useLazyGetExportDataQuery,
+} from "@/redux/api/admin/usermanagementApi";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type Plan = "Starter" | "Professional" | "Business" | "Trial" | "Enterprise";
-type Status = "Active" | "Suspended" | "Disabled";
+type Status = "Active" | "Suspended" | "DELETED";
 
 interface User {
   id: string;
-  name: string;
-  email: string;
-  plan: Plan;
-  device: string;
-  deviceUsage: number;
-  storage: string;
-  storageUsage: number;
-  status: Status;
+  username: string;
+  full_name: string | null;
+  company_name: string | null;
+  image_url: string | null;
+  role: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  account: {
+    email: string;
+    is_verified: boolean;
+    created_at: string;
+  };
+  payments: any[];
   issues: string[];
+  // Frontend virtual fields to match styling
+  plan?: Plan;
+  device?: string;
+  deviceUsage?: number;
+  storage?: string;
+  storageUsage?: number;
 }
-
-const initialUsers: User[] = [
-  {
-    id: "1",
-    name: "Jenny Wilson",
-    email: "olivia@gmail.com",
-    plan: "Starter",
-    device: "23/50",
-    deviceUsage: 46,
-    storage: "100 GB",
-    storageUsage: 75,
-    status: "Active",
-    issues: ["Payment due", "5 error logs"],
-  },
-  {
-    id: "2",
-    name: "Brooklyn Simmons",
-    email: "olivia@gmail.com",
-    plan: "Professional",
-    device: "23/50",
-    deviceUsage: 100,
-    storage: "100 GB",
-    storageUsage: 100,
-    status: "Disabled",
-    issues: [],
-  },
-  {
-    id: "3",
-    name: "Kristin Watson",
-    email: "olivia@gmail.com",
-    plan: "Professional",
-    device: "23/50",
-    deviceUsage: 35,
-    storage: "100 GB",
-    storageUsage: 60,
-    status: "Suspended",
-    issues: ["Payment due", "5 error logs"],
-  },
-  {
-    id: "4",
-    name: "Dianne Russell",
-    email: "olivia@gmail.com",
-    plan: "Business",
-    device: "23/50",
-    deviceUsage: 20,
-    storage: "100 GB",
-    storageUsage: 45,
-    status: "Active",
-    issues: ["Payment due", "5 error logs"],
-  },
-  {
-    id: "5",
-    name: "Floyd Miles",
-    email: "olivia@gmail.com",
-    plan: "Business",
-    device: "23/50",
-    deviceUsage: 70,
-    storage: "100 GB",
-    storageUsage: 65,
-    status: "Active",
-    issues: ["Payment due", "5 error logs"],
-  },
-  {
-    id: "6",
-    name: "Jerome Bell",
-    email: "olivia@gmail.com",
-    plan: "Trial",
-    device: "23/50",
-    deviceUsage: 40,
-    storage: "100 GB",
-    storageUsage: 60,
-    status: "Active",
-    issues: ["Payment due", "5 error logs"],
-  },
-];
 
 export default function UserManagementPage() {
   const router = useRouter();
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // State for filters and pagination
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [planFilter, setPlanFilter] = useState("All Plans");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [storageFilter, setStorageFilter] = useState(">80% Storage");
+
+  const limit = 10;
+
+  // API Queries
+  const { data: usersData, isLoading: isUsersLoading } = useGetUsersQuery({
+    page,
+    limit,
+    search: searchTerm,
+    status: statusFilter,
+    plan: planFilter,
+    storageUsage: storageFilter,
+  });
+
+  const { data: statsData } = useGetUserStatsQuery({});
+
+  // API Mutations
+  const [deleteUser] = useDeleteUserMutation();
+  const [suspendUser] = useSuspendUserMutation();
+  const [unsuspendUser] = useUnsuspendUserMutation();
+  const [loginAsUser] = useLoginAsUserMutation();
+  const [adminResetPassword] = useAdminResetPasswordMutation();
+
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null); // To pass data to modals
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+
+  const users = usersData?.data || [];
+  const meta = usersData?.meta || {};
+  const stats = statsData?.data || {};
 
   const toggleSelectAll = () => {
     if (selectedUsers.size === users.length) {
       setSelectedUsers(new Set());
     } else {
-      setSelectedUsers(new Set(users.map((u) => u.id)));
+      setSelectedUsers(new Set(users.map((u: any) => u.id)));
+    }
+  };
+
+  const [triggerExport] = useLazyGetExportDataQuery();
+
+  const handleExportPDF = async () => {
+    try {
+      const { data: exportData, isError } = await triggerExport({
+        search: searchTerm,
+        status: statusFilter,
+        plan: planFilter,
+        storageUsage: storageFilter,
+      });
+
+      if (isError || !exportData?.success) {
+        toast.error("Failed to fetch export data");
+        return;
+      }
+
+      const users = exportData.data?.users?.users || [];
+      const doc = new jsPDF();
+
+      // Add Title
+      doc.setFontSize(18);
+      doc.text('User Management Report', 14, 22);
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Exported At: ${new Date().toLocaleString()}`, 14, 30);
+
+      // Define table columns
+      const tableColumn = ["Index", "User ID", "Name", "Email", "Plan", "Role", "Status"];
+      const tableRows: any[] = [];
+
+      users.forEach((user: any, index: number) => {
+        const userData = [
+          index + 1,
+          user.id || 'N/A',
+          user.full_name || user.username || 'N/A',
+          user.account?.email || 'N/A',
+          (user.payments?.[0]?.plan?.name || "Free Trial").replace("_", " "),
+          user.role || 'N/A',
+          user.status || 'N/A'
+        ];
+        tableRows.push(userData);
+      });
+
+      // Generate Table
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40,
+        theme: 'striped',
+        headStyles: { fillColor: [59, 130, 246] }, // Blue-500
+        styles: { fontSize: 8 }
+      });
+
+      // Save PDF
+      doc.save(`user-report-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success("User report exported successfully");
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("An error occurred while exporting the report");
     }
   };
 
@@ -168,51 +205,42 @@ export default function UserManagementPage() {
     setSelectedUsers(newSelected);
   };
 
-  const handleBulkAction = (action: "suspend" | "deactivate") => {
-    setUsers(
-      users.map((user) => {
-        if (selectedUsers.has(user.id)) {
-          return {
-            ...user,
-            status: action === "suspend" ? "Suspended" : "Disabled",
-          };
+  const handleBulkAction = async (action: "suspend" | "unsuspend") => {
+    toast.info(`Bulk ${action} for ${selectedUsers.size} users (Processing...)`);
+    try {
+      for (const userId of Array.from(selectedUsers)) {
+        if (action === "suspend") {
+          await suspendUser(userId).unwrap();
+        } else {
+          await unsuspendUser(userId).unwrap();
         }
-        return user;
-      })
-    );
+      }
+      toast.success(`Bulk ${action} successful`);
+    } catch (err: any) {
+      toast.error(err?.data?.message || `Failed to ${action} some users`);
+    }
     setSelectedUsers(new Set());
   };
 
   const handleAddUser = (data: any) => {
-    const newUser: User = {
-      id: Date.now().toString(),
-      name: data.fullName,
-      email: data.email,
-      plan: data.plan.includes("Enterprise")
-        ? "Professional"
-        : data.plan.includes("Demo")
-        ? "Trial"
-        : "Starter",
-      device: `0/${data.deviceLimit}`,
-      deviceUsage: 0,
-      storage: `${data.storageLimit} GB`,
-      storageUsage: 0,
-      status: "Active",
-      issues: [],
-    };
-    setUsers([newUser, ...users]);
+    // Current API doesn't have an add user endpoint in usermanagementApi.ts provided in the prompt
+    // Assuming it's handled elsewhere or needs to be added later.
+    toast.info("Add user functionality not yet connected to backend.");
     setIsModalOpen(false);
   };
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPlan = planFilter === "All Plans" || user.plan === planFilter;
-    const matchesStatus =
-      statusFilter === "All Status" || user.status === statusFilter;
-    return matchesSearch && matchesPlan && matchesStatus;
-  });
+  const handleLoginAsUser = async (userId: string) => {
+    try {
+      const res = await loginAsUser(userId).unwrap();
+      if (res.success) {
+        toast.success("Login tokens generated successfully");
+        // Store tokens and redirect if needed
+        console.log("Tokens:", res.data);
+      }
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to login as user");
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -237,7 +265,10 @@ export default function UserManagementPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <button className="px-4 py-2 shadow-customShadow cursor-pointer bg-white dark:bg-gray-800 text-nowrap rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors">
+            <button
+              onClick={handleExportPDF}
+              className="px-4 py-2 shadow-customShadow cursor-pointer bg-white dark:bg-gray-800 text-nowrap rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+            >
               <CloudDownload className="w-4 h-4" />
               <span className="hidden lg:block"> Export User Report</span>
             </button>
@@ -264,10 +295,10 @@ export default function UserManagementPage() {
             </span>
           </div>
           <div className="text-3xl font-semibold text-gray-900 dark:text-white">
-            1,100
+            {stats.totalUsers?.count || 0}
           </div>
-          <div className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-            <span>↓ -8.2 %</span>
+          <div className={`text-sm ${(stats.totalUsers?.change || 0) < 0 ? 'text-red-500' : 'text-green-500'} flex items-center gap-1 mt-1`}>
+            <span>{(stats.totalUsers?.change || 0) < 0 ? '↓' : '↑'} {Math.abs(stats.totalUsers?.change || 0)} %</span>
             <span className="text-gray-500 dark:text-gray-400">
               From Last Month
             </span>
@@ -284,10 +315,10 @@ export default function UserManagementPage() {
             </span>
           </div>
           <div className="text-3xl font-semibold text-gray-900 dark:text-white">
-            1,100
+            {stats.activeUsers?.count || 0}
           </div>
-          <div className="text-sm text-green-500 dark:text-green-400 flex items-center gap-1 mt-1">
-            <span>↑ +8.2 %</span>
+          <div className={`text-sm ${(stats.activeUsers?.change || 0) < 0 ? 'text-red-500' : 'text-green-500'} flex items-center gap-1 mt-1`}>
+            <span>{(stats.activeUsers?.change || 0) < 0 ? '↓' : '↑'} {Math.abs(stats.activeUsers?.change || 0)} %</span>
             <span className="text-gray-500 dark:text-gray-400">
               From Last Month
             </span>
@@ -304,10 +335,10 @@ export default function UserManagementPage() {
             </span>
           </div>
           <div className="text-3xl font-semibold text-gray-900 dark:text-white">
-            1,100
+            {stats.trialUsers?.count || 0}
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
-            <span>45 %</span>
+            <span>{stats.trialUsers?.conversionRate || 0} %</span>
             <span className="text-gray-500 dark:text-gray-400">
               Conversion rate
             </span>
@@ -324,7 +355,7 @@ export default function UserManagementPage() {
             </span>
           </div>
           <div className="text-3xl font-semibold text-gray-900 dark:text-white">
-            12
+            {stats.needAttention?.count || 0}
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Overdue, Offline, Errors
@@ -340,15 +371,15 @@ export default function UserManagementPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               {selectedUsers.size > 0
                 ? `Selected (${selectedUsers.size})`
-                : `All Users (1112)`}
+                : `All Users (${meta.total || 0})`}
             </h2>
             {selectedUsers.size > 0 && (
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleBulkAction("deactivate")}
+                  onClick={() => handleBulkAction("unsuspend")}
                   className="px-4 cursor-pointer py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  Deactivate
+                  Unsuspend
                 </button>
                 <button
                   onClick={() => handleBulkAction("suspend")}
@@ -398,13 +429,13 @@ export default function UserManagementPage() {
                 <th className="px-4 py-3 text-left">
                   <input
                     type="checkbox"
-                    checked={selectedUsers.size === users.length}
+                    checked={users.length > 0 && selectedUsers.size === users.length}
                     onChange={toggleSelectAll}
                     className="rounded border-gray-300 dark:border-gray-600"
                   />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                  Report Name
+                  User
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                   Plan
@@ -427,9 +458,28 @@ export default function UserManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredUsers.map((user, index) => {
+              {isUsersLoading ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-10 text-center text-gray-500 dark:text-gray-400">
+                    Loading users...
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-10 text-center text-gray-500 dark:text-gray-400">
+                    No users found
+                  </td>
+                </tr>
+              ) : users.map((user: any, index: number) => {
                 const isFirstRows = index < 2;
-                const isLastRows = index >= filteredUsers.length - 2;
+                const isLastRows = index >= users.length - 2;
+
+                // Fallback for styling fields not directly in meta
+                const deviceUsage = user.deviceUsage || 0;
+                const storageUsage = user.storageUsage || 0;
+                const plan = (user.payments?.[0]?.plan?.name || "Free Trial").replace("_", " ");
+                const statusStr = user.status.charAt(0) + user.status.slice(1).toLowerCase();
+
                 return (
                   <tr
                     key={user.id}
@@ -446,78 +496,74 @@ export default function UserManagementPage() {
                     <td className="px-4 py-3">
                       <div>
                         <div className="font-medium text-gray-900 dark:text-white text-nowrap">
-                          {user.name}
+                          {user.full_name || user.username}
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {user.email}
+                          {user.account?.email || "N/A"}
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-medium">
-                        {user.plan}
+                        {plan}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="text-sm text-gray-900 dark:text-white mb-1">
-                        {user.device}
+                        {user.device || "0/0"}
                       </div>
                       <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${
-                            user.deviceUsage > 80
-                              ? "bg-red-500"
-                              : user.deviceUsage > 60
+                          className={`h-full ${deviceUsage > 80
+                            ? "bg-red-500"
+                            : deviceUsage > 60
                               ? "bg-orange-500"
                               : "bg-blue-500"
-                          }`}
-                          style={{ width: `${user.deviceUsage}%` }}
+                            }`}
+                          style={{ width: `${deviceUsage}%` }}
                         />
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="text-sm text-gray-900 dark:text-white mb-1">
-                        {user.storage}
+                        {user.storage || "0"}
                       </div>
                       <div className="w-32 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${
-                            user.storageUsage > 80
-                              ? "bg-red-500"
-                              : user.storageUsage > 60
+                          className={`h-full ${storageUsage > 80
+                            ? "bg-red-500"
+                            : storageUsage > 60
                               ? "bg-orange-500"
                               : "bg-blue-500"
-                          }`}
-                          style={{ width: `${user.storageUsage}%` }}
+                            }`}
+                          style={{ width: `${storageUsage}%` }}
                         />
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`flex items-center gap-1 w-fit px-3 py-1 rounded-full text-xs font-medium border ${
-                          user.status === "Active"
-                            ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
-                            : user.status === "Suspended"
+                        className={`flex items-center gap-1 w-fit px-3 py-1 rounded-full text-xs font-medium border ${user.status === "ACTIVE"
+                          ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+                          : user.status === "SUSPENDED"
                             ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
                             : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
-                        }`}
+                          }`}
                       >
                         <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            user.status === "Active"
-                              ? "bg-green-500"
-                              : user.status === "Suspended"
+                          className={`w-1.5 h-1.5 rounded-full ${user.status === "ACTIVE"
+                            ? "bg-green-500"
+                            : user.status === "SUSPENDED"
                               ? "bg-red-500"
                               : "bg-gray-500"
-                          }`}
+                            }`}
                         />
-                        {user.status}
+                        {statusStr}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {user.issues.length > 0 ? (
+                      {user.issues && user.issues.length > 0 && user.issues[0] !== "No issues" ? (
                         <div className="flex gap-2">
-                          {user.issues.map((issue, idx) => (
+                          {user.issues.map((issue: string, idx: number) => (
                             <span
                               key={idx}
                               className="px-2 py-1 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded text-xs text-nowrap"
@@ -551,106 +597,111 @@ export default function UserManagementPage() {
                               onClick={() => setOpenActionMenu(null)}
                             />
                             <div
-                              className={`absolute right-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 ${
-                                isFirstRows
-                                  ? "mt-2"
-                                  : isLastRows
+                              className={`absolute right-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 ${isFirstRows
+                                ? "mt-2"
+                                : isLastRows
                                   ? "bottom-full mb-2"
                                   : "mt-2"
-                              }`}
+                                }`}
                             >
-                          {/* <button
-                            onClick={() => router.push(`/admin/user-management/${user.id}`)}
-                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View Profile
-                          </button> */}
-                          <button
-                            onClick={() => {
-                              // Pass user data as query params or use router state
-                              router.push(
-                                `/admin/user-management/${
-                                  user.id
-                                }?name=${encodeURIComponent(
-                                  user.name
-                                )}&email=${encodeURIComponent(
-                                  user.email
-                                )}&plan=${user.plan}&status=${
-                                  user.status
-                                }&device=${user.device}&storage=${
-                                  user.storage
-                                }&deviceUsage=${
-                                  user.deviceUsage
-                                }&storageUsage=${user.storageUsage}`
-                              );
-                            }}
-                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View Profile
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setIsEditModalOpen(true);
-                              setOpenActionMenu(null);
-                            }}
-                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
-                          >
-                            <Edit className="w-4 h-4" />
-                            Edit User
-                          </button>
+                              <button
+                                onClick={() => {
+                                  router.push(
+                                    `/admin/user-management/${user.id
+                                    }?name=${encodeURIComponent(
+                                      user.full_name || user.username
+                                    )}&email=${encodeURIComponent(
+                                      user.account?.email || ""
+                                    )}&plan=${plan}&status=${user.status
+                                    }&device=${user.device || "0/0"}&storage=${user.storage || "0"
+                                    }&deviceUsage=${deviceUsage
+                                    }&storageUsage=${storageUsage}`
+                                  );
+                                }}
+                                className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                              >
+                                <Eye className="w-4 h-4" />
+                                View Profile
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsEditModalOpen(true);
+                                  setOpenActionMenu(null);
+                                }}
+                                className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                              >
+                                <Edit className="w-4 h-4" />
+                                Edit User
+                              </button>
 
-                          <button
-                            onClick={() => {
-                              alert("Login as user clicked");
-                              setOpenActionMenu(null);
-                            }}
-                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
-                          >
-                            <LogIn className="w-4 h-4" />
-                            Login as user
-                          </button>
+                              <button
+                                onClick={() => {
+                                  handleLoginAsUser(user.id);
+                                  setOpenActionMenu(null);
+                                }}
+                                className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                              >
+                                <LogIn className="w-4 h-4" />
+                                Login as user
+                              </button>
 
-                          <button
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setIsResetPasswordOpen(true);
-                              setOpenActionMenu(null);
-                            }}
-                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
-                          >
-                            <RotateCcw className="w-4 h-4" />
-                            Reset Password
-                          </button>
+                              <button
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsResetPasswordOpen(true);
+                                  setOpenActionMenu(null);
+                                }}
+                                className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                                Reset Password
+                              </button>
 
-                          <button
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setIsSuspendModalOpen(true);
-                              setOpenActionMenu(null);
-                            }}
-                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-orange-600 dark:text-orange-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
-                          >
-                            <UserX className="w-4 h-4" />
-                            Suspend User
-                          </button>
+                              {user.status === "SUSPENDED" ? (
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await unsuspendUser(user.id).unwrap();
+                                      toast.success("User unsuspended successfully");
+                                    } catch (err: any) {
+                                      toast.error(err?.data?.message || "Failed to unsuspend user");
+                                    }
+                                    setOpenActionMenu(null);
+                                  }}
+                                  className="w-full cursor-pointer px-4 py-2 text-left text-sm text-green-600 dark:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                                >
+                                  <UserCheck className="w-4 h-4" />
+                                  Unsuspend User
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setSelectedUser(user);
+                                    setIsSuspendModalOpen(true);
+                                    setOpenActionMenu(null);
+                                  }}
+                                  className="w-full cursor-pointer px-4 py-2 text-left text-sm text-orange-600 dark:text-orange-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                                >
+                                  <UserX className="w-4 h-4" />
+                                  Suspend User
+                                </button>
+                              )}
 
-                          <button
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setIsDeleteModalOpen(true);
-                              setOpenActionMenu(null);
-                            }}
-                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete User
-                          </button>
-                        </div>
-                      </>
-                    )}
+                              <button
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsDeleteModalOpen(true);
+                                  setOpenActionMenu(null);
+                                }}
+                                className="w-full cursor-pointer px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete User
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -663,13 +714,21 @@ export default function UserManagementPage() {
         {/* Pagination */}
         <div className="p-4 border-t border-border flex justify-between items-center bg-navbarBg rounded-b-lg">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Showing 6 of 6 users
+            Showing {users.length} of {meta.total || 0} users
           </div>
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-customShadow">
+            <button
+              onClick={() => setPage(prev => Math.max(1, prev - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-customShadow disabled:opacity-50 cursor-pointer"
+            >
               Previous
             </button>
-            <button className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-customShadow">
+            <button
+              onClick={() => setPage(prev => (meta.totalPages && prev < meta.totalPages) ? prev + 1 : prev)}
+              disabled={page === (meta.totalPages || 1)}
+              className="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-customShadow disabled:opacity-50 cursor-pointer"
+            >
               Next
             </button>
           </div>
@@ -677,7 +736,7 @@ export default function UserManagementPage() {
       </div>
 
       {/* Add User Modal */}
-      <AddUserModal 
+      <AddUserModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddUser={handleAddUser}
@@ -690,8 +749,8 @@ export default function UserManagementPage() {
         userData={selectedUser}
         onSave={(updatedData) => {
           console.log("User updated:", updatedData);
-          // Update users array here if needed
           setIsEditModalOpen(false);
+          toast.info("Edit user functionality not yet connected to specialized backend endpoint.");
         }}
       />
 
@@ -699,15 +758,15 @@ export default function UserManagementPage() {
         {...({
           isOpen: isResetPasswordOpen,
           onClose: () => setIsResetPasswordOpen(false),
-          userName: selectedUser?.name || "",
-          onConfirm: (newPassword: string) => {
-            console.log(
-              "Password reset for",
-              selectedUser?.name,
-              "to",
-              newPassword
-            );
-            setIsResetPasswordOpen(false);
+          userName: selectedUser?.full_name || selectedUser?.username || "",
+          onConfirm: async (newPassword: string) => {
+            try {
+              await adminResetPassword({ userId: selectedUser.id, data: { newPassword } }).unwrap();
+              toast.success("Password reset successfully");
+              setIsResetPasswordOpen(false);
+            } catch (err: any) {
+              toast.error(err?.data?.message || "Failed to reset password");
+            }
           },
         } as any)}
       />
@@ -715,28 +774,30 @@ export default function UserManagementPage() {
       <SuspendUserModal
         isOpen={isSuspendModalOpen}
         onClose={() => setIsSuspendModalOpen(false)}
-        userName={selectedUser?.name || ""}
-        onConfirm={() => {
-          // Update user status to Suspended
-          setUsers(
-            users.map((u) =>
-              u.id === selectedUser?.id
-                ? { ...u, status: "Suspended" as Status }
-                : u
-            )
-          );
-          setIsSuspendModalOpen(false);
+        userName={selectedUser?.full_name || selectedUser?.username || ""}
+        onConfirm={async () => {
+          try {
+            await suspendUser(selectedUser.id).unwrap();
+            toast.success("User suspended successfully");
+            setIsSuspendModalOpen(false);
+          } catch (err: any) {
+            toast.error(err?.data?.message || "Failed to suspend user");
+          }
         }}
       />
 
       <DeleteUserModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        userName={selectedUser?.name || ""}
-        onConfirm={() => {
-          // Remove user from list
-          setUsers(users.filter((u) => u.id !== selectedUser?.id));
-          setIsDeleteModalOpen(false);
+        userName={selectedUser?.full_name || selectedUser?.username || ""}
+        onConfirm={async () => {
+          try {
+            await deleteUser(selectedUser.id).unwrap();
+            toast.success("User deleted successfully");
+            setIsDeleteModalOpen(false);
+          } catch (err: any) {
+            toast.error(err?.data?.message || "Failed to delete user");
+          }
         }}
       />
     </div>

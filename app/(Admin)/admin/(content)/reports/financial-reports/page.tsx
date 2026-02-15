@@ -1,118 +1,23 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
 import { useTheme } from 'next-themes';
 import { Users, DollarSign, Percent, TrendingUp, TrendingDown, UserPlus, ChevronDown, Download, Target, Zap, Home, TargetIcon, ChevronRight, HomeIcon } from 'lucide-react';
 import Dropdown from '@/components/shared/Dropdown';
 import Link from 'next/link';
+import {
+  useGetFinancialOverviewQuery,
+  useGetMrrBreakdownQuery,
+  useGetSubscriberOverviewQuery,
+  useGetSubscriberActivityQuery,
+  useGetChurnByPlanQuery,
+  useGetPlanPerformanceQuery,
+  useGetFinancialChartsQuery,
+  useGetArpuAnalyticsQuery,
+  useGetTrialConversionQuery,
+} from "@/redux/api/admin/financialreportApi";
 
-// Demo data generator
-const generateData = (days: number) => {
-  const factor = days === 1 ? 0.8 : days === 7 ? 0.95 : days === 30 ? 1 : 1.1;
-
-  return {
-    summary: {
-      mrr: Math.round(28100 * factor),
-      arr: Math.round(337200 * factor),
-      churnRate: 2.9,
-      arpu: Math.round(116 * factor),
-      newSubscriptions: Math.round(73 * factor)
-    },
-    mrrArr: {
-      newSales: Math.round(4200 * factor),
-      upgrades: Math.round(1900 * factor),
-      downgrades: Math.round(-400 * factor),
-      churned: Math.round(-800 * factor),
-      mrrTrend: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
-          days === 30 ? `Day ${i + 1}` :
-            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-        mrr: 20000 + i * 1000 + Math.random() * 2000
-      })),
-      monthlyBreakdown: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 4 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
-          days === 30 ? `Week ${i + 1}` :
-            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-        churned: -(Math.random() * 200 + 100),
-        downgrades: -(Math.random() * 300 + 200),
-        newSales: Math.random() * 1500 + 1000,
-        upgrades: Math.random() * 800 + 500
-      })),
-      annualRevenue: Math.round(337200 * factor),
-      growthRate: 7.3
-    },
-    churn: {
-      newSignups: Math.round(73 * factor),
-      cancellations: Math.round(14 * factor),
-      netGrowth: Math.round(50 * factor),
-      retentionRate: 97.1,
-      activityData: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
-          days === 30 ? `Day ${i + 1}` :
-            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-        cancellations: Math.random() * 20 + 10,
-        netGrowth: Math.random() * 30 + 20,
-        newSignups: Math.random() * 60 + 40
-      })),
-      churnByPlan: [
-        { plan: 'Starter Plan', rate: 4.2 },
-        { plan: 'Business Plan', rate: 2.8 },
-        { plan: 'Enterprise Plan', rate: 1.2 }
-      ]
-    },
-    plans: {
-      starter: { subscribers: 284, revenue: 8532, avgUser: 30, churnRate: 4.5, growth: 12 },
-      business: { subscribers: 156, revenue: 15732, avgUser: 120, churnRate: 2.8, growth: 8 },
-      enterprise: { subscribers: 42, revenue: 5040, avgUser: 600, churnRate: 1.2, growth: 25 },
-      revenueData: [
-        { plan: 'Starter', revenue: Math.round(8532 * factor) },
-        { plan: 'Business', revenue: Math.round(15732 * factor) },
-        { plan: 'Enterprise', revenue: Math.round(5040 * factor) }
-      ],
-      subscribersData: [
-        { plan: 'Starter', subscribers: Math.round(284 * factor) },
-        { plan: 'Business', subscribers: Math.round(156 * factor) },
-        { plan: 'Enterprise', subscribers: Math.round(42 * factor) }
-      ]
-    },
-    arpu: {
-      overall: Math.round(116 * factor),
-      starter: Math.round(30 * factor),
-      business: Math.round(135 * factor),
-      enterprise: Math.round(630 * factor),
-      arpuTrend: Array.from({ length: days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 12 }, (_, i) => ({
-        month: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
-          days === 30 ? `Day ${i + 1}` :
-            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-        business: 130 + Math.random() * 20,
-        enterprise: 600 + Math.random() * 100,
-        overall: 110 + Math.random() * 20,
-        starter: 28 + Math.random() * 5
-      })),
-      growthFactors: [
-        { name: 'Plan Upgrades', description: 'Users moving to higher tiers', impact: '+$1.80' },
-        { name: 'Add-on Features', description: 'Extra storage, uploads, etc.', impact: '+$1.20' },
-        { name: 'Price Adjustments', description: 'Annual price increases', impact: '+$0.60' },
-        { name: 'Plan Downgrades', description: 'Users moving to lower tiers', impact: '-$0.20' }
-      ]
-    },
-    trials: {
-      overallConversion: 74.3,
-      trialsStarted: Math.round(785 * factor),
-      convertedToPaid: Math.round(586 * factor),
-      avgTrialDuration: 14,
-      conversionByPlan: [
-        { plan: 'Starter Plan', trials: 430, converted: 304, rate: 70.0 },
-        { plan: 'Business Plan', trials: 280, converted: 224, rate: 80.0 },
-        { plan: 'Enterprise Plan', trials: 75, converted: 58, rate: 80.0 }
-      ],
-      topFeature: 'Content Scheduler',
-      featureUsage: 89,
-      avgTimeToConvert: 8.5
-    }
-  };
-};
 
 const FinancialReport = () => {
   const { theme, resolvedTheme } = useTheme();
@@ -127,7 +32,142 @@ const FinancialReport = () => {
 
   const [timeRange, setTimeRange] = useState(30);
 
-  const data = useMemo(() => generateData(timeRange), [timeRange]);
+  const timeRangeString = useMemo(() => {
+    if (timeRange === 1) return "1d";
+    if (timeRange === 7) return "7d";
+    if (timeRange === 365) return "1y";
+    return "30d";
+  }, [timeRange]);
+
+  // API Queries
+  const { data: overviewData, isLoading: isOverviewLoading } = useGetFinancialOverviewQuery({ timeRange: timeRangeString });
+  const { data: mrrBreakdownData } = useGetMrrBreakdownQuery({ timeRange: timeRangeString });
+  const { data: subscriberOverviewData } = useGetSubscriberOverviewQuery({ timeRange: timeRangeString });
+  const { data: subscriberActivityData } = useGetSubscriberActivityQuery({ timeRange: timeRangeString });
+  const { data: churnByPlanData } = useGetChurnByPlanQuery({ timeRange: timeRangeString });
+  const { data: planPerformanceData } = useGetPlanPerformanceQuery({ timeRange: timeRangeString });
+  // const { data: chartsData } = useGetFinancialChartsQuery({ timeRange: timeRangeString });
+  const { data: arpuData } = useGetArpuAnalyticsQuery({ timeRange: timeRangeString });
+  const { data: trialsData } = useGetTrialConversionQuery({ timeRange: timeRangeString });
+
+  const data = useMemo(() => {
+    const overview = overviewData?.data || {};
+    const mrrBreakdown = mrrBreakdownData?.data || {};
+    const subscriberOverview = subscriberOverviewData?.data || {};
+    const subscriberActivity = subscriberActivityData?.data || [];
+    const churnByPlan = churnByPlanData?.data || [];
+    const planPerformance = planPerformanceData?.data || [];
+    const arpu = arpuData?.data || {};
+    const trials = trialsData?.data || {};
+
+    // Default Fallbacks for empty API data
+    const defaultChurnByPlan = [
+      { plan: 'Starter Plan', rate: 0 },
+      { plan: 'Business Plan', rate: 0 },
+      { plan: 'Enterprise Plan', rate: 0 }
+    ];
+
+    const defaultConversionByPlan = [
+      { plan: 'Starter Plan', trials: 0, converted: 0, rate: 0 },
+      { plan: 'Business Plan', trials: 0, converted: 0, rate: 0 },
+      { plan: 'Enterprise Plan', trials: 0, converted: 0, rate: 0 }
+    ];
+
+    return {
+      summary: {
+        mrr: overview.mrr?.value || 0,
+        arr: overview.arr?.value || 0,
+        churnRate: overview.churnRate?.value || 0,
+        arpu: overview.arpu?.value || 0,
+        newSubscriptions: overview.newSubscriptions?.value || 0
+      },
+      mrrArr: {
+        newSales: mrrBreakdown.summary?.newSales || 0,
+        upgrades: mrrBreakdown.summary?.upgrades || 0,
+        downgrades: mrrBreakdown.summary?.downgrades || 0,
+        churned: mrrBreakdown.summary?.churned || 0,
+        mrrTrend: (mrrBreakdown.mrrTrend || []).map((item: any) => ({
+          month: item.label,
+          mrr: item.value
+        })),
+        monthlyBreakdown: (mrrBreakdown.breakdown || []).map((item: any) => ({
+          month: item.label,
+          churned: item.churned,
+          downgrades: item.downgrades,
+          newSales: item.newSales,
+          upgrades: item.upgrades
+        })),
+        annualRevenue: overview.arr?.value || 0,
+        growthRate: overview.growthRate?.value || 0
+      },
+      churn: {
+        newSignups: subscriberOverview.newSignUps || 0,
+        cancellations: subscriberOverview.cancellations || 0,
+        netGrowth: subscriberOverview.netGrowth || 0,
+        retentionRate: subscriberOverview.retentionRate || 0,
+        activityData: subscriberActivity.map((item: any) => ({
+          month: item.month,
+          cancellations: item.cancellations,
+          netGrowth: item.netGrowth,
+          newSignups: item.newSignUps
+        })),
+        churnByPlan: churnByPlan.length > 0
+          ? churnByPlan.map((item: any) => ({
+            plan: item.planName || item.plan,
+            rate: item.churnRate || item.rate
+          }))
+          : defaultChurnByPlan
+      },
+      plans: {
+        starter: planPerformance.find((p: any) => p.planName?.includes("Starter")) || { subscribers: 0, revenue: 0, avgUser: 0, churnRate: 0, growth: 0 },
+        business: planPerformance.find((p: any) => p.planName?.includes("Business")) || { subscribers: 0, revenue: 0, avgUser: 0, churnRate: 0, growth: 0 },
+        enterprise: planPerformance.find((p: any) => p.planName?.includes("Enterprise")) || { subscribers: 0, revenue: 0, avgUser: 0, churnRate: 0, growth: 0 },
+        revenueData: planPerformance.map((p: any) => ({
+          plan: p.planName,
+          revenue: p.revenue
+        })),
+        subscribersData: planPerformance.map((p: any) => ({
+          plan: p.planName,
+          subscribers: p.subscribers
+        }))
+      },
+      arpu: {
+        overall: arpu.overallARPU?.value || 0,
+        starter: (arpu.planARPU || []).find((p: any) => p.planName?.includes("Starter"))?.value || 0,
+        business: (arpu.planARPU || []).find((p: any) => p.planName?.includes("Business"))?.value || 0,
+        enterprise: (arpu.planARPU || []).find((p: any) => p.planName?.includes("Enterprise"))?.value || 0,
+        arpuTrend: (arpu.chart || []).map((item: any) => ({
+          month: item.label,
+          overall: item.overallARPU,
+          starter: item.starterARPU,
+          business: item.businessARPU,
+          enterprise: item.enterpriseARPU
+        })),
+        growthFactors: (arpu.growthFactors || []).map((f: any) => ({
+          name: f.name,
+          description: f.description,
+          impact: (f.impact >= 0 ? "+" : "") + "$" + Math.abs(f.impact).toFixed(2)
+        }))
+      },
+      trials: {
+        overallConversion: trials.overallConversion?.value || 0,
+        trialsStarted: trials.trialsStarted?.value || 0,
+        convertedToPaid: trials.convertedToPaid?.value || 0,
+        avgTrialDuration: trials.averageTrialDuration?.value || 14,
+        conversionByPlan: (trials.conversionByPlan && trials.conversionByPlan.length > 0)
+          ? trials.conversionByPlan.map((p: any) => ({
+            plan: p.planName,
+            trials: p.totalTrials,
+            converted: p.convertedCount,
+            rate: p.conversionRate
+          }))
+          : defaultConversionByPlan,
+        topFeature: (trials.conversionInsights || [])[0]?.description || 'N/A',
+        featureUsage: parseInt((trials.conversionInsights || [])[0]?.value) || 0,
+        avgTimeToConvert: parseFloat((trials.conversionInsights || [])[1]?.value) || 0
+      }
+    };
+  }, [overviewData, mrrBreakdownData, subscriberOverviewData, subscriberActivityData, churnByPlanData, planPerformanceData, arpuData, trialsData]);
 
   const timeRanges = [
     { value: 1, label: 'Last 1 day' },
@@ -151,14 +191,14 @@ const FinancialReport = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-            <Link href="/admin/dashboard">
+              <Link href="/admin/dashboard">
                 <HomeIcon className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span>Reports & Analytics</span>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-bgBlue dark:text-blue-400 font-medium">Financial Report</span>
-          </div> 
+              </Link>
+              <ChevronRight className="w-4 h-4" />
+              <span>Reports & Analytics</span>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-bgBlue dark:text-blue-400 font-medium">Financial Report</span>
+            </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-1">Financial Report</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Comprehensive financial analytics and subscription metrics
@@ -240,8 +280,8 @@ const FinancialReport = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0 ${activeTab === tab.id
-                  ? 'text-blue-600 dark:text-blue-400 ring-1 ring-blue-100 dark:ring-blue-800 shadow-customShadow'
-                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'text-blue-600 dark:text-blue-400 ring-1 ring-blue-100 dark:ring-blue-800 shadow-customShadow'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
             >
               {tab.label}
@@ -426,7 +466,7 @@ const FinancialReport = () => {
             <div className="bg-navbarBg border border-border rounded-xl p-6">
               <h2 className="text-lg font-semibold mb-4">Churn Rate by Plan</h2>
               <div className="space-y-4">
-                {data.churn.churnByPlan.map((plan, idx) => (
+                {data.churn.churnByPlan.map((plan: any, idx: number) => (
                   <div key={idx}>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">{plan.plan}</span>
@@ -639,7 +679,7 @@ const FinancialReport = () => {
             <div className="bg-navbarBg rounded-lg p-6 border border-border">
               <h3 className="text-lg font-semibold mb-4">ARPU Growth Factors</h3>
               <div className="space-y-4">
-                {data.arpu.growthFactors.map((factor, idx) => (
+                {data.arpu.growthFactors.map((factor: any, idx: number) => (
                   <div key={idx} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                     <div className="flex-1">
                       <div className="font-medium text-sm">{factor.name}</div>
@@ -695,7 +735,7 @@ const FinancialReport = () => {
 
               <div className="space-y-3 mb-6">
                 <h3 className="font-semibold text-sm">Conversion by Plan</h3>
-                {data.trials.conversionByPlan.map((plan, idx) => (
+                {data.trials.conversionByPlan.map((plan: any, idx: number) => (
                   <div key={idx} className="mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">{plan.plan}</span>

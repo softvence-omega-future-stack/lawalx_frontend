@@ -44,6 +44,12 @@ export const dashboardApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    getDashboardExport: builder.query({
+      query: (filter: string) => ({
+        url: `/dashboard/export?filter=${filter}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -55,4 +61,6 @@ export const {
   useGetRecentSupportTicketsQuery,
   useGetContentUsageBreakdownQuery,
   useGetPaymentBreakdownQuery,
+  useGetDashboardExportQuery,
+  useLazyGetDashboardExportQuery,
 } = dashboardApi;
