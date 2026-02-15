@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../baseApi";
 
 const devicesAPI = baseApi.injectEndpoints({
@@ -8,7 +9,7 @@ const devicesAPI = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Content"],
+      invalidatesTags: ["Devices"],
     }),
   }),
 });

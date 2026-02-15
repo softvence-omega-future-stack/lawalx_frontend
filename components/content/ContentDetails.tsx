@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // components/content/ContentDetails.tsx
 "use client";
 
@@ -25,6 +26,7 @@ import BaseSelect from "@/common/BaseSelect";
 import ContentGrid from "./ContentGrid";
 import RenameDialog from "./RenameDialog";
 import AssignToDialog from "./AssignToDialog";
+import DeleteConfirmationModal from "@/components/Admin/modals/DeleteConfirmationModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,9 +36,8 @@ import {
 import { toast } from "sonner";
 import { ContentItem } from "@/types/content";
 import { sortByName, allContent } from "./MyContent";
-import { useUploadFileMutation, useGetSingleContentFolderDataQuery } from "@/redux/api/users/content/content.api";
-import { transformFile } from "@/lib/content-utils";
-import CommonLoader from "@/common/CommonLoader";
+import { useUploadFileMutation, useGetSingleContentFolderDataQuery, useUpdateFolderNameMutation, useUpdateFileNameMutation, useDeleteFileMutation, useDeleteFolderMutation } from "@/redux/api/users/content/content.api";
+import { transformFile, transformFolder } from "@/lib/content-utils";
 
 interface ContentDetailsProps {
   content: ContentItem;
@@ -44,6 +45,10 @@ interface ContentDetailsProps {
 
 const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
   const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
+  const [updateFolderName] = useUpdateFolderNameMutation();
+  const [updateFileName] = useUpdateFileNameMutation();
+  const [deleteFile] = useDeleteFileMutation();
+  const [deleteFolder] = useDeleteFolderMutation();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -51,6 +56,7 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [openRename, setOpenRename] = useState(false);
   const [openAssign, setOpenAssign] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -60,7 +66,7 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
   const isFolder = initialContent.type === "folder";
 
   // Fetch folder contents only if it's a folder
-  const { data: folderData, isLoading: isFolderLoading } = useGetSingleContentFolderDataQuery(initialContent.id, {
+  const { data: folderData } = useGetSingleContentFolderDataQuery(initialContent.id, {
     skip: !isFolder,
   });
 
@@ -69,7 +75,11 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
     if (folderData?.data && isMounted) {
       return {
         ...initialContent,
-        children: folderData.data.map((f: any) => transformFile(f, isMounted)),
+        children: Array.isArray(folderData.data)
+          ? folderData.data.map((f: any) =>
+            f.type === "FOLDER" ? transformFolder(f, isMounted) : transformFile(f, isMounted)
+          )
+          : [],
       };
     }
     return initialContent;
@@ -129,11 +139,11 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
 
     // If we are inside a folder, tell backend to attach files to that parent
     if (isFolder && content.id) {
-      formData.append("parentId", content.id);
+      formData.append("folderId", content.id);
     }
 
     try {
-      const res = await uploadFile(formData).unwrap();
+      const res = await uploadFile({ formData, folderId: content.id }).unwrap();
       // console.log(res);
 
       toast.success(res?.message || "File(s) uploaded successfully");
@@ -142,6 +152,35 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
     } catch (err: any) {
       console.error("Upload failed:", err);
       toast.error(err?.data?.message || "Upload failed. Please try again.");
+    }
+  };
+
+  const handleRename = async (newName: string) => {
+    if (!content.id) return;
+    try {
+      const mutation = content.type === "folder" ? updateFolderName : updateFileName;
+      const res = await mutation({ id: content.id, name: newName }).unwrap();
+      toast.success(res?.message || "Renamed successfully");
+    } catch (err: any) {
+      console.error("Rename failed:", err);
+      toast.error(err?.data?.message || "Rename failed. Please try again.");
+    }
+  };
+
+  const handleDeleteFolder = async () => {
+    if (!content.id) return;
+    try {
+      const mutation = isFolder ? deleteFolder : deleteFile;
+      const res = await mutation(content.id as any).unwrap();
+      if (res?.success) {
+        toast.success(res.message || "Deleted successfully");
+        router.push("/content");
+      } else {
+        toast.error(res?.message || "Failed to delete");
+      }
+    } catch (err: any) {
+      console.error("Delete failed:", err);
+      toast.error(err?.data?.message || "Failed to delete. Please try again.");
     }
   };
 
@@ -156,7 +195,7 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
           setOpen={setOpenRename}
           itemName={content.title}
           itemType={content.type}
-          onRename={(newName) => console.log("Rename:", newName)}
+          onRename={handleRename}
         />
       )}
 
@@ -167,6 +206,18 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
           onAssign={(ids) => console.log("Assigned to screens:", ids)}
         />
       )}
+
+      <DeleteConfirmationModal
+        isOpen={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={async () => {
+          await handleDeleteFolder();
+          setOpenDeleteDialog(false);
+        }}
+        title={`Delete ${isFolder ? "Folder" : "File"}`}
+        description={`Are you sure you want to delete this ${isFolder ? "folder" : "file"}? This action cannot be undone.`}
+        itemName={content.title}
+      />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
@@ -228,7 +279,10 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <button className="flex items-center gap-2 px-6 py-2.5 bg-[#F94D4D] text-white rounded-lg text-base font-semibold transition-all hover:bg-[#e04444] shadow-customShadow cursor-pointer">
+            <button
+              onClick={() => setOpenDeleteDialog(true)}
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#F94D4D] text-white rounded-lg text-base font-semibold transition-all hover:bg-[#e04444] shadow-customShadow cursor-pointer"
+            >
               <Trash2 className="w-5 h-5" /> Remove
             </button>
           </div>
@@ -321,7 +375,24 @@ const ContentDetails = ({ content: initialContent }: ContentDetailsProps) => {
               items={filteredChildren.map(child => ({ ...child, size: child.size || "" })) as any}
               viewMode={viewMode}
               onItemSelect={(id: string) => router.push(`/content/${id}`)}
-              onItemMenuClick={(id: string, action: string) => console.log("Menu:", id, action)}
+              onItemMenuClick={(id: string, action: string) => {
+                if (action.startsWith("rename:")) {
+                  const newName = action.split(":")[1];
+                  if (newName) {
+                    const child = filteredChildren.find(c => c.id === id);
+                    const mutation = child?.type === "folder" ? updateFolderName : updateFileName;
+                    mutation({ id, name: newName })
+                      .unwrap()
+                      .then((res: any) => toast.success(res?.message || "Renamed successfully"))
+                      .catch((err: any) => {
+                        console.error("Rename failed:", err);
+                        toast.error(err?.data?.message || "Rename failed");
+                      });
+                  }
+                } else {
+                  console.log("Menu:", id, action);
+                }
+              }}
               onAssignClick={(id: string) => console.log("Assign:", id)}
             />
           </div>

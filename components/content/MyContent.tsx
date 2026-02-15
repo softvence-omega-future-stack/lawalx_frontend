@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
@@ -19,7 +20,7 @@ import ContentGrid from "./ContentGrid";
 import EmptyState from "./EmptyState";
 import CreateFolderDialog from "./CreateFolderDialog";
 import FolderOpenDialog from "./FolderOepnDialog";
-import { useGetAllContentDataQuery, useUploadFileMutation } from "@/redux/api/users/content/content.api";
+import { useGetAllContentDataQuery, useUploadFileMutation, useUpdateFolderNameMutation, useUpdateFileNameMutation } from "@/redux/api/users/content/content.api";
 import CommonLoader from "@/common/CommonLoader";
 import { ContentItem, SelectOption } from "@/types/content";
 import { transformFile, transformFolder } from "@/lib/content-utils";
@@ -41,10 +42,10 @@ export const allContent: SelectOption[] = [
   { label: "Files", value: "files" },
 ];
 
-
-
 const MyContent = () => {
   const [uploadFile, { isLoading }] = useUploadFileMutation();
+  const [updateFolderName] = useUpdateFolderNameMutation();
+  const [updateFileName] = useUpdateFileNameMutation();
   const { data: allContentData, isLoading: isAllContentLoading } = useGetAllContentDataQuery(undefined);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
@@ -105,6 +106,20 @@ const MyContent = () => {
         setSelectedItem({ id, title: "", type: "image", size: "" });
         setOpenMoveFolder(true);
       }
+    } else if (action?.startsWith("rename:")) {
+      const newName = action.split(":")[1];
+      if (newName) {
+        const item = filteredContent.find((c) => c.id === id) || contentItems.flatMap(i => i.children ?? []).find(c => c.id === id);
+        const mutation = item?.type === "folder" ? updateFolderName : updateFileName;
+
+        mutation({ id, name: newName })
+          .unwrap()
+          .then((res: any) => toast.success(res?.message || "Renamed successfully"))
+          .catch((err: any) => {
+            console.error("Rename failed:", err);
+            toast.error(err?.data?.message || "Rename failed");
+          });
+      }
     }
   };
 
@@ -162,7 +177,7 @@ const MyContent = () => {
           {/* UPLOAD BUTTON */}
           <button
             onClick={handleUploadClick}
-            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center justify-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow min-w-[160px]"
+            className="bg-bgBlue hover:bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg flex items-center justify-center gap-2 text-sm md:text-base font-semibold cursor-pointer transition-all duration-300 ease-in-out shadow-customShadow min-w-40"
             disabled={isLoading}
             aria-busy={isLoading}
           >

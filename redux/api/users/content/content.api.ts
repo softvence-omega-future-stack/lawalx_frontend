@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../baseApi";
-import { CreateFolderPayload, FileItemSingle, GetAllDataResponse, GetSingleFilesResponse, GetSingleFolderFilesResponse, MyContentResponse, SuccessResponse, UploadFilePayload } from "./content.type";
+import { CreateFolderPayload, GetAllDataResponse, GetFilesResponse, GetSingleFilesResponse, GetSingleFolderFilesResponse, MyContentResponse, SuccessResponse, UploadFilePayload } from "./content.type";
 
 const contentAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -12,16 +13,28 @@ const contentAPI = baseApi.injectEndpoints({
       invalidatesTags: ["Content"],
     }),
     uploadFile: build.mutation<any, UploadFilePayload>({
-      query: (data) => ({
-        url: "/content/upload-file",
-        method: "POST",
-        body: data,
-      }),
+      query: (arg) => {
+        const isObject = !(arg instanceof FormData);
+        const body = isObject ? (arg as any).formData : arg;
+        const folderId = isObject ? (arg as any).folderId : undefined;
+        return {
+          url: `/content/upload-file${folderId ? `?folderId=${folderId}` : ""}`,
+          method: "POST",
+          body,
+        };
+      },
       invalidatesTags: ["Content"],
     }),
     getAllContentData: build.query<GetAllDataResponse, void>({
       query: () => ({
         url: "/content/all",
+        method: "GET",
+      }),
+      providesTags: ["Content"],
+    }),
+    getAllFiles: build.query<GetFilesResponse, void>({
+      query: () => ({
+        url: "/content/files",
         method: "GET",
       }),
       providesTags: ["Content"],
@@ -47,23 +60,48 @@ const contentAPI = baseApi.injectEndpoints({
       }),
       providesTags: ["Content"],
     }),
-    updateFile: build.mutation<any, SuccessResponse>({
-      query: (id) => ({
-        url: `/file/update/${id}`,
+    updateFileName: build.mutation<any, { name: string; id: string }>({
+      query: ({ id, name }) => ({
+        url: `/content/content/${id}/rename`,
         method: "PATCH",
+        body: { name },
       }),
       invalidatesTags: ["Content"],
     }),
-    assignProgram: build.mutation<any, SuccessResponse>({
-      query: (id) => ({
+    updateFolderName: build.mutation<any, { name: string; id: string }>({
+      query: ({ id, name }) => ({
+        url: `/content/update-folder-name/${id}`,
+        method: "PATCH",
+        body: { name },
+      }),
+      invalidatesTags: ["Content"],
+    }),
+    assignProgram: build.mutation<any, { id: string; programId: string }>({
+      query: ({ id, programId }) => ({
         url: `/file/${id}/assign-program`,
         method: "PATCH",
+        body: { programId },
       }),
       invalidatesTags: ["Content"],
     }),
-    deleteFile: build.mutation<any, SuccessResponse>({
-      query: (id) => ({
+    moveToFolder: build.mutation<any, { id: string; targetFolderId: string }>({
+      query: ({ id, targetFolderId }) => ({
+        url: `/content/file/${id}/move`,
+        method: "PATCH",
+        body: { targetFolderId },
+      }),
+      invalidatesTags: ["Content"],
+    }),
+    deleteFile: build.mutation<any, { id: string }>({
+      query: ({ id }) => ({
         url: `/content/delete-file/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Content"],
+    }),
+    deleteFolder: build.mutation<any, SuccessResponse>({
+      query: (id) => ({
+        url: `/content/delete-folder/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Content"],
@@ -71,4 +109,4 @@ const contentAPI = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentDataQuery, useGetSingleContentFolderDataQuery, useGetSingleFilesDataQuery, useGetSingleFileDetailsQuery, useUpdateFileMutation, useAssignProgramMutation, useDeleteFileMutation } = contentAPI;
+export const { useCreateFolderMutation, useUploadFileMutation, useGetAllContentDataQuery, useGetAllFilesQuery, useGetSingleContentFolderDataQuery, useGetSingleFilesDataQuery, useGetSingleFileDetailsQuery, useUpdateFileNameMutation, useUpdateFolderNameMutation, useAssignProgramMutation, useDeleteFileMutation, useDeleteFolderMutation, useMoveToFolderMutation } = contentAPI;

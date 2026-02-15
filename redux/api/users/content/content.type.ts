@@ -3,8 +3,8 @@ export type CreateFolderPayload = {
   name: string;
   parentId?: string;
 };
-// Upload payload will be sent as FormData (files + optional parentId)
-export type UploadFilePayload = FormData;
+// Upload payload will be sent as FormData (files + optional folderId)
+export type UploadFilePayload = FormData | { formData: FormData; folderId?: string };
 
 // all content get route type definition
 export type ContentType = "FOLDER" | "IMAGE" | "VIDEO" | "AUDIO" | "FILE";
@@ -76,7 +76,6 @@ export interface GetAllDataResponse {
 }
 
 // single folder get data type 
-export type FileTypeSingle = "IMAGE" | "VIDEO" | "AUDIO";
 
 export interface FileItemSingle {
   id: string;
@@ -85,7 +84,7 @@ export interface FileItemSingle {
   fileType: string; // image/jpeg | video/mp4 | audio/mpeg
   originalName: string;
   size: number;
-  type: FileTypeSingle;
+  type: FileType;
   duration: number;
   userId: string;
   folderId: string | null;
@@ -106,6 +105,18 @@ export interface GetSingleFilesResponse {
   message: string;
   data: FileItemSingle;
 }
+
+// get all files 
+
+export interface ApiResponse<T> {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export type GetFilesResponse = ApiResponse<FileItem[]>;
+
 
 
 // All success response 
