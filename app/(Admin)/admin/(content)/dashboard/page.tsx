@@ -12,7 +12,11 @@ import {
   useGetRecentSupportTicketsQuery,
   useGetContentUsageBreakdownQuery,
   useGetPaymentBreakdownQuery,
+  useLazyGetDashboardExportQuery,
 } from '@/redux/api/admin/dashbaordApi';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { toast } from 'sonner';
 
 type DateRange = '1d' | '7d' | '1m' | '1y';
 
@@ -570,8 +574,91 @@ const Dashboard: React.FC = () => {
     return overviewData.data;
   }, [overviewData]);
 
-  const handleExport = () => {
-    window.print();
+  const [triggerExport] = useLazyGetDashboardExportQuery();
+
+  const handleExport = async () => {
+    try {
+      const { data: exportData, isError } = await triggerExport(dateRange);
+
+      if (isError || !exportData) {
+        toast.error("Failed to fetch export data");
+        return;
+      }
+
+      const rawData = exportData.dashboard;
+      const doc = new jsPDF();
+
+      // Add Title
+      doc.setFontSize(18);
+      doc.text('Dashboard Overview Report', 14, 22);
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Filter: ${dateRange} | Exported At: ${new Date().toLocaleString()}`, 14, 30);
+
+      // 1. Overview Section
+      doc.setFontSize(14);
+      doc.setTextColor(0);
+      doc.text('Overview Metrics', 14, 45);
+
+      const overview = rawData?.overview || {};
+      const overviewRows = [
+        ['Total Users', overview.totalUsers, `${overview.usersGrowth}%`],
+        ['Active Users', overview.activeUsers, `${overview.activeUsersGrowth}%`],
+        ['Active Subscriptions', overview.activeSubscriptions, `${overview.subscriptionGrowth}%`],
+        ['Total Revenue', `$${overview.totalRevenue}`, `${overview.revenueGrowth}%`],
+        ['Active Devices', overview.activeDevices, `${overview.deviceGrowth}%`],
+        ['Total Content Items', overview.totalContentItems, `${overview.contentGrowth}%`],
+        ['Open Support Tickets', overview.openSupportTickets, `${overview.ticketGrowth}%`],
+        ['System Uptime', `${overview.systemUptime}%`, `${overview.uptimeGrowth}%`],
+        ['Avg API Response Time', `${overview.avgApiResponseTime}ms`, `${overview.apiResponseGrowth}%`],
+      ];
+
+      autoTable(doc, {
+        head: [['Metric', 'Value', 'Growth']],
+        body: overviewRows,
+        startY: 50,
+        theme: 'striped',
+        headStyles: { fillColor: [59, 130, 246] },
+      });
+
+      // 2. Subscription Plans
+      const subStartY = ((doc as any).lastAutoTable?.cursor?.y || 150) + 15;
+      doc.setFontSize(14);
+      doc.text('Subscription Plans', 14, subStartY);
+
+      const plans = rawData?.subscriptionPlans?.plans || [];
+      const planRows = plans.map((p: any) => [p.planName, p.count, `${p.percentage}%`]);
+
+      autoTable(doc, {
+        head: [['Plan Name', 'Count', 'Percentage']],
+        body: planRows,
+        startY: subStartY + 5,
+        theme: 'striped',
+        headStyles: { fillColor: [16, 185, 129] },
+      });
+
+      // 3. Content Summary
+      const contentStartY = ((doc as any).lastAutoTable?.cursor?.y || subStartY + 40) + 15;
+      doc.setFontSize(14);
+      doc.text('Content Summary', 14, contentStartY);
+
+      const contentByType = rawData?.content?.byType || [];
+      const contentRows = contentByType.map((c: any) => [c.type, c.uploaded, `${c.growth}%`]);
+
+      autoTable(doc, {
+        head: [['Content Type', 'Uploaded', 'Growth']],
+        body: contentRows,
+        startY: contentStartY + 5,
+        theme: 'striped',
+        headStyles: { fillColor: [249, 115, 22] },
+      });
+
+      doc.save(`dashboard-report-${dateRange}-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success("Dashboard report exported successfully");
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("An error occurred while exporting the report");
+    }
   };
 
   const handleAddClient = (data: any) => {
