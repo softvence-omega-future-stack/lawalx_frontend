@@ -5,57 +5,117 @@ import { Monitor, Wifi, WifiOff, TrendingUp, ChevronDown, Download, Home, Chevro
 import Dropdown from '@/components/shared/Dropdown';
 import Link from 'next/link';
 
-// Demo data generator
-const generateData = (days: number) => {
-  const regions = [
-    { name: 'North America', base: 2575, onlineRate: 0.951, offlineRate: 0.049 },
-    { name: 'Europe', base: 1854, onlineRate: 0.962, offlineRate: 0.048 },
-    { name: 'Asia', base: 1201, onlineRate: 0.944, offlineRate: 0.056 },
-    { name: 'South America', base: 468, onlineRate: 0.951, offlineRate: 0.049 },
-    { name: 'Others', base: 168, onlineRate: 0.929, offlineRate: 0.071 }
-  ];
+import {
+  useGetDeviceDashboardQuery,
+  useLazyGetDeviceExportQuery
+} from '@/redux/api/admin/devicereportApi';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { toast } from 'sonner';
 
-  const factor = days === 1 ? 0.8 : days === 7 ? 0.95 : days === 30 ? 1 : 1.1;
-
-  const adjustedRegions = regions.map(r => ({
-    ...r,
-    base: Math.round(r.base * factor),
-    online: Math.round(r.base * factor * r.onlineRate),
-    offline: Math.round(r.base * factor * r.offlineRate)
-  }));
-
-  const total = adjustedRegions.reduce((sum, r) => sum + r.base, 0);
-  const totalOnline = adjustedRegions.reduce((sum, r) => sum + r.online, 0);
-  const totalOffline = adjustedRegions.reduce((sum, r) => sum + r.offline, 0);
-
-  const uptimeData = [];
-  const daysToShow = days === 1 ? 24 : days === 7 ? 7 : days === 30 ? 30 : 365;
-  const baseUptime = 98.7;
-
-  for (let i = 0; i < daysToShow; i++) {
-    const variance = (Math.random() - 0.5) * 2;
-    uptimeData.push({
-      day: days === 1 ? `${i}:00` : days === 7 ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i] :
-        days === 30 ? `Day ${i + 1}` : `M${i + 1}`,
-      uptime: Math.max(95, Math.min(100, baseUptime + variance))
-    });
-  }
-
-  return {
-    summary: {
-      total,
-      online: totalOnline,
-      offline: totalOffline,
-      avgUptime: baseUptime
-    },
-    regions: adjustedRegions,
-    uptimeData
-  };
-};
 const DeviceReportDashboard = () => {
   const [timeRange, setTimeRange] = useState(30);
+  const [triggerExport] = useLazyGetDeviceExportQuery();
 
-  const data = useMemo(() => generateData(timeRange), [timeRange]);
+  const handleExportPDF = async () => {
+    try {
+      const { data: exportData, isError } = await triggerExport({});
+
+      if (isError || !exportData?.success) {
+        toast.error("Failed to fetch export data");
+        return;
+      }
+
+      const devices = exportData.data?.devices || [];
+      const doc = new jsPDF();
+
+      // Add Title
+      doc.setFontSize(18);
+      doc.text('Device Report', 14, 22);
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Exported At: ${new Date().toLocaleString()}`, 14, 30);
+
+      // Define table columns
+      const tableColumn = ["Index", "Device ID", "Name", "Status", "Region", "Username"];
+      const tableRows: any[] = [];
+
+      devices.forEach((device: any, index: number) => {
+        const deviceData = [
+          index + 1,
+          device.id || 'N/A',
+          device.name || 'N/A',
+          device.status || 'N/A',
+          device.region || 'N/A',
+          device.user?.username || 'N/A'
+        ];
+        tableRows.push(deviceData);
+      });
+
+      // Generate Table
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40,
+        theme: 'striped',
+        headStyles: { fillColor: [139, 92, 246] }, // Violet-500
+        styles: { fontSize: 9 }
+      });
+
+      // Save PDF
+      doc.save(`device-report-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success("Device report exported successfully");
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("An error occurred while exporting the report");
+    }
+  };
+
+  const timeRangeString = useMemo(() => {
+    if (timeRange === 1) return "1d";
+    if (timeRange === 7) return "7d";
+    if (timeRange === 365) return "1y";
+    return "30d";
+  }, [timeRange]);
+
+  // API Queries
+  const { data: dashboardData, isLoading: isDashboardLoading } = useGetDeviceDashboardQuery({ filter: timeRangeString });
+
+  const data = useMemo(() => {
+    const apiData = dashboardData?.data || {};
+    const summary = apiData.summary || {};
+
+    const defaultRegions = [
+      { name: 'North America', base: 0, online: 0, offline: 0, onlineRate: 0, offlineRate: 0 },
+      { name: 'Europe', base: 0, online: 0, offline: 0, onlineRate: 0, offlineRate: 0 },
+      { name: 'Asia', base: 0, online: 0, offline: 0, onlineRate: 0, offlineRate: 0 },
+      { name: 'South America', base: 0, online: 0, offline: 0, onlineRate: 0, offlineRate: 0 },
+      { name: 'Others', base: 0, online: 0, offline: 0, onlineRate: 0, offlineRate: 0 }
+    ];
+
+    const regionsFromApi = (apiData.regionalStats || []).map((r: any) => ({
+      name: r.region || r.name,
+      base: r.totalDevices || r.base || 0,
+      online: r.onlineDevices || r.online || 0,
+      offline: r.offlineDevices || r.offline || 0,
+      onlineRate: (r.onlineDevices / r.totalDevices) || 0,
+      offlineRate: (r.offlineDevices / r.totalDevices) || 0
+    }));
+
+    return {
+      summary: {
+        total: summary.totalDevices || 0,
+        online: summary.onlineDevices || 0,
+        offline: summary.offlineDevices || 0,
+        avgUptime: parseFloat(summary.averageUptime || "0")
+      },
+      regions: regionsFromApi.length > 0 ? regionsFromApi : defaultRegions,
+      uptimeData: (apiData.uptimeGraph || []).map((item: any) => ({
+        day: item.label,
+        uptime: item.value
+      }))
+    };
+  }, [dashboardData]);
 
   const timeRanges = [
     { value: 1, label: 'Last 1 day' },
@@ -71,14 +131,14 @@ const DeviceReportDashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-            <Link href="/admin/dashboard">
+              <Link href="/admin/dashboard">
                 <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span>Reports & Analytics</span>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-bgBlue dark:text-blue-400 font-medium">Device Report</span>
-          </div> 
+              </Link>
+              <ChevronRight className="w-4 h-4" />
+              <span>Reports & Analytics</span>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-bgBlue dark:text-blue-400 font-medium">Device Report</span>
+            </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-1">Device Report</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Monitor and manage all connected devices across customers
@@ -92,7 +152,10 @@ const DeviceReportDashboard = () => {
               onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
             />
 
-            <button className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg flex items-center gap-2 hover:scale-105 transition-all text-sm bg-navbarBg cursor-pointer dark:shadow-customShadow">
+            <button
+              onClick={handleExportPDF}
+              className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg flex items-center gap-2 hover:scale-105 transition-all text-sm bg-navbarBg cursor-pointer dark:shadow-customShadow"
+            >
               <Download className="w-4 h-4" />
               <span className='hidden md:block'>Export Device Report</span>
             </button>
@@ -220,7 +283,7 @@ const DeviceReportDashboard = () => {
         <div className="bg-navbarBg rounded-lg p-6 border border-border">
           <h2 className="text-lg font-semibold mb-6">Regional Device Statistics</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {data.regions.map((region) => (
+            {data.regions.map((region: any) => (
               <div key={region.name} className="p-4 rounded-lg border border-border">
                 <h3 className="font-semibold mb-3">{region.name}</h3>
                 <div className="text-2xl font-bold mb-3">{region.base.toLocaleString()}</div>
