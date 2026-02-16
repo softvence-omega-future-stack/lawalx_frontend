@@ -120,6 +120,22 @@ const MyContentCard = ({
             </button>
           </div>
         );
+      case "video":
+        return (
+          <div
+            className="relative w-14 h-14 rounded-xl overflow-hidden bg-black shrink-0 cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); setOpen(true); }}
+          >
+            <video
+              src={item.video}
+              className="w-full h-full object-cover"
+              muted
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+              <Play className="w-5 h-5 text-white fill-white" />
+            </div>
+          </div>
+        );
       default:
         return (
           <div className="w-14 h-14 rounded-xl bg-navbarBg flex items-center justify-center shrink-0">
@@ -137,8 +153,13 @@ const MyContentCard = ({
 
   const handleDelete = async () => {
     try {
-      const mutation = item.type === "folder" ? folderDelete : fileDelete;
-      const res = await mutation(item.id as any).unwrap();
+      let res;
+      if (item.type === "folder") {
+        res = await folderDelete(item.id as any).unwrap();
+      } else {
+        res = await fileDelete({ id: item.id }).unwrap();
+      }
+
       if (res?.success) {
         toast.success(res.message || "Deleted successfully.");
         router.refresh();
@@ -345,6 +366,21 @@ const MyContentCard = ({
               <div className="relative w-full h-full cursor-pointer" onClick={() => item.type === "image" && setOpenImage(true)}>
                 <Image src={item.thumbnail} alt={item.title} fill className="object-cover" />
               </div>
+            ) : item.type === "video" ? (
+              <div
+                className="relative w-full h-full bg-black cursor-pointer"
+                onClick={(e) => { e.stopPropagation(); setOpen(true); }}
+              >
+                <video
+                  src={item.video}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                  onMouseEnter={(e) => e.currentTarget.play()}
+                  onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                />
+              </div>
             ) : item.type === "folder" ? (
               <Image className="cursor-pointer" onClick={() => router.push(`/content/${item.id}`)} src={folder} alt="folder" />
             ) : (
@@ -357,10 +393,10 @@ const MyContentCard = ({
             )}
 
             {item.type === "video" && (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <button
                   onClick={(e) => { e.stopPropagation(); setOpen(true); }}
-                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer"
+                  className="bg-white/90 dark:bg-gray-900/90 rounded-full p-2.5 hover:bg-white dark:hover:bg-gray-900 transition-colors cursor-pointer pointer-events-auto"
                 >
                   <Play className="w-8 h-8 fill-[rgba(255,255,255,0.7)]" />
                 </button>

@@ -62,12 +62,16 @@ const BaseVideoPlayer = ({
     }
 
     // Local MP4 or public folder
+    // Check if it's an absolute URL
+    const isAbsolute = src.startsWith("http://") || src.startsWith("https://");
+    const safeSrc = isAbsolute ? src : (src.startsWith("/") ? src : "/" + src);
+
     return {
       type: "video",
       poster: poster || "",
       sources: [
         {
-          src: src.startsWith("/") ? src : "/" + src,
+          src: safeSrc,
           type: "video/mp4",
         },
       ],
