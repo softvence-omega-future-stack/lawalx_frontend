@@ -36,7 +36,6 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
     <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-navbarBg rounded-2xl shadow-xl w-full max-w-xl border border-border">
 
-        {/* Header */}
         <div className="flex items-center justify-between p-5 sm:p-6 border-b border-border">
           <h2 className="text-xl sm:text-2xl font-semibold text-Headings dark:text-white">
             Add New Device
