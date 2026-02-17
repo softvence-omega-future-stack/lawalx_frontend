@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { TvMinimal, Radio, WifiOff, Search, ChevronDown, MoreVertical, Trash2, Edit, Monitor, UserCheck } from "lucide-react";
+import { TvMinimal, Radio, WifiOff, Search, ChevronDown, MoreVertical, Trash2, CircleQuestionMark, Eye, PenLine } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import AddDeviceModal from "@/components/dashboard/AddDeviceModal";
 import PreviewDeviceModal from "@/components/devices/modals/PreviewDeviceModal";
@@ -9,50 +15,38 @@ import GoogleMapModal from "@/components/shared/modals/GoogleMapModal";
 import RenameDeviceModal from "@/components/devices/modals/RenameDeviceModal";
 import RemoveDeviceModal from "@/components/devices/modals/RemoveDeviceModal";
 import ReportDeviceModal from "@/components/devices/modals/ReportDeviceModal";
+import { useGetMyDevicesDataQuery, useDeleteDeviceMutation, useRenameDeviceMutation } from "@/redux/api/users/devices/devices.api";
+import { Device as ApiDevice } from "@/redux/api/users/devices/devices.type";
+import { toast } from "sonner";
 
-// Local types to match admin page logic
-type Device = {
-  id: number;
+// Local types to match admin page logic, adapting to API data
+type DeviceView = {
+  id: string;
   device: string;
   model: string;
   location: string;
   type: string;
-  status: 'Online' | 'Offline' | 'Syncing' | string;
+  status: string;
   storage: string;
-  daysAgo: number;
-  lastSyncDate?: Date;
-  lastSync?: string;
+  lastSync: string;
   lat: number;
   lng: number;
+  original: ApiDevice; // Keep original for actions
 };
 
-// Generate demo data with dates
-const generateDevicesData = (): Device[] => {
-  const devices = [
-    { device: 'Lobby Display', model: 'LG-43-4K', location: 'Chicago, IL', type: 'LG webOS', status: 'Online', storage: '12.0/42.0 GB', daysAgo: 0.5, lat: 41.8781, lng: -87.6298 },
-    { device: 'Menu Board', model: 'SS-55-HD', location: 'Los Angeles, CA', type: 'Samsung Tizen', status: 'Offline', storage: '3.2/8.0 GB', daysAgo: 0.8, lat: 34.0522, lng: -118.2437 },
-    { device: 'Office Screen', model: 'AV-32-HD', location: 'New York, NY', type: 'Android TV', status: 'Online', storage: '8.5/16.0 GB', daysAgo: 1.2, lat: 40.7128, lng: -74.0060 },
-    { device: 'Reception Display', model: 'FTV-50-4K', location: 'Miami, FL', type: 'Fire TV', status: 'Syncing', storage: '5.7/32.0 GB', daysAgo: 2.5, lat: 25.7617, lng: -80.1918 },
-    { device: 'Conference Room', model: 'LG-65-4K', location: 'Boston, MA', type: 'LG webOS', status: 'Online', storage: '14.2/64.0 GB', daysAgo: 4, lat: 42.3601, lng: -71.0589 },
-    { device: 'Waiting Area', model: 'SS-43-HD', location: 'Seattle, WA', type: 'Samsung Tizen', status: 'Offline', storage: '6.1/16.0 GB', daysAgo: 10, lat: 47.6062, lng: -122.3321 },
-    { device: 'Staff Room', model: 'AV-24-HD', location: 'Dallas, TX', type: 'Android TV', status: 'Online', storage: '4.8/8.0 GB', daysAgo: 20, lat: 32.7767, lng: -96.7970 },
-    { device: 'Garage Display', model: 'FTV-43-4K', location: 'Phoenix, AZ', type: 'Fire TV', status: 'Online', storage: '7.8/16.0 GB', daysAgo: 45, lat: 33.4484, lng: -112.0740 },
-  ];
-
+const calculateTimeAgo = (dateString: string | null) => {
+  if (!dateString) return "Never";
+  const date = new Date(dateString);
   const now = new Date();
-  return devices.map((item, index) => {
-    const lastSyncDate = new Date(now.getTime() - item.daysAgo * 24 * 60 * 60 * 1000);
-    let lastSync;
-    if (item.status === 'Syncing') {
-      lastSync = 'Syncing now';
-    } else if (item.daysAgo < 1) {
-      const mins = Math.floor(item.daysAgo * 24 * 60);
-      lastSync = mins < 60 ? `${mins} minutes ago` : `${Math.floor(mins / 60)} hours ago`;
-    } else {
-      lastSync = `${Math.floor(item.daysAgo)} days ago`;
-    }
-    return { ...item, id: index + 1, lastSyncDate, lastSync };
-  });
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return "Just now";
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} hours ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `${diffInDays} days ago`;
 };
 
 // Reusable Dropdown Component (matching admin style)
@@ -92,46 +86,60 @@ const Dropdown = ({ value, options, onChange, icon: Icon }: any) => {
 };
 
 // Action Menu Component (matching admin style)
-const ActionMenu = ({ device, onAction, isLastRows, isFirstRows }: any) => {
-  const [isOpen, setIsOpen] = useState(false);
+const ActionMenu = ({ device, onAction }: any) => {
   const actions = [
-    { label: 'Preview', icon: Monitor, color: 'text-blue-600 dark:text-blue-400' },
-    { label: 'Rename', icon: Edit, color: 'text-gray-600 dark:text-gray-400' },
-    { label: 'Report Issue', icon: UserCheck, color: 'text-orange-600 dark:text-orange-400' },
+    { label: 'Preview', icon: Eye, color: 'text-gray-900 dark:text-white' },
+    { label: 'Rename', icon: PenLine, color: 'text-gray-900 dark:text-white' },
+    { label: 'Report Issue', icon: CircleQuestionMark, color: 'text-gray-900 dark:text-white' },
     { label: 'Remove Device', icon: Trash2, color: 'text-red-600 dark:text-red-400' },
   ];
 
   return (
-    <div className="relative">
-      <button onClick={() => setIsOpen(!isOpen)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 cursor-pointer">
-        <MoreVertical className="w-5 h-5" />
-      </button>
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className={`absolute right-0 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 ${isLastRows ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
-            {actions.map((action) => (
-              <button
-                key={action.label}
-                onClick={() => {
-                  onAction(action.label, device);
-                  setIsOpen(false);
-                }}
-                className={`w-full cursor-pointer text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg flex items-center gap-2 ${action.color}`}
-              >
-                <action.icon className="w-4 h-4" />
-                {action.label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 cursor-pointer outline-none">
+          <MoreVertical className="w-5 h-5" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        {actions.map((action) => (
+          <DropdownMenuItem
+            key={action.label}
+            onClick={() => onAction(action.label, device)}
+            className={`flex items-center gap-2 ${action.color}`}
+          >
+            <action.icon className="w-4 h-4" />
+            {action.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
 export default function DevicesPage() {
-  const [allDevices] = useState(generateDevicesData());
+  const { data: devicesData, isLoading, isError } = useGetMyDevicesDataQuery();
+  const [deleteDevice, { isLoading: isDeleting }] = useDeleteDeviceMutation();
+  const [renameDeviceApi, { isLoading: isRenaming }] = useRenameDeviceMutation();
+
+  const allDevices: DeviceView[] = useMemo(() => {
+    if (!devicesData?.data) return [];
+
+    return devicesData.data.map((device) => ({
+      id: device.id,
+      device: device.name || device.deviceSerial || "Unknown Device",
+      model: device.model || "Unknown Model",
+      location: device.location || "Unknown Location",
+      type: device.deviceType || "Unknown Type",
+      status: device.status === "PAIRED" ? "Online" : (device.status === "OFFLINE" ? "Offline" : device.status),
+      storage: device.storage ? (typeof device.storage === 'string' ? device.storage : "N/A") : "N/A",
+      lastSync: calculateTimeAgo(device.lastSeen),
+      lat: 0,
+      lng: 0,
+      original: device
+    }));
+  }, [devicesData]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [typeFilter, setTypeFilter] = useState('All Types');
@@ -139,12 +147,12 @@ export default function DevicesPage() {
   const itemsPerPage = 10;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [previewDevice, setPreviewDevice] = useState<Device | null>(null);
-  const [renameDevice, setRenameDevice] = useState<Device | null>(null);
-  const [removeDevice, setRemoveDevice] = useState<Device | null>(null);
-  const [reportDevice, setReportDevice] = useState<Device | null>(null);
+  const [previewDevice, setPreviewDevice] = useState<DeviceView | null>(null);
+  const [renameDevice, setRenameDevice] = useState<DeviceView | null>(null);
+  const [removeDevice, setRemoveDevice] = useState<DeviceView | null>(null);
+  const [reportDevice, setReportDevice] = useState<DeviceView | null>(null);
   const [mapModalOpen, setMapModalOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; label: string; device: Device | null }>({ lat: 0, lng: 0, label: '', device: null });
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; label: string; device: DeviceView | null }>({ lat: 0, lng: 0, label: '', device: null });
 
   // Filtering
   const filteredDevices = useMemo(() => {
@@ -169,11 +177,35 @@ export default function DevicesPage() {
   const online = allDevices.filter(d => d.status === "Online").length;
   const offline = allDevices.filter(d => d.status === "Offline").length;
 
-  const handleAction = (action: string, device: Device) => {
+  const handleAction = (action: string, device: DeviceView) => {
     if (action === 'Preview') setPreviewDevice(device);
     if (action === 'Rename') setRenameDevice(device);
     if (action === 'Remove Device') setRemoveDevice(device);
     if (action === 'Report Issue') setReportDevice(device);
+  };
+
+  const handleDelete = async () => {
+    if (!removeDevice) return;
+    try {
+      await deleteDevice({ id: removeDevice.id }).unwrap();
+      toast.success("Device removed successfully");
+      setRemoveDevice(null);
+    } catch (error) {
+      toast.error("Failed to remove device");
+      console.error("Delete error:", error);
+    }
+  };
+
+  const handleRename = async (newName: string) => {
+    if (!renameDevice) return;
+    try {
+      await renameDeviceApi({ id: renameDevice.id, name: newName }).unwrap();
+      toast.success("Device renamed successfully");
+      setRenameDevice(null);
+    } catch (error) {
+      toast.error("Failed to rename device");
+      console.error("Rename error:", error);
+    }
   };
 
   const statusStyles: any = {
@@ -248,6 +280,7 @@ export default function DevicesPage() {
       {/* Title + Add Button */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-Heading dark:text-white">{filteredDevices.length} Devices</h2>
+        {isLoading && <span className="text-sm text-gray-500">Loading devices...</span>}
       </div>
 
       {/* Main Container (Management + Table) */}
@@ -311,7 +344,7 @@ export default function DevicesPage() {
                   <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.storage}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{device.lastSync}</td>
                   <td className="px-6 py-4 text-right">
-                    <ActionMenu device={device} onAction={handleAction} isLastRows={index >= paginatedDevices.length - 2} />
+                    <ActionMenu device={device} onAction={handleAction} />
                   </td>
                 </tr>
               ))}
@@ -354,19 +387,15 @@ export default function DevicesPage() {
         isOpen={!!renameDevice}
         onClose={() => setRenameDevice(null)}
         deviceName={renameDevice?.device || ''}
-        onRename={(newName) => {
-          console.log(`Renaming ${renameDevice?.device} to ${newName}`);
-          // Update device name in state if needed
-        }}
+        onRename={handleRename}
+        isLoading={isRenaming}
       />
       <RemoveDeviceModal
         isOpen={!!removeDevice}
         onClose={() => setRemoveDevice(null)}
         deviceName={removeDevice?.device || ''}
-        onConfirm={() => {
-          console.log(`Removing device: ${removeDevice?.device}`);
-          // Remove device from state if needed
-        }}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
       />
       <ReportDeviceModal
         isOpen={!!reportDevice}
