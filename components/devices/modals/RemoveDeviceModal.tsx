@@ -5,9 +5,10 @@ interface Props {
   onClose: () => void;
   deviceName?: string;
   onConfirm?: () => void;
+  isLoading?: boolean;
 }
 
-export default function RemoveDeviceModal({ isOpen, onClose, deviceName, onConfirm }: Props) {
+export default function RemoveDeviceModal({ isOpen, onClose, deviceName, onConfirm, isLoading }: Props) {
   if (!isOpen) return null;
 
   return (
@@ -26,25 +27,33 @@ export default function RemoveDeviceModal({ isOpen, onClose, deviceName, onConfi
         </div>
 
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-8">
-          Are you sure you want to remove <strong className="text-gray-900 dark:text-white">{deviceName}</strong>? 
+          Are you sure you want to remove <strong className="text-gray-900 dark:text-white">{deviceName}</strong>?
           All content will be removed from this device.
         </p>
 
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 shadow-customShadow rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            disabled={isLoading}
+            className="px-6 py-2.5 shadow-customShadow rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
-            onClick={() => {
-              onConfirm?.();
-              onClose();
-            }}
-            className="px-6 py-2.5 bg-bgRed hover:bg-red-600 shadow-customShadow text-white rounded-xl font-medium flex items-center gap-2 transition-colors"
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="px-6 py-2.5 bg-bgRed hover:bg-red-600 shadow-customShadow text-white rounded-xl font-medium flex items-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed min-w-[120px] justify-center"
           >
-            <Trash2 className="w-4 h-4" /> Remove
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Removing...
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-4 h-4" /> Remove
+              </>
+            )}
           </button>
         </div>
       </div>

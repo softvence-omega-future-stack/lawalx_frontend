@@ -1,14 +1,23 @@
-import { X, RotateCcw, Power } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { Device } from "@/types/device";
+import { X, RotateCcw, Power, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Device as ApiDevice } from "@/redux/api/users/devices/devices.type";
+import { useGetSingleDeviceDataQuery } from "@/redux/api/users/devices/devices.api";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  device: Device | null;
+  device: any | null; // Accepting any to stay compatible with different device views
 }
 
 export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
+  const { data: detailData, isLoading: isFetchingDetail } = useGetSingleDeviceDataQuery(
+    { id: device?.id },
+    { skip: !isOpen || !device?.id }
+  );
+
+  const deviceDetail = useMemo(() => {
+    return detailData?.data && detailData.data.length > 0 ? detailData.data[0] : null;
+  }, [detailData]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [volume, setVolume] = useState(70);
   const [brightness, setBrightness] = useState(80);
@@ -116,8 +125,23 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
 
   if (!isOpen || !device) return null;
 
-  const parseStorage = (storage: string) => {
-    const match = storage.match(/([\d.]+)?\s*(?:GB)?\s*\/\s*([\d.]+)\s*GB/);
+  const currentDevice = deviceDetail || device;
+
+  const parseStorage = (storage: any) => {
+    if (!storage) return { used: 0, total: 100, formatted: "N/A" };
+
+    // If it's the structure from API metadata or storage field
+    if (typeof storage === 'object') {
+      const used = parseFloat(storage.used) || 0;
+      const total = parseFloat(storage.total) || 100;
+      return {
+        used,
+        total,
+        formatted: `${used.toFixed(1)} GB / ${total.toFixed(1)} GB`
+      };
+    }
+
+    const match = String(storage).match(/([\d.]+)?\s*(?:GB)?\s*\/\s*([\d.]+)\s*GB/);
     if (match) {
       const used = match[1] ? parseFloat(match[1]) : 0;
       const total = parseFloat(match[2]);
@@ -128,17 +152,28 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
       };
     }
 
-    const singleMatch = storage.match(/([\d.]+)\s*GB/);
+    const singleMatch = String(storage).match(/([\d.]+)\s*GB/);
     if (singleMatch) {
       const used = parseFloat(singleMatch[1]);
-      return { used, total: 50, formatted: `${used.toFixed(1)} GB / 50.0 GB` };
+      return { used, total: 100, formatted: `${used.toFixed(1)} GB / 100.0 GB` };
     }
 
-    return { used: 0, total: 50, formatted: "0.0 GB / 50.0 GB" };
+    return { used: 0, total: 100, formatted: "N/A" };
   };
 
-  const { used, total, formatted } = parseStorage(device.storage);
+  const { used, total, formatted } = parseStorage(currentDevice.storage);
   const storagePercent = total > 0 ? (used / total) * 100 : 0;
+
+  const calculateLastSync = (lastSeen: string | null) => {
+    if (!lastSeen) return "Never";
+    const date = new Date(lastSeen);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
+  };
 
   const formatTime = (seconds: number) => {
     if (isNaN(seconds) || seconds === Infinity) return "0:00";
@@ -152,15 +187,23 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
       <div className="relative w-full max-w-5xl bg-navbarBg rounded-xl shadow-2xl overflow-hidden max-h-[95vh] flex flex-col sm:max-h-[90vh] border border-transparent dark:border-gray-700">
         <div className="flex items-center justify-between border-b border-border bg-navbarBg px-4 py-3 sm:px-5 sm:py-3.5">
           <div>
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">{device.name}</h2>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">3840 × 2160</p>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">{currentDevice.name || currentDevice.device}</h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{currentDevice.model || "Standard Model"}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto relative">
+          {isFetchingDetail && (
+            <div className="absolute inset-0 z-10 bg-white/50 dark:bg-black/50 backdrop-blur-[1px] flex items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="h-8 w-8 animate-spin text-bgBlue" />
+                <span className="text-sm font-medium text-gray-500">Loading details...</span>
+              </div>
+            </div>
+          )}
           <div className="flex flex-col lg:flex-row min-h-0">
             <div className="flex-1 p-4 sm:p-5">
               <div className="relative bg-black rounded-lg overflow-hidden shadow-md aspect-video">
@@ -299,25 +342,23 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Status</span>
                   <div
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
-                      device.status === "Online"
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${currentDevice.status === "PAIRED" || currentDevice.status === "Online"
                         ? "bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-800 text-green-500 dark:text-green-400"
-                        : device.status === "Offline"
-                        ? "bg-red-100 dark:bg-red-900/30 border-red-400 dark:border-red-800 text-red-400 dark:text-red-500"
-                        : "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-400"
-                    }`}
+                        : currentDevice.status === "OFFLINE" || currentDevice.status === "Offline"
+                          ? "bg-red-100 dark:bg-red-900/30 border-red-400 dark:border-red-800 text-red-400 dark:text-red-500"
+                          : "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-400"
+                      }`}
                   >
                     <div
-                      className={`w-2.5 h-2.5 rounded-full animate-pulse ${
-                        device.status === "Online"
+                      className={`w-2.5 h-2.5 rounded-full animate-pulse ${currentDevice.status === "PAIRED" || currentDevice.status === "Online"
                           ? "bg-green-500"
-                          : device.status === "Offline"
-                          ? "bg-red-500"
-                          : "bg-gray-400"
-                      }`}
+                          : currentDevice.status === "OFFLINE" || currentDevice.status === "Offline"
+                            ? "bg-red-500"
+                            : "bg-gray-400"
+                        }`}
                     ></div>
                     <span className="text-sm font-medium">
-                      {device.status}
+                      {currentDevice.status === "PAIRED" ? "Online" : (currentDevice.status === "OFFLINE" ? "Offline" : currentDevice.status)}
                     </span>
                   </div>
                 </div>
@@ -326,7 +367,7 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Last Sync</span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    5 minutes ago
+                    {calculateLastSync(currentDevice.lastSeen || currentDevice.last_Sync)}
                   </span>
                 </div>
                 <hr className="border-gray-100 dark:border-gray-700" />
@@ -375,24 +416,24 @@ export default function PreviewDeviceModal({ isOpen, onClose, device }: Props) {
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Device ID</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white font-mono">
-                    DEV-{device.id}829
+                  <span className="text-sm font-medium text-gray-900 dark:text-white font-mono truncate ml-4">
+                    {currentDevice.id}
                   </span>
                 </div>
                 <hr className="border-gray-100 dark:border-gray-700" />
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500 dark:text-gray-400">IP Address</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white font-mono">
-                    192.168.1.{40 + device.id}
+                  <span className="text-sm font-medium text-gray-900 dark:text-white font-mono text-xs">
+                    {currentDevice.ip || "192.168.1.1"}
                   </span>
                 </div>
                 <hr className="border-gray-100 dark:border-gray-700" />
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Screen Playing</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    Main Lobby Display
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate ml-4">
+                    {currentDevice.program?.name || "No Screen Playing"}
                   </span>
                 </div>
                 <hr className="border-gray-100 dark:border-gray-700" />

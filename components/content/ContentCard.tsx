@@ -7,7 +7,7 @@ const stats = [
     title: "Total Files",
     value: 12,
     icon: FilePlay,
-    color: "#404040", // custom gray
+    color: "#404040",
   },
   {
     title: "Assigned",
