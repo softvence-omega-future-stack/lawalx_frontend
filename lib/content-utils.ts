@@ -31,6 +31,19 @@ const getUrl = (url: string | null) => {
 
     // Handle relative paths
     const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "").replace(/\/$/, "");
+    
+    // If it's an upload path (starts with /uploads or uploads/), use the origin, not the full API base
+    // The API base might include /api/v1, but uploads are usually at the root
+    if (cleanUrl.startsWith("/") || cleanUrl.startsWith("uploads/")) {
+        const urlObj = new URL(baseUrl);
+        const origin = urlObj.origin;
+        const path = cleanUrl.startsWith("/") ? cleanUrl : `/${cleanUrl}`;
+        // If the path already includes /api/v1 (unlikely for raw uploads but possible), handle it?
+        // Actually, based on User's request, the uploads are at root /uploads/...
+        // So we combine origin + path
+        return `${origin}${path}`;
+    }
+
     const path = cleanUrl.startsWith("/") ? cleanUrl : `/${cleanUrl}`;
     return `${baseUrl}${path}`;
 };
@@ -41,7 +54,7 @@ export const transformFile = (file: any, isMounted: boolean): ContentItem => ({
     type: file.type === "IMAGE" ? "image" : file.type === "VIDEO" ? "video" : "playlist",
     size: formatBytes(file.size),
     duration: formatDuration(file.duration),
-    thumbnail: (file.type === "IMAGE" || file.type === "VIDEO") ? getUrl(file.url) : undefined,
+    thumbnail: (file.type === "IMAGE") ? getUrl(file.url) : undefined,
     video: file.type === "VIDEO" ? getUrl(file.url) : undefined,
     audio: file.type === "AUDIO" ? getUrl(file.url) : undefined,
     uploadedDate: isMounted ? new Date(file.createdAt).toLocaleDateString() : "",
