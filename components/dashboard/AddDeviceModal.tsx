@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { X, QrCode } from "lucide-react";
 import Dropdown from "@/components/shared/Dropdown";
+import { useAddDeviceMutation } from "@/redux/api/users/devices/devices.api";
+import { toast } from "sonner";
 
 interface AddDeviceModalProps {
   isOpen: boolean;
@@ -10,21 +12,30 @@ interface AddDeviceModalProps {
 }
 
 function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
+  const [addDevice] = useAddDeviceMutation();
   const [pin, setPin] = useState("");
   const [selectedScreen, setSelectedScreen] = useState("Main Lobby Display");
 
   if (!isOpen) return null;
 
-  const handleAddDevice = () => {
-    console.log("Adding device with PIN:", pin, "Screen:", selectedScreen);
-    onClose();
+  const handleAddDevice = async ({ pin, name }: { pin: string, name?: string }) => {
+    try {
+      const res = await addDevice({ pin, name }).unwrap();
+      console.log(res);
+
+      if (res.success) {
+        onClose();
+        toast.success(res.message || "Device added successfully");
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to add device");
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-navbarBg rounded-2xl shadow-xl w-full max-w-lg border border-border">
+      <div className="bg-navbarBg rounded-2xl shadow-xl w-full max-w-xl border border-border">
 
-        {/* Header */}
         <div className="flex items-center justify-between p-5 sm:p-6 border-b border-border">
           <h2 className="text-xl sm:text-2xl font-semibold text-Headings dark:text-white">
             Add New Device
@@ -44,7 +55,7 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
           <div className="relative">
             {/* Vertical Line */}
             <div className="absolute left-3.5 sm:left-4 top-8 bottom-8 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
-            
+
             <div className="space-y-4 sm:space-y-5 relative">
               {/* Step 1 */}
               <div className="flex items-start gap-3 sm:gap-4">
@@ -109,17 +120,27 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
           </div>
 
           {/* PIN Input */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <input
-              type="text"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              placeholder="Enter the PIN or scan the QR code"
-              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-            />
-            <button className="p-2.5 sm:p-3 border border-borderGray dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0 bg-qrBackground dark:bg-gray-800">
-              <QrCode className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400" />
-            </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-1 min-w-[200px] gap-2">
+              <input
+                type="text"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="Enter the PIN or scan the QR code"
+                className="flex-1 px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              />
+              <button
+                className="p-3 border border-borderGray dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shrink-0 shadow-customShadow cursor-pointer"
+              >
+                <QrCode className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+              </button>
+            </div>
+
+            <div className="w-full sm:w-auto flex justify-end">
+              <button className="px-6 py-3 bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium shadow-customShadow cursor-pointer">
+                Add
+              </button>
+            </div>
           </div>
 
           {/* Select Screen Dropdown */}
@@ -151,8 +172,8 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
             Cancel
           </button>
           <button
-            onClick={handleAddDevice}
-            className="px-5 sm:px-6 py-2 sm:py-2.5 bg-bgBlue text-white rounded-lg font-medium text-sm sm:text-base hover:bg-blue-600 transition-colors"
+            onClick={() => handleAddDevice({ pin, name: selectedScreen })}
+            className="px-5 cursor-pointer sm:px-6 py-2 sm:py-2.5 bg-bgBlue text-white rounded-lg font-medium text-sm sm:text-base hover:bg-blue-600 transition-colors"
           >
             Add Device
           </button>
