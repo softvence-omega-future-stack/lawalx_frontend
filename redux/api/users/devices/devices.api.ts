@@ -36,7 +36,7 @@ const devicesAPI = baseApi.injectEndpoints({
     }),
     renameDevice: build.mutation<any, { id: string, name: string }>({
       query: ({ id, name }) => ({
-        url: `/device/rename/${id}`,
+        url: `/device/${id}/rename`,
         method: "PATCH",
         body: { name },
       }),

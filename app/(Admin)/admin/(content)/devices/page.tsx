@@ -499,7 +499,7 @@ export default function GlobalDevices() {
 
         {/* Device Management */}
         <div className="bg-navbarBg rounded-xl border border-border">
-          <div className="p-6 border-b border-border">
+          <div className="p-6 border-b border-border rounded-t-xl">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Device Management</h2>
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1 relative">
@@ -598,7 +598,7 @@ export default function GlobalDevices() {
           </div>
 
           {/* Pagination */}
-          <div className="p-4 border-t border-border flex justify-between items-center bg-navbarBg rounded-b-lg">
+          <div className="p-4 border-t border-border flex justify-between items-center bg-navbarBg rounded-b-xl">
             <div className="text-sm text-gray-500 dark:text-gray-400">
               Showing {filteredDevices.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}-
               {Math.min(currentPage * itemsPerPage, filteredDevices.length)} of {filteredDevices.length} devices
