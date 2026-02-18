@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { TvMinimal, Radio, WifiOff, Search, ChevronDown, MoreVertical, Trash2, CircleQuestionMark, Eye, PenLine } from "lucide-react";
+import { TvMinimal, Radio, WifiOff, Search, ChevronDown, MoreVertical, Trash2, CircleQuestionMark, Eye, PenLine, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -88,10 +88,10 @@ const Dropdown = ({ value, options, onChange, icon: Icon }: any) => {
 // Action Menu Component (matching admin style)
 const ActionMenu = ({ device, onAction }: any) => {
   const actions = [
-    { label: 'Preview', icon: Eye, color: 'text-gray-900 dark:text-white' },
-    { label: 'Rename', icon: PenLine, color: 'text-gray-900 dark:text-white' },
-    { label: 'Report Issue', icon: CircleQuestionMark, color: 'text-gray-900 dark:text-white' },
-    { label: 'Remove Device', icon: Trash2, color: 'text-red-600 dark:text-red-400' },
+    { label: 'Preview', icon: Eye, color: 'text-gray-900 dark:text-white hover:text-white focus:text-white transition-colors' },
+    { label: 'Rename', icon: PenLine, color: 'text-gray-900 dark:text-white hover:text-white focus:text-white transition-colors' },
+    // { label: 'Report Issue', icon: CircleQuestionMark, color: 'text-gray-900 dark:text-white hover:text-white focus:text-white transition-colors' },
+    { label: 'Remove Device', icon: Trash2, color: 'text-red-600 dark:text-red-400 hover:text-white focus:text-white transition-colors' },
   ];
 
   return (
@@ -106,10 +106,12 @@ const ActionMenu = ({ device, onAction }: any) => {
           <DropdownMenuItem
             key={action.label}
             onClick={() => onAction(action.label, device)}
-            className={`flex items-center gap-2 ${action.color}`}
+            className={`flex items-center gap-2 cursor-pointer group outline-none ${action.color}`}
           >
-            <action.icon className="w-4 h-4" />
-            {action.label}
+            <action.icon className="w-4 h-4 transition-colors group-hover:text-white" />
+            <span className="transition-colors group-hover:text-white">
+              {action.label}
+            </span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -224,9 +226,9 @@ export default function DevicesPage() {
         </div>
         <button
           onClick={() => setIsAddOpen(true)}
-          className="px-6 py-1.5 cursor-pointer bg-bgBlue text-white rounded-xl flex items-center gap-2 shadow-customShadow hover:scale-105 transition"
+          className="px-6 py-2 md:py-3 cursor-pointer bg-bgBlue text-white rounded-lg flex items-center gap-2 shadow-customShadow hover:bg-blue-500 transition"
         >
-          <span className="text-lg">+</span> Add Device
+          <span className="text-lg"><Plus /></span> Add Device
         </button>
       </div>
 
@@ -286,7 +288,7 @@ export default function DevicesPage() {
       {/* Main Container (Management + Table) */}
       <div className="bg-navbarBg rounded-xl border border-border">
         {/* Filtering section matching admin */}
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b border-border rounded-t-xl">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -356,7 +358,7 @@ export default function DevicesPage() {
         </div>
 
         {/* Pagination matching admin */}
-        <div className="p-4 border-t border-border flex justify-between items-center bg-navbarBg rounded-b-lg">
+        <div className="p-4 border-t border-border flex justify-between items-center bg-navbarBg rounded-b-xl">
           <div className="text-sm text-gray-500 dark:text-gray-400">
             Showing {filteredDevices.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}-
             {Math.min(currentPage * itemsPerPage, filteredDevices.length)} of {filteredDevices.length} devices
@@ -386,9 +388,8 @@ export default function DevicesPage() {
       <RenameDeviceModal
         isOpen={!!renameDevice}
         onClose={() => setRenameDevice(null)}
-        deviceName={renameDevice?.device || ''}
-        onRename={handleRename}
-        isLoading={isRenaming}
+        deviceId={renameDevice?.id}
+        initialName={renameDevice?.device || ""}
       />
       <RemoveDeviceModal
         isOpen={!!removeDevice}
