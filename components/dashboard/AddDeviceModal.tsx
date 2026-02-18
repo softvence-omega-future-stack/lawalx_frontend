@@ -33,16 +33,23 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-navbarBg rounded-2xl shadow-xl w-full max-w-xl border border-border">
-
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 cursor-pointer"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full border border-gray-200 dark:border-gray-700 z-[101] overflow-hidden cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between p-5 sm:p-6 border-b border-border">
           <h2 className="text-xl sm:text-2xl font-semibold text-Headings dark:text-white">
             Add New Device
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
             aria-label="Close modal"
           >
             <X className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -167,7 +174,7 @@ function AddDeviceModal({ isOpen, onClose }: AddDeviceModalProps) {
         <div className="flex items-center justify-between gap-3 mx-5 py-4 sm:py-5 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={onClose}
-            className="px-5 sm:px-6 py-2 sm:py-2.5 border border-bgRed dark:border-bgRed rounded-lg font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            className="px-5 sm:px-6 py-2 sm:py-2.5 border border-bgRed dark:border-bgRed rounded-lg font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
           >
             Cancel
           </button>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../baseApi";
 import { SuccessResponse } from "../content/content.type";
-import { AddDevicePin } from "./devices.type";
+import { AddDevicePin, DeviceListResponse } from "./devices.type";
 
 const devicesAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -13,7 +13,36 @@ const devicesAPI = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Devices"],
     }),
+    getMyDevicesData: build.query<DeviceListResponse, void>({
+      query: () => ({
+        url: "/device/my-devices",
+        method: "GET",
+      }),
+      providesTags: ["Devices"],
+    }),
+    getSingleDeviceData: build.query<DeviceListResponse, { id: string }>({
+      query: ({ id }) => ({
+        url: `/device/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Devices"],
+    }),
+    deleteDevice: build.mutation<any, { id: string }>({
+      query: ({ id }) => ({
+        url: `/device/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Devices"],
+    }),
+    renameDevice: build.mutation<any, { id: string, name: string }>({
+      query: ({ id, name }) => ({
+        url: `/device/${id}/rename`,
+        method: "PATCH",
+        body: { name },
+      }),
+      invalidatesTags: ["Devices"],
+    }),
   }),
 });
 
-export const { useAddDeviceMutation } = devicesAPI;
+export const { useAddDeviceMutation, useGetMyDevicesDataQuery, useGetSingleDeviceDataQuery, useDeleteDeviceMutation, useRenameDeviceMutation } = devicesAPI;
