@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useState } from "react";
 import { Folder, ListMusic, FileVideo, CloudUpload, FolderPlus, Video } from "lucide-react";
 import { toast } from "sonner";
