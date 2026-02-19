@@ -66,6 +66,13 @@ export const financialreportApi = baseApi.injectEndpoints({
         params,
       }),
     }),
+    getFinancialExport: builder.query({
+      query: (params) => ({
+        url: `/financialreport/export`,
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
@@ -79,4 +86,5 @@ export const {
   useGetFinancialChartsQuery,
   useGetArpuAnalyticsQuery,
   useGetTrialConversionQuery,
+  useLazyGetFinancialExportQuery,
 } = financialreportApi;
