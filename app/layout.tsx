@@ -63,7 +63,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased project-font`}>
+      <body className={`${inter.variable} antialiased project-font`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
