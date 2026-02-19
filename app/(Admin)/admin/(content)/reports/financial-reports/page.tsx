@@ -16,7 +16,11 @@ import {
   useGetFinancialChartsQuery,
   useGetArpuAnalyticsQuery,
   useGetTrialConversionQuery,
+  useLazyGetFinancialExportQuery,
 } from "@/redux/api/admin/financialreportApi";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { toast } from 'sonner';
 
 
 const FinancialReport = () => {
@@ -49,6 +53,145 @@ const FinancialReport = () => {
   // const { data: chartsData } = useGetFinancialChartsQuery({ timeRange: timeRangeString });
   const { data: arpuData } = useGetArpuAnalyticsQuery({ timeRange: timeRangeString });
   const { data: trialsData } = useGetTrialConversionQuery({ timeRange: timeRangeString });
+  const [triggerExport] = useLazyGetFinancialExportQuery();
+
+  const handleExport = async () => {
+    try {
+      const result = await triggerExport({ timeRange: timeRangeString });
+
+      if (result.error || !result.data || !result.data.success) {
+        console.error("Export data fetch error:", result.error || result.data?.message);
+        toast.error("Failed to fetch export data. Please try again.");
+        return;
+      }
+
+      const rawData = result.data.data;
+      const doc = new jsPDF();
+      const SECTION_GAP = 25;
+      const HEADING_GAP = 10;
+
+      // Helper to safely format numbers
+      const formatCurrency = (val: any) => `$${(Number(val) || 0).toLocaleString()}`;
+      const formatNumber = (val: any) => (Number(val) || 0).toLocaleString();
+      const formatPercent = (val: any) => `${val || 0}%`;
+
+      // Add Title
+      doc.setFontSize(18);
+      doc.text('Financial Report', 14, 20);
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Filter: ${timeRangeString} | Exported At: ${new Date().toLocaleString()}`, 14, 28);
+
+      // 1. Overview Section
+      let currentY = 45;
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0);
+      doc.text('Overview Metrics', 14, currentY);
+      doc.setFont("helvetica", "normal");
+
+      const overview = rawData?.overview || {};
+      const overviewRows = [
+        ['MRR', formatCurrency(overview.mrr?.value), formatPercent(overview.mrr?.growth)],
+        ['ARR', formatCurrency(overview.arr?.value), formatPercent(overview.arr?.growth)],
+        ['Churn Rate', formatPercent(overview.churnRate?.value), formatPercent(overview.churnRate?.growth)],
+        ['ARPU', formatCurrency(overview.arpu?.value), formatPercent(overview.arpu?.growth)],
+        ['New Subscriptions', formatNumber(overview.newSubscriptions?.value), formatPercent(overview.newSubscriptions?.growth)],
+      ];
+
+      autoTable(doc, {
+        head: [['Metric', 'Value', 'Growth']],
+        body: overviewRows,
+        startY: currentY + HEADING_GAP,
+        theme: 'striped',
+        headStyles: { fillColor: [59, 130, 246] },
+      });
+
+      // 2. MRR Breakdown Summary
+      currentY = ((doc as any).lastAutoTable?.cursor?.y || currentY + 40) + SECTION_GAP;
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text('MRR Breakdown Summary', 14, currentY);
+      doc.setFont("helvetica", "normal");
+
+      const mrrSummary = rawData?.mrrBreakdown?.summary || {};
+      const mrrRows = [
+        ['New Sales', formatCurrency(mrrSummary.newSales)],
+        ['Upgrades', formatCurrency(mrrSummary.upgrades)],
+        ['Downgrades', formatCurrency(mrrSummary.downgrades)],
+        ['Churned', formatCurrency(mrrSummary.churned)],
+        ['Net New MRR', formatCurrency(mrrSummary.netNewMRR)],
+      ];
+
+      autoTable(doc, {
+        head: [['Component', 'Value']],
+        body: mrrRows,
+        startY: currentY + HEADING_GAP,
+        theme: 'striped',
+        headStyles: { fillColor: [139, 92, 246] },
+      });
+
+      // 3. Subscriber Overview
+      currentY = ((doc as any).lastAutoTable?.cursor?.y || currentY + 40) + SECTION_GAP;
+      if (currentY > 250) {
+        doc.addPage();
+        currentY = 20;
+      }
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text('Subscriber Overview', 14, currentY);
+      doc.setFont("helvetica", "normal");
+
+      const subOverview = rawData?.subscriberOverview || {};
+      const subRows = [
+        ['New Sign-ups', formatNumber(subOverview.newSignUps)],
+        ['Cancellations', formatNumber(subOverview.cancellations)],
+        ['Net Growth', formatNumber(subOverview.netGrowth)],
+        ['Retention Rate', formatPercent(subOverview.retentionRate)],
+      ];
+
+      autoTable(doc, {
+        head: [['Metric', 'Value']],
+        body: subRows,
+        startY: currentY + HEADING_GAP,
+        theme: 'striped',
+        headStyles: { fillColor: [16, 185, 129] },
+      });
+
+      // 4. Trial Conversion Summary
+      currentY = ((doc as any).lastAutoTable?.cursor?.y || currentY + 40) + SECTION_GAP;
+      if (currentY > 250) {
+        doc.addPage();
+        currentY = 20;
+      }
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text('Trial Conversion Summary', 14, currentY);
+      doc.setFont("helvetica", "normal");
+
+      const trials = rawData?.trialConversion || {};
+      const trialRows = [
+        ['Overall Conversion', formatPercent(trials.overallConversion?.value)],
+        ['Trials Started', formatNumber(trials.trialsStarted?.value)],
+        ['Converted to Paid', formatNumber(trials.convertedToPaid?.value)],
+        ['Avg Trial Duration', `${trials.averageTrialDuration?.value || 0} days`],
+      ];
+
+      autoTable(doc, {
+        head: [['Metric', 'Value']],
+        body: trialRows,
+        startY: currentY + HEADING_GAP,
+        theme: 'striped',
+        headStyles: { fillColor: [236, 72, 153] },
+      });
+
+      doc.save(`financial-report-${timeRangeString}-${new Date().toISOString().split('T')[0]}.pdf`);
+      toast.success("Financial report exported successfully");
+    } catch (error) {
+      console.error("Detailed Export error:", error);
+      toast.error("An error occurred during export. Check console for details.");
+    }
+  };
 
   const data = useMemo(() => {
     const overview = overviewData?.data || {};
@@ -76,10 +219,20 @@ const FinancialReport = () => {
     return {
       summary: {
         mrr: overview.mrr?.value || 0,
+        mrrGrowth: overview.mrr?.growth || 0,
+        mrrPeriod: overview.mrr?.period || 0,
         arr: overview.arr?.value || 0,
+        arrGrowth: overview.arr?.growth || 0,
+        arrPeriod: overview.arr?.period || 0,
         churnRate: overview.churnRate?.value || 0,
+        churnRateGrowth: overview.churnRate?.growth || 0,
+        churnRatePeriod: overview.churnRate?.period || 0,
         arpu: overview.arpu?.value || 0,
-        newSubscriptions: overview.newSubscriptions?.value || 0
+        arpuGrowth: overview.arpu?.growth || 0,
+        arpuPeriod: overview.arpu?.period || 0,
+        newSubscriptions: overview.newSubscriptions?.value || 0,
+        newSubscriptionsGrowth: overview.newSubscriptions?.growth || 0,
+        newSubscriptionsPeriod: overview.newSubscriptions?.period || 0
       },
       mrrArr: {
         newSales: mrrBreakdown.summary?.newSales || 0,
@@ -212,7 +365,10 @@ const FinancialReport = () => {
               onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
             />
 
-            <button className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg flex items-center gap-2 hover:scale-105 transition-all text-sm bg-navbarBg cursor-pointer dark:shadow-customShadow">
+            <button
+              onClick={handleExport}
+              className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg flex items-center gap-2 hover:scale-105 transition-all text-sm bg-navbarBg cursor-pointer dark:shadow-customShadow"
+            >
               <Download className="w-4 h-4" />
               <span className='hidden md:block'>Export Financial Report</span>
             </button>
@@ -227,9 +383,9 @@ const FinancialReport = () => {
               <span className="text-xs text-gray-500 dark:text-gray-400">MRR</span>
             </div>
             <div className="text-2xl font-bold mb-1">${data.summary.mrr.toLocaleString()}</div>
-            <div className="text-xs text-green-500 flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" />
-              +8.2% from Last Month
+            <div className={`text-xs ${data.summary.mrrGrowth >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
+              {data.summary.mrrGrowth >= 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : <TrendingDown className="w-3 h-3 text-red-500" />}
+              {data.summary.mrrGrowth}% {data.summary.mrrPeriod}
             </div>
           </div>
 
@@ -239,7 +395,10 @@ const FinancialReport = () => {
               <span className="text-xs text-gray-500 dark:text-gray-400">ARR</span>
             </div>
             <div className="text-2xl font-bold mb-1">${data.summary.arr.toLocaleString()}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">+7% on track for $400K</div>
+            <div className={`text-xs ${data.summary.arrGrowth >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
+              {data.summary.arrGrowth >= 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : <TrendingDown className="w-3 h-3 text-red-500" />}
+              {data.summary.arrGrowth}% {data.summary.arrPeriod}
+            </div>
           </div>
 
           <div className="bg-navbarBg border border-border rounded-lg p-4">
@@ -248,7 +407,10 @@ const FinancialReport = () => {
               <span className="text-xs text-gray-500 dark:text-gray-400">Churn Rate</span>
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.churnRate}%</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">45 % conversion rate</div>
+            <div className={`text-xs ${data.summary.churnRateGrowth >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
+              {data.summary.churnRateGrowth >= 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : <TrendingDown className="w-3 h-3 text-red-500" />}
+              {data.summary.churnRateGrowth}% {data.summary.churnRatePeriod}
+            </div>
           </div>
 
           <div className="bg-navbarBg border border-border rounded-lg p-4">
@@ -257,9 +419,9 @@ const FinancialReport = () => {
               <span className="text-xs text-gray-500 dark:text-gray-400">ARPU</span>
             </div>
             <div className="text-2xl font-bold mb-1">${data.summary.arpu}</div>
-            <div className="text-xs text-red-500 flex items-center gap-1">
-              <TrendingDown className="w-3 h-3" />
-              +3.4% growth
+            <div className={`text-xs ${data.summary.arpuGrowth >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
+              {data.summary.arpuGrowth >= 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : <TrendingDown className="w-3 h-3 text-red-500" />}
+              {data.summary.arpuGrowth}% {data.summary.arpuPeriod}
             </div>
           </div>
 
@@ -269,7 +431,10 @@ const FinancialReport = () => {
               <span className="text-xs text-gray-500 dark:text-gray-400">New Subscriptions</span>
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.newSubscriptions}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">This month</div>
+            <div className={`text-xs ${data.summary.newSubscriptionsGrowth >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
+              {data.summary.newSubscriptionsGrowth >= 0 ? <TrendingUp className="w-3 h-3 text-green-500" /> : <TrendingDown className="w-3 h-3 text-red-500" />}
+              {data.summary.newSubscriptionsGrowth} {data.summary.newSubscriptionsPeriod}
+            </div>
           </div>
         </div>
 
