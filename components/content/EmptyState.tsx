@@ -1,5 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useRef, useState } from "react";
 import { Folder, ListMusic, FileVideo, CloudUpload, FolderPlus, Video } from "lucide-react";
+import { toast } from "sonner";
 import ContentButton from "@/common/ContentButton";
+import { useUploadFileMutation } from "@/redux/api/users/content/content.api";
+import CreateFolderDialog from "./CreateFolderDialog";
 
 interface EmptyStateProps {
   contentFilter: string;
@@ -7,6 +12,40 @@ interface EmptyStateProps {
 }
 
 const EmptyState = ({ contentFilter, searchQuery }: EmptyStateProps) => {
+  const [uploadFile, { isLoading }] = useUploadFileMutation();
+  const [openFolderDialog, setOpenFolderDialog] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append("file", files[i]);
+    }
+
+    try {
+      // Use formData directly as in MyContent.tsx
+      const res = await uploadFile(formData).unwrap();
+      toast.success(res?.message || "File(s) uploaded successfully");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err: any) {
+      console.error("Upload failed:", err);
+      toast.error(err?.data?.message || "Upload failed. Please try again.");
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (contentFilter === "folders") {
+      setOpenFolderDialog(true);
+    } else if (contentFilter === "playlists") {
+      console.log("Create playlist clicked");
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
+
   const getEmptyStateContent = () => {
     switch (contentFilter) {
       case "folders":
@@ -65,9 +104,26 @@ const EmptyState = ({ contentFilter, searchQuery }: EmptyStateProps) => {
         <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
           {description}
         </p>
-        
-        <ContentButton icon={buttonIcon} title={buttonTitle} />
+
+        <ContentButton
+          icon={buttonIcon}
+          title={isLoading ? "Uploading..." : buttonTitle}
+          onClick={handleButtonClick}
+          disabled={isLoading}
+        />
       </div>
+
+      {openFolderDialog && (
+        <CreateFolderDialog open={openFolderDialog} setOpen={setOpenFolderDialog} />
+      )}
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        multiple
+      />
     </div>
   );
 };

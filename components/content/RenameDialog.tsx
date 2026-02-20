@@ -18,7 +18,7 @@ interface RenameDialogProps {
     setOpen: (open: boolean) => void;
     itemName: string;
     onRename: (newName: string) => void;
-    itemType: "folder" | "playlist" | "video" | "image";
+    itemType: "folder" | "playlist" | "video" | "image" | "audio";
 }
 
 const RenameDialog = ({ open, setOpen, itemName, onRename, itemType }: RenameDialogProps) => {

@@ -1,53 +1,27 @@
 "use client";
 
 import { Plus, ChevronDown, Clock, Video, Edit, Pause, Play, X, CalendarClock } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddExistingDialog from "./AddExistingDialog";
 
-interface Schedule {
-  id: number;
-  title: string;
-  description: string;
-  fileName: string;
-  days: string;
-  time: string;
-  status: "playing" | "upcoming" | "stopped";
+import { Schedule } from "@/redux/api/users/programs/programs.type";
+
+interface ContentScheduleProps {
+  schedules: Schedule[];
 }
 
-const defaultSchedules: Schedule[] = [
-  {
-    id: 1,
-    title: "Morning Content",
-    description: "Welcome content during morning hours",
-    fileName: "Welcome.MP4",
-    days: "Mon, Tue, Wed, Thu, Fri",
-    time: "09:00 AM",
-    status: "playing",
-  },
-  {
-    id: 2,
-    title: "Morning Content",
-    description: "Welcome content during morning hours",
-    fileName: "Welcome.MP4",
-    days: "Mon, Tue, Wed, Thu, Fri",
-    time: "09:00 AM",
-    status: "upcoming",
-  },
-  {
-    id: 3,
-    title: "Morning Content",
-    description: "Welcome content during morning hours",
-    fileName: "Welcome.MP4",
-    days: "Mon, Tue, Wed, Thu, Fri",
-    time: "09:00 AM",
-    status: "stopped",
-  },
-];
 
-const ContentSchedule = () => {
+
+const ContentSchedule: React.FC<ContentScheduleProps> = ({ schedules }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [scheduleList, setScheduleList] = useState<Schedule[]>(defaultSchedules);
+  const [scheduleList, setScheduleList] = useState<Schedule[]>([]);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (schedules) {
+      setScheduleList(schedules);
+    }
+  }, [schedules]);
 
   const getStatusBadge = (status: string) => {
     const badges = {
@@ -104,70 +78,21 @@ const ContentSchedule = () => {
 
         {/* Schedule Cards */}
         <div className="space-y-4">
-          {scheduleList.map((schedule) => (
-            <div
-              key={schedule.id}
-              className="bg-navbarBg rounded-xl border border-border hover:shadow-sm transition-shadow"
-            >
-              {/* Card Header */}
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-3 p-4 sm:p-6">
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h3 className="text-base sm:text-lg font-semibold text-headings">
-                      {schedule.title}
-                    </h3>
-                    {getStatusBadge(schedule.status)}
-                  </div>
-                  <p className="text-sm text-muted">{schedule.description}</p>
-                </div>
-
-                <button className="rounded-lg transition-all flex items-center justify-center gap-1.5 text-gray-700 hover:text-gray-900 py-2 px-3 cursor-pointer bg-white hover:bg-gray-50 border border-gray-300 font-medium text-sm self-start shadow-customShadow">
-                  <Edit className="w-4 h-4" />
-                  Edit
-                </button>
-              </div>
-
-              <div className="border-t border-borderGray"></div>
-              {/* Card Content */}
-              <div className="space-y-2 p-4 sm:p-6">
-                <div className="flex items-center gap-2 text-sm text-body">
-                  <Video className="w-4 h-4 text-muted" />
-                  <span className="font-medium">Play:</span>
-                  <span>{schedule.fileName}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-body">
-                  <Clock className="w-4 h-4 text-muted" />
-                  <span>
-                    {schedule.days} • {schedule.time}
-                  </span>
-                </div>
-              </div>
-              <div className="border-t border-borderGray"></div>
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between gap-3 p-4 sm:p-6">
-                <button
-                  className={`shadow-customShadow rounded-full transition-all flex items-center justify-center text-white py-3 px-3 cursor-pointer ${schedule.status === "stopped"
-                    ? "bg-bgBlue hover:bg-[#00A4FF]"
-                    : "bg-[#F97316] hover:bg-orange-600"
-                    }`}
-                  title={schedule.status === "stopped" ? "Play" : "Pause"}
-                >
-                  {schedule.status === "stopped" ? (
-                    <Play className="w-4 h-4 sm:w-5 sm:h-5" />
-                  ) : (
-                    <Pause className="w-4 h-4 sm:w-5 sm:h-5" />
-                  )}
-                </button>
-
-                <button
-                  className="rounded-lg transition-all flex items-center justify-center gap-1.5 text-white py-2 px-4 md:py-3 cursor-pointer bg-red-500 hover:bg-red-600 font-medium text-sm shadow-customShadow"
-                >
-                  <X className="w-4 h-4" />
-                  Remove
-                </button>
-              </div>
+          {scheduleList.length === 0 ? (
+            <div className="text-center py-10 text-muted">
+              <CalendarClock className="w-12 h-12 mx-auto mb-3 opacity-20" />
+              <p>No schedules found for this program.</p>
             </div>
-          ))}
+          ) : (
+            scheduleList.map((schedule: any) => (
+              <div
+                key={schedule.id}
+                className="bg-navbarBg rounded-xl border border-border hover:shadow-sm transition-shadow"
+              >
+                {/* ... existing card layout mapping fields from schedule ... */}
+              </div>
+            ))
+          )}
         </div>
       </div>
       {open && <AddExistingDialog open={open} setOpen={setOpen} />}

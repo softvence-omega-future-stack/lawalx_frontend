@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // components/CreateScreenModal.tsx
 "use client";
 
@@ -11,17 +12,21 @@ import {
   Wifi,
   WifiOff,
   Search,
-  QrCode,
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Music,
 } from "lucide-react";
 import Dropdown from "@/common/Dropdown";
 import Image from "next/image";
 import QRCodeDialog from "./QRCodeDialog";
 import { useGetAllFilesQuery } from "@/redux/api/users/content/content.api";
+import { useGetMyDevicesDataQuery } from "@/redux/api/users/devices/devices.api";
+import { useCreateProgramMutation } from "@/redux/api/users/programs/programs.api";
+import { WorkoutStatus } from "@/redux/api/users/programs/programs.type";
 import { useMemo, useEffect } from "react";
 import { transformFile } from "@/lib/content-utils";
+import { toast } from "sonner";
 
 interface CreateScreenModalProps {
   isOpen: boolean;
@@ -33,8 +38,10 @@ export default function CreateScreenModal({
   onClose,
 }: CreateScreenModalProps) {
   const { data: allFiles, isLoading: isFilesLoading } = useGetAllFilesQuery(undefined);
+  const { data: deviceData, isLoading: isDevicesLoading } = useGetMyDevicesDataQuery(undefined);
+  const [createProgram, { isLoading: isCreating }] = useCreateProgramMutation();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedType, setSelectedType] = useState("video");
+  const [selectedType, setSelectedType] = useState("all");
   const [showQr, setShowQr] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMounted, setIsMounted] = useState(false);
@@ -43,12 +50,14 @@ export default function CreateScreenModal({
     name: string;
     description: string;
     selectedVideos: string[];
-    selectedDevices: number[];
+    selectedDevices: string[];
+    serene_size: string;
   }>({
     name: "",
     description: "",
     selectedVideos: [],
     selectedDevices: [],
+    serene_size: "1920x1080",
   });
 
   useEffect(() => {
@@ -64,19 +73,16 @@ export default function CreateScreenModal({
     return transformedFiles.filter((file) => {
       const matchesSearch = file.title.toLowerCase().includes(searchQuery.toLowerCase());
       let matchesType = true;
-      if (selectedType === "video") matchesType = file.type === "video";
+      if (selectedType === "all") matchesType = true;
+      else if (selectedType === "video") matchesType = file.type === "video";
       else if (selectedType === "image") matchesType = file.type === "image";
-      else if (selectedType === "audio") matchesType = file.type === "playlist";
+      else if (selectedType === "audio") matchesType = file.type === "audio";
 
       return matchesSearch && matchesType;
     });
   }, [transformedFiles, searchQuery, selectedType]);
 
-  const devices = [
-    { id: 1, name: "LG UR75 43 Inch 4K UHD Smart LED TV", resolution: "3840 × 2160", online: true },
-    { id: 2, name: "LG UR75 43 Inch 4K UHD Smart LED TV", resolution: "3840 × 2160", online: false },
-    { id: 3, name: "LG UR75 43 Inch 4K UHD Smart LED TV", resolution: "3840 × 2160", online: false },
-  ];
+  const devices = deviceData?.data || [];
 
   const handleNext = () => {
     if (currentStep < 3) setCurrentStep(currentStep + 1);
@@ -86,11 +92,31 @@ export default function CreateScreenModal({
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const handleCreate = () => {
-    console.log("Creating screen with data:", formData);
-    setCurrentStep(1);
-    setFormData({ name: "", description: "", selectedVideos: [], selectedDevices: [] });
-    onClose();
+  const handleCreate = async () => {
+    try {
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        serene_size: formData.serene_size || "1920x1080",
+        status: WorkoutStatus.DRAFT,
+        content_ids: formData.selectedVideos,
+        device_ids: formData.selectedDevices,
+      };
+
+      const res = await createProgram(payload).unwrap();
+
+      if (res?.success) {
+        toast.success(res.message || "Program created successfully!");
+        setCurrentStep(1);
+        setFormData({ name: "", description: "", selectedVideos: [], selectedDevices: [], serene_size: "1920x1080" });
+        onClose();
+      } else {
+        toast.error(res?.message || "Failed to create program.");
+      }
+    } catch (err: any) {
+      console.error("Failed to create program:", err);
+      toast.error(err?.data?.message || err?.message || "Failed to create program. Please try again.");
+    }
   };
 
   const toggleVideoSelection = (videoId: string) => {
@@ -102,7 +128,7 @@ export default function CreateScreenModal({
     }));
   };
 
-  const toggleDeviceSelection = (deviceId: number) => {
+  const toggleDeviceSelection = (deviceId: string) => {
     setFormData((prev) => ({
       ...prev,
       selectedDevices: prev.selectedDevices.includes(deviceId)
@@ -239,6 +265,21 @@ export default function CreateScreenModal({
                   className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-bgBlue focus:border-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Screen Resolution
+                </label>
+                <Dropdown
+                  options={[
+                    { value: "1920x1080", label: "1920 x 1080 (HD)" },
+                    { value: "1280x720", label: "1280 x 720 (720p)" },
+                    { value: "3840x2160", label: "3840 x 2160 (4K)" },
+                  ]}
+                  value={formData.serene_size}
+                  onChange={(value) => setFormData({ ...formData, serene_size: String(value) })}
+                  className="w-full cursor-pointer"
+                />
+              </div>
             </div>
           )}
 
@@ -260,8 +301,9 @@ export default function CreateScreenModal({
                 <div className="w-full sm:w-[200px]">
                   <Dropdown
                     options={[
-                      { value: "video", label: "Videos" },
+                      { value: "all", label: "All Content" },
                       { value: "image", label: "Images" },
+                      { value: "video", label: "Videos" },
                       { value: "audio", label: "Audio" },
                     ]}
                     value={selectedType}
@@ -304,6 +346,16 @@ export default function CreateScreenModal({
                             height={56}
                             className="w-full h-full object-cover"
                           />
+                        ) : file.type === "video" ? (
+                          <video
+                            src={file.video}
+                            className="w-full h-full object-cover"
+                            muted
+                            onMouseEnter={(e) => e.currentTarget.play()}
+                            onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                          />
+                        ) : file.type === "audio" ? (
+                          <Music className="w-8 h-8 text-bgBlue" />
                         ) : (
                           <div className="text-xs text-gray-400">No Preview</div>
                         )}
@@ -329,48 +381,59 @@ export default function CreateScreenModal({
                   Select Devices
                 </label>
                 <div className="border border-borderGray dark:border-gray-600 rounded-lg divide-y dark:divide-gray-700 max-h-64 overflow-y-auto">
-                  {devices.map((device) => (
-                    <div
-                      key={device.id}
-                      className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                      onClick={() => toggleDeviceSelection(device.id)}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={formData.selectedDevices.includes(device.id)}
-                        onChange={() => toggleDeviceSelection(device.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500 cursor-pointer"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900 dark:text-white truncate">
-                            {device.name}
-                          </span>
-                          <span
-                            className={`text-xs px-2 py-1 border rounded-md flex items-center gap-1 ${device.online
-                              ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
-                              : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                              }`}
-                          >
-                            {device.online ? (
-                              <Wifi className="w-3 h-3" />
-                            ) : (
-                              <WifiOff className="w-3 h-3" />
-                            )}
-                            {device.online ? "Online" : "Offline"}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                          {device.resolution}
+                  {isDevicesLoading ? (
+                    <div className="flex flex-col items-center justify-center p-8 text-gray-400">
+                      <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                      <span>Loading devices...</span>
+                    </div>
+                  ) : devices.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                      No devices found. Please add a device first.
+                    </div>
+                  ) : (
+                    devices.map((device: any) => (
+                      <div
+                        key={device.id}
+                        className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                        onClick={() => toggleDeviceSelection(device.id)}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.selectedDevices.includes(device.id)}
+                          onChange={() => toggleDeviceSelection(device.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500 cursor-pointer"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900 dark:text-white truncate">
+                              {device.name}
+                            </span>
+                            <span
+                              className={`text-xs px-2 py-1 border rounded-md flex items-center gap-1 ${device.status === "ONLINE"
+                                ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+                                : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+                                }`}
+                            >
+                              {device.status === "ONLINE" ? (
+                                <Wifi className="w-3 h-3" />
+                              ) : (
+                                <WifiOff className="w-3 h-3" />
+                              )}
+                              {device.status === "ONLINE" ? "Online" : "Offline"}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                            {device.ip || "No IP Address"} {device.location ? `• ${device.location}` : ""}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
                   Add New Device
                 </label>
@@ -395,7 +458,7 @@ export default function CreateScreenModal({
                     </button>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
         </div>
@@ -427,9 +490,17 @@ export default function CreateScreenModal({
           ) : (
             <button
               onClick={handleCreate}
-              className="px-6 py-2.5 bg-bgBlue hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer"
+              disabled={isCreating}
+              className="flex items-center gap-2 px-6 py-2.5 bg-bgBlue hover:bg-blue-500 text-white rounded-lg font-medium transition-colors shadow-customShadow cursor-pointer disabled:bg-gray-400"
             >
-              Create
+              {isCreating ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create"
+              )}
             </button>
           )}
         </div>

@@ -4,28 +4,25 @@ import { Plus, GripVertical, MoreVertical, Trash2, ArrowUp, ArrowDown, ChevronDo
 import { useState, useRef, useEffect } from "react";
 import AddContentDialog from "./AddContentDialog";
 
-interface TimelineItem {
-  id: number;
-  type: "video" | "image" | "content";
-  title: string;
-  format?: string;
-  startTime: string;
-  duration: number;
+import { Timeline } from "@/redux/api/users/programs/programs.type";
+
+interface ContentTimelineProps {
+  timeline: Timeline[];
 }
 
-const sampleData: TimelineItem[] = [
-  { id: 1, type: "video", title: "Video 1", format: "MP4", startTime: "00:00", duration: 120 },
-  { id: 2, type: "image", title: "Image", format: "JPG", startTime: "02:01", duration: 20 },
-  { id: 3, type: "content", title: "Morning Menu", format: "Content", startTime: "02:01", duration: 135 },
-];
-
-const ContentTimeline = () => {
-  const [items, setItems] = useState<TimelineItem[]>(sampleData);
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline }) => {
+  const [items, setItems] = useState<Timeline[]>([]);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const menuRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (timeline) {
+      setItems(timeline);
+    }
+  }, [timeline]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -33,7 +30,7 @@ const ContentTimeline = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
-      
+
       if (openMenuId !== null) {
         const menuElement = menuRefs.current[openMenuId];
         if (menuElement && !menuElement.contains(event.target as Node)) {
@@ -53,7 +50,7 @@ const ContentTimeline = () => {
     return `${String(minutes).padStart(2, "0")} min ${String(seconds).padStart(2, "0")} sec`;
   };
 
-  const handleRemove = (id: number) => {
+  const handleRemove = (id: string) => {
     setItems(items.filter(item => item.id !== id));
     setOpenMenuId(null);
   };
@@ -67,10 +64,20 @@ const ContentTimeline = () => {
     setOpenMenuId(null);
   };
 
+  const formatStartTime = (items: Timeline[], index: number) => {
+    let totalSeconds = 0;
+    for (let i = 0; i < index; i++) {
+      totalSeconds += items[i].duration;
+    }
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+
   const handleDragStart = (e: React.DragEvent, index: number) => {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/html', index.toString());
-    
+
     // Create a visible drag image
     const dragElement = e.currentTarget as HTMLElement;
     const clone = dragElement.cloneNode(true) as HTMLElement;
@@ -81,7 +88,7 @@ const ContentTimeline = () => {
     clone.style.opacity = '0.9';
     document.body.appendChild(clone);
     e.dataTransfer.setDragImage(clone, 0, 0);
-    
+
     setTimeout(() => {
       document.body.removeChild(clone);
     }, 0);
@@ -124,7 +131,7 @@ const ContentTimeline = () => {
 
           {isDropdownOpen && (
             <div className="absolute left-0 sm:right-0 top-full mt-2 z-50 bg-navbarBg rounded-lg shadow-xl border border-border py-2 w-full sm:w-48">
-              <button 
+              <button
                 onClick={() => {
                   setIsDropdownOpen(false);
                   setOpen(true);
@@ -134,7 +141,7 @@ const ContentTimeline = () => {
                 <FilePlay className="w-4 h-4 md:w-5 md:h-5" /> Add Existing
               </button>
               <div className="border-t border-border my-1" />
-              <button 
+              <button
                 onClick={() => {
                   setIsDropdownOpen(false);
                   // Add your logic here
@@ -161,13 +168,15 @@ const ContentTimeline = () => {
 
               <div className="flex-1 min-w-0 w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1 flex-wrap">
-                  <h3 className="font-semibold text-sm md:text-lg text-headings">{item.title}</h3>
-                  {item.format && (
-                    <span className="text-xs w-fit px-2 py-0.5 border border-border text-muted rounded-lg whitespace-nowrap">{item.format}</span>
+                  <h3 className="font-semibold text-sm md:text-lg text-headings">{item.file?.originalName}</h3>
+                  {item.file?.fileType && (
+                    <span className="text-xs w-fit px-2 py-0.5 border border-border text-muted rounded-lg whitespace-nowrap uppercase">
+                      {item.file.fileType.split('/')[1] || item.file.fileType}
+                    </span>
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-1 text-sm text-muted">
-                  <span>Start: {item.startTime}</span>
+                  <span>Start: {formatStartTime(items, index)}</span>
                   <span>Duration: {item.duration} Sec</span>
                 </div>
               </div>
@@ -176,17 +185,17 @@ const ContentTimeline = () => {
                 <div className="text-lg font-medium text-bgBlue bg-cardBackground px-3 py-1 rounded-lg border border-border">{item.duration}</div>
               </div>
 
-              <div 
-                className="relative shrink-0 mt-2 sm:mt-0" 
+              <div
+                className="relative shrink-0 mt-2 sm:mt-0"
                 ref={(el) => {
                   if (el) menuRefs.current[item.id] = el;
                 }}
               >
-                <button 
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenMenuId(openMenuId === item.id ? null : item.id);
-                  }} 
+                  }}
                   className="rounded transition-colors"
                 >
                   <MoreVertical className="w-5 h-5 text-muted cursor-pointer hover:text-bgBlue" />
@@ -194,32 +203,32 @@ const ContentTimeline = () => {
 
                 {openMenuId === item.id && (
                   <div className="absolute right-0 top-full mt-1 z-50 bg-navbarBg rounded-lg shadow-xl border border-border py-1 w-40">
-                    <button  
+                    <button
 
                       onClick={(e) => {
                         e.stopPropagation();
                         handleRemove(item.id);
-                      }} 
+                      }}
                       className="w-full px-4 py-2 text-left text-sm text-red-500 hover:text-bgBlue flex items-center gap-2 cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" /> Remove
                     </button>
-                    <button 
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleMove(index, "up");
-                      }} 
-                      disabled={index === 0} 
+                      }}
+                      disabled={index === 0}
                       className="w-full px-4 py-2 text-left text-sm text-body hover:text-bgBlue flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <ArrowUp className="w-4 h-4" /> Move Up
                     </button>
-                    <button 
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleMove(index, "down");
-                      }} 
-                      disabled={index === items.length - 1} 
+                      }}
+                      disabled={index === items.length - 1}
                       className="w-full px-4 py-2 text-left text-sm text-body hover:text-bgBlue flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                       <ArrowDown className="w-4 h-4" /> Move Down

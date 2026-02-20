@@ -1,38 +1,32 @@
 "use client";
 
 import { Monitor, Trash2, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddDeviceDialog from "./AddDeviceDialog";
 
-interface ConnectedDevice {
-    id: number;
-    name: string;
-    location: string;
-    isOnline: boolean;
-}
+import { Program, Device } from "@/redux/api/users/programs/programs.type";
 
 interface ScreenSettingsProps {
-    screenName?: string;
-    description?: string;
-    devices?: ConnectedDevice[];
+    program: Program;
 }
 
-const sampleDevices: ConnectedDevice[] = [
-    { id: 1, name: "Office 1", location: "LA, USA", isOnline: true },
-    { id: 2, name: "Office 2", location: "NY, USA", isOnline: false },
-];
 
-const ScreenSettings: React.FC<ScreenSettingsProps> = ({
-    screenName = "",
-    description = "",
-    devices = sampleDevices,
-}) => {
-    const [name, setName] = useState(screenName);
-    const [desc, setDesc] = useState(description);
-    const [connectedDevices, setConnectedDevices] = useState<ConnectedDevice[]>(devices);
+
+const ScreenSettings: React.FC<ScreenSettingsProps> = ({ program }) => {
+    const [name, setName] = useState(program.name);
+    const [desc, setDesc] = useState(program.description);
+    const [connectedDevices, setConnectedDevices] = useState<Device[]>([]);
     const [open, setOpen] = useState(false);
 
-    const handleRemoveDevice = (id: number) => {
+    useEffect(() => {
+        if (program) {
+            setName(program.name);
+            setDesc(program.description);
+            setConnectedDevices(program.devices || []);
+        }
+    }, [program]);
+
+    const handleRemoveDevice = (id: string) => {
         setConnectedDevices(connectedDevices.filter((device) => device.id !== id));
     };
 
@@ -87,14 +81,14 @@ const ScreenSettings: React.FC<ScreenSettingsProps> = ({
                                 <div className="flex-1 min-w-0">
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                                         <span className="font-semibold text-base sm:text-lg text-headings">{device.name}</span>
-                                        {device.isOnline && (
+                                        {device.status === "ONLINE" && (
                                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs sm:text-sm font-medium rounded-full w-fit">
                                                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                                                 Online
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-sm sm:text-base text-muted">{device.location}</p>
+                                    <p className="text-sm sm:text-base text-muted">{device.location || "No location"}</p>
                                 </div>
                                 <button
                                     onClick={() => handleRemoveDevice(device.id)}
