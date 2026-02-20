@@ -7,7 +7,7 @@ export interface SelectOption {
 export interface ContentItem {
     id: string;
     title: string;
-    type: "folder" | "playlist" | "video" | "image";
+    type: "folder" | "playlist" | "video" | "image" | "audio";
     size: string;
     duration?: string;
     fileCount?: number;
