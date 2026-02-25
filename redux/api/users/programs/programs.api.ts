@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../baseApi";
 import { SuccessResponse } from "../content/content.type";
 import { CreateProgramPayload, GetAllProgramsResponse, GetProgramByIdResponse } from "./programs.type";
@@ -27,8 +26,24 @@ const programsAPI = baseApi.injectEndpoints({
       }),
       providesTags: ["Programs"],
     }),
+
+    updateSingleProgram: build.mutation<SuccessResponse, {id: string}>({
+      query: ({id}) => ({
+        url: `/program/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Programs"],
+    }),
+
+    deleteProgram: build.mutation<SuccessResponse, {id: string}>({
+      query: ({id}) => ({
+        url: `/program/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Programs"],
+    }),
   
   }),
 });
 
-export const { useCreateProgramMutation, useGetAllProgramsDataQuery, useGetSingleProgramDataQuery } = programsAPI;
+export const { useCreateProgramMutation, useGetAllProgramsDataQuery, useGetSingleProgramDataQuery,useUpdateSingleProgramMutation, useDeleteProgramMutation } = programsAPI;

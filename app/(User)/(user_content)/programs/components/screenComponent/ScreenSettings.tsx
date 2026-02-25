@@ -1,22 +1,28 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Monitor, Trash2, Plus } from "lucide-react";
-import { useState, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
+import { Trash2, Loader2 } from "lucide-react";
 import AddDeviceDialog from "./AddDeviceDialog";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import DeleteConfirmationModal from "@/components/Admin/modals/DeleteConfirmationModal";
 
 import { Program, Device } from "@/redux/api/users/programs/programs.type";
+import { useDeleteProgramMutation } from "@/redux/api/users/programs/programs.api";
 
 interface ScreenSettingsProps {
     program: Program;
 }
 
-
-
-const ScreenSettings: React.FC<ScreenSettingsProps> = ({ program }) => {
+const ScreenSettings: FC<ScreenSettingsProps> = ({ program }) => {
+    const router = useRouter();
+    const [deleteProgram, { isLoading: isDeleting }] = useDeleteProgramMutation();
     const [name, setName] = useState(program.name);
     const [desc, setDesc] = useState(program.description);
     const [connectedDevices, setConnectedDevices] = useState<Device[]>([]);
     const [open, setOpen] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     useEffect(() => {
         if (program) {
@@ -26,8 +32,18 @@ const ScreenSettings: React.FC<ScreenSettingsProps> = ({ program }) => {
         }
     }, [program]);
 
-    const handleRemoveDevice = (id: string) => {
-        setConnectedDevices(connectedDevices.filter((device) => device.id !== id));
+    // const handleRemoveDevice = (id: string) => {
+    //     setConnectedDevices(connectedDevices.filter((device) => device.id !== id));
+    // };
+
+    const handleDeleteProgram = async () => {
+        try {
+            const res = await deleteProgram({ id: program.id }).unwrap();
+            toast.success(res.message || "Program deleted successfully");
+            router.push("/programs");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to delete program");
+        }
     };
 
     return (
@@ -66,7 +82,7 @@ const ScreenSettings: React.FC<ScreenSettingsProps> = ({ program }) => {
                 </div>
 
                 {/* Connected Devices */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                     <h3 className="text-base sm:text-xl font-medium text-headings mb-2">Connected Devices</h3>
                     <p className="text-sm sm:text-base text-muted mb-4">
                         Manage devices connected to this screen
@@ -107,7 +123,7 @@ const ScreenSettings: React.FC<ScreenSettingsProps> = ({ program }) => {
                         <Plus className="w-4 sm:w-6 h-4 sm:h-6 text-bgBlue font-semibold" />
                         Add Devices
                     </button>
-                </div>
+                </div> */}
 
                 {/* Delete Screen */}
                 <div className="mt-6 p-4 sm:p-6 rounded-xl bg-red-50">
@@ -117,14 +133,33 @@ const ScreenSettings: React.FC<ScreenSettingsProps> = ({ program }) => {
                         </p>
                     </div>
                     <button
-                        className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm sm:text-base font-semibold flex items-center gap-2 transition-colors cursor-pointer shadow-customShadow"
+                        onClick={() => setOpenDeleteDialog(true)}
+                        disabled={isDeleting}
+                        className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm sm:text-base font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-customShadow disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        <Trash2 className="w-4 sm:w-5 h-4 sm:h-5" />
-                        Delete Screen
+                        {isDeleting ? (
+                            <>
+                                <Loader2 className="w-4 sm:w-5 h-4 sm:h-5 animate-spin" />
+                                Deleting...
+                            </>
+                        ) : (
+                            <>
+                                <Trash2 className="w-4 sm:w-5 h-4 sm:h-5" />
+                                Delete Screen
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
             {open && <AddDeviceDialog open={open} setOpen={setOpen} />}
+            <DeleteConfirmationModal
+                isOpen={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+                onConfirm={handleDeleteProgram}
+                title="Delete Program"
+                description="Are you sure you want to delete this program? This action cannot be undone."
+                itemName={program.name}
+            />
         </div>
     );
 };

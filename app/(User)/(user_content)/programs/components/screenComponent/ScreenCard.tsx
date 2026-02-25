@@ -10,7 +10,6 @@ import {
   Loader2,
 } from "lucide-react";
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Program } from "@/redux/api/users/programs/programs.type";
 import dayjs from "dayjs";
@@ -46,7 +45,7 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ program }) => {
   const isActive = program.status.toLowerCase() === "publish";
 
   return (
-    <div className="group bg-navbarBg border border-border rounded-xl overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-all">
+    <div className="group bg-navbarBg border border-border rounded-xl overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-all h-full flex flex-col">
       {/* Video Section (ONLY this has p-3) */}
       <div className="p-3">
         <div className="relative overflow-hidden rounded-lg">
@@ -62,18 +61,18 @@ const ScreenCard: React.FC<ScreenCardProps> = ({ program }) => {
       </div>
 
       {/* Rest of Content (UNCHANGED padding) */}
-      <div className="p-4 sm:p-6">
+      <div className="p-4 sm:p-6 flex flex-col flex-grow">
         {/* Title */}
         <h3 className="text-base sm:text-lg md:text-xl font-semibold text-headings line-clamp-1">
           {program.name}
         </h3>
 
-        <p className="text-sm sm:text-base text-body line-clamp-5">
+        <p className="text-sm sm:text-base text-body line-clamp-5 py-1 md:py-2">
           {program.description}
         </p>
 
         {/* Full-width Divider */}
-        <div className="border-t border-borderGray my-6 -mx-4 sm:-mx-6" />
+        <div className="border-t border-borderGray mt-auto mb-6 -mx-4 sm:-mx-6" />
 
         {/* Info Section */}
         <div className="space-y-2 sm:space-y-3 mb-6 text-sm sm:text-base text-body">
