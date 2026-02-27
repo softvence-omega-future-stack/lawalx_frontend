@@ -20,7 +20,7 @@ import {
 import Dropdown from "@/common/Dropdown";
 import Image from "next/image";
 import QRCodeDialog from "./QRCodeDialog";
-import { useGetAllFilesQuery } from "@/redux/api/users/content/content.api";
+import { useGetAllContentDataQuery } from "@/redux/api/users/content/content.api";
 import { useGetMyDevicesDataQuery } from "@/redux/api/users/devices/devices.api";
 import { useCreateProgramMutation } from "@/redux/api/users/programs/programs.api";
 import { WorkoutStatus } from "@/redux/api/users/programs/programs.type";
@@ -37,7 +37,7 @@ export default function CreateScreenModal({
   isOpen,
   onClose,
 }: CreateScreenModalProps) {
-  const { data: allFiles, isLoading: isFilesLoading } = useGetAllFilesQuery(undefined);
+  const { data: allContent, isLoading: isContentLoading } = useGetAllContentDataQuery(undefined);
   const { data: deviceData, isLoading: isDevicesLoading } = useGetMyDevicesDataQuery(undefined);
   const [createProgram, { isLoading: isCreating }] = useCreateProgramMutation();
   const [currentStep, setCurrentStep] = useState(1);
@@ -65,9 +65,13 @@ export default function CreateScreenModal({
   }, []);
 
   const transformedFiles = useMemo(() => {
-    if (!allFiles?.data) return [];
-    return allFiles.data.map((file: any) => transformFile(file, isMounted));
-  }, [allFiles, isMounted]);
+    if (!allContent?.data) return [];
+    const rootFiles = allContent.data.rootFiles.map((file: any) => transformFile(file, isMounted));
+    const folderFiles = allContent.data.folders.flatMap((folder: any) =>
+      folder.files.map((file: any) => transformFile(file, isMounted))
+    );
+    return [...rootFiles, ...folderFiles];
+  }, [allContent, isMounted]);
 
   const filteredFiles = useMemo(() => {
     return transformedFiles.filter((file) => {
@@ -314,10 +318,10 @@ export default function CreateScreenModal({
               </div>
 
               <div className="border border-borderGray dark:border-gray-600 rounded-lg max-h-76 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                {isFilesLoading ? (
+                {isContentLoading ? (
                   <div className="flex flex-col items-center justify-center p-8 text-gray-400">
                     <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                    <span>Loading files...</span>
+                    <span>Loading content...</span>
                   </div>
                 ) : filteredFiles.length === 0 ? (
                   <div className="p-8 text-center text-gray-500 dark:text-gray-400">
@@ -361,10 +365,20 @@ export default function CreateScreenModal({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-gray-900 dark:text-white truncate">
+                        <div className="font-medium text-gray-900 dark:text-white truncate" title={file.title}>
                           {file.title}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{file.size}</div>
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 shrink-0">{file.size}</span>
+                          {/* {(file.video || file.audio) && (
+                            <span
+                              className="text-[10px] text-blue-500 truncate cursor-help"
+                              title={file.video || file.audio}
+                            >
+                              URL: {file.video || file.audio}
+                            </span>
+                          )} */}
+                        </div>
                       </div>
                     </div>
                   ))

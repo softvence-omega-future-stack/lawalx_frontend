@@ -5,12 +5,18 @@ import { useState, useRef, useEffect } from "react";
 import AddContentDialog from "./AddContentDialog";
 
 import { Timeline } from "@/redux/api/users/programs/programs.type";
+import { useDeleteProgramMutation } from "@/redux/api/users/programs/programs.api";
+import { toast } from "sonner";
 
 interface ContentTimelineProps {
   timeline: Timeline[];
+  onSelect?: (item: Timeline, index: number) => void;
+  selectedId?: string;
+  onChange?: (items: Timeline[]) => void;
 }
 
-const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline }) => {
+const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline, onSelect, selectedId, onChange }) => {
+  const [contentDelete] = useDeleteProgramMutation();
   const [items, setItems] = useState<Timeline[]>([]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -50,9 +56,19 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline }) => {
     return `${String(minutes).padStart(2, "0")} min ${String(seconds).padStart(2, "0")} sec`;
   };
 
-  const handleRemove = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
-    setOpenMenuId(null);
+  const handleRemove = async (id: string) => {
+    try {
+      const res = await contentDelete({ id });
+      if (res) {
+        toast.success(res.data?.message || "Content deleted successfully");
+        const updatedItems = items.filter(item => item.id !== id);
+        setItems(updatedItems);
+        onChange?.(updatedItems);
+        setOpenMenuId(null);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleMove = (index: number, direction: "up" | "down") => {
@@ -61,6 +77,7 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline }) => {
     if (targetIndex < 0 || targetIndex >= items.length) return;
     [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
     setItems(newItems);
+    onChange?.(newItems);
     setOpenMenuId(null);
   };
 
@@ -108,6 +125,7 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline }) => {
     const [draggedItem] = newItems.splice(dragIndex, 1);
     newItems.splice(dropIndex, 0, draggedItem);
     setItems(newItems);
+    onChange?.(newItems);
   };
 
   return (
@@ -162,7 +180,9 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline }) => {
               onDragStart={(e) => handleDragStart(e, index)}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, index)}
-              className="relative bg-navbarBg rounded-lg border border-border p-3 sm:p-4 flex flex-row items-start sm:items-center gap-3 sm:gap-3 hover:border-blue-200 transition-colors cursor-move"
+              onClick={() => onSelect && onSelect(item, index)}
+              className={`relative bg-navbarBg rounded-lg border p-3 sm:p-4 flex flex-row items-start sm:items-center gap-3 sm:gap-3 transition-colors cursor-pointer ${selectedId === item.id ? "border-bgBlue ring-1 ring-bgBlue" : "border-border hover:border-blue-200"
+                }`}
             >
               <GripVertical className="w-5 h-5 text-muted cursor-grab active:cursor-grabbing shrink-0" />
 

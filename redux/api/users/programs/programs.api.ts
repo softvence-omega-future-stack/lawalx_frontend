@@ -19,31 +19,40 @@ const programsAPI = baseApi.injectEndpoints({
       }),
       providesTags: ["Programs"],
     }),
-    getSingleProgramData: build.query<GetProgramByIdResponse, {id: string}>({
-      query: ({id}) => ({
-        url: `/program/${id}`,
+    getSingleProgramData: build.query<GetProgramByIdResponse, { id: string }>({
+      query: ({ id }) => ({
+        url: `/program/get-single/${id}`,
         method: "GET",
       }),
       providesTags: ["Programs"],
     }),
 
-    updateSingleProgram: build.mutation<SuccessResponse, {id: string}>({
-      query: ({id}) => ({
-        url: `/program/${id}`,
+    updateSingleProgram: build.mutation<SuccessResponse, { id: string, data: Partial<CreateProgramPayload> }>({
+      query: ({ id, data }) => ({
+        url: `/program/update/${id}`,
         method: "PATCH",
+        body: data,
       }),
       invalidatesTags: ["Programs"],
     }),
 
-    deleteProgram: build.mutation<SuccessResponse, {id: string}>({
-      query: ({id}) => ({
-        url: `/program/${id}`,
+    deleteProgram: build.mutation<SuccessResponse, { id: string }>({
+      query: ({ id }) => ({
+        url: `/program/delete/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Programs"],
     }),
-  
+
+    deleteTimelineItem: build.mutation<SuccessResponse, { id: string }>({
+      query: ({ id }) => ({
+        url: `/program/delete-timeline-item/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Programs"],
+    }),
+
   }),
 });
 
-export const { useCreateProgramMutation, useGetAllProgramsDataQuery, useGetSingleProgramDataQuery,useUpdateSingleProgramMutation, useDeleteProgramMutation } = programsAPI;
+export const { useCreateProgramMutation, useGetAllProgramsDataQuery, useGetSingleProgramDataQuery, useUpdateSingleProgramMutation, useDeleteProgramMutation, useDeleteTimelineItemMutation } = programsAPI;

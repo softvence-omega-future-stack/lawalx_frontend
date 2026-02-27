@@ -67,6 +67,31 @@ const ZoomControls: React.FC = () => {
 };
 
 const MapLocation: React.FC = () => {
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="relative">
+        <div className="mb-6">
+          <h1 className="text-xl md:text-2xl font-semibold text-headings mb-3">
+            Locations
+          </h1>
+          <div className="flex justify-between items-center">
+            <h2 className="text-base text-muted">Map</h2>
+            <h2 className="text-base text-muted">Time Zone: <span className="text-headings font-semibold">Asia/Dhaka</span></h2>
+          </div>
+        </div>
+        <div className="relative bg-white rounded-xl shadow-sm border border-border overflow-hidden h-96 flex items-center justify-center bg-gray-50">
+          <p className="text-muted text-sm">Loading map...</p>
+        </div>
+      </div>
+    );
+  }
+
   const position: [number, number] = [45.6, -114.0];
 
   return (
