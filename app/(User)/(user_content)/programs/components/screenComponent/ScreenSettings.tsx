@@ -57,7 +57,6 @@ const ScreenSettings: FC<ScreenSettingsProps> = ({ program }) => {
                     </p>
                 </div>
 
-                {/* Screen Name */}
                 <div className="mb-6">
                     <label className="block text-sm sm:text-base font-medium text-headings mb-2">Screen Name</label>
                     <input
