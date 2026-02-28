@@ -1,10 +1,22 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Users, Activity, LogIn, Clock, AlertTriangle, ChevronDown, Download, Filter, CheckCircle, AlertCircle, Shield, TrendingUp, Home, ChevronRight } from 'lucide-react';
 import Dropdown from '@/components/shared/Dropdown';
 import Link from 'next/link';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import {
+  useGetUserActivityOverviewQuery, useGetAuditOverviewQuery, useGetRecentActivityQuery,
+  useGetActionDistributionQuery, useGetSecurityEventsQuery, useGetAdoptionOverviewQuery,
+  useGetAdoptionTrendQuery, useGetFeatureUsageQuery, useGetEngagementLevelsQuery,
+  useGetSessionDurationTrendQuery, useGetInventoryOverviewQuery, useGetUserDirectoryQuery,
+  useGetUsersByRoleQuery, useGetPermissionOverviewQuery, useGetAuthOverviewQuery,
+  useGetAuthEventsQuery, useGetLoginActivityTrendQuery, useGetSecurityAlertsQuery,
+  useLazyGetUserActivityExportQuery,
+} from '@/redux/api/admin/User Report/userreportApi';
 
 // Demo data generator
 const generateData = (days: number) => {
@@ -125,8 +137,7 @@ const generateData = (days: number) => {
 const UserActivityReports = () => {
   const [activeTab, setActiveTab] = useState('activity');
   const [timeRange, setTimeRange] = useState(30);
-
-  const data = useMemo(() => generateData(timeRange), [timeRange]);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   const timeRanges = [
     { value: 1, label: 'Last 1 day' },
@@ -142,7 +153,75 @@ const UserActivityReports = () => {
     { id: 'authentication', label: 'Authentication' }
   ];
 
-  //   const COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
+  const apiTimeRange = timeRange === 1 ? '1d' : timeRange === 7 ? '7d' : timeRange === 365 ? '1y' : '30d';
+  const { data: overview } = useGetUserActivityOverviewQuery({ timeRange: apiTimeRange });
+  const { data: auditOv } = useGetAuditOverviewQuery({ timeRange: apiTimeRange });
+  const { data: recentAct } = useGetRecentActivityQuery({ timeRange: apiTimeRange });
+  const { data: actDist } = useGetActionDistributionQuery({ timeRange: apiTimeRange });
+  const { data: secEv } = useGetSecurityEventsQuery({ timeRange: apiTimeRange });
+  const { data: adoptOv } = useGetAdoptionOverviewQuery({ timeRange: apiTimeRange });
+  const { data: adoptTr } = useGetAdoptionTrendQuery({ timeRange: apiTimeRange });
+  const { data: featUse } = useGetFeatureUsageQuery({ timeRange: apiTimeRange });
+  const { data: engLvl } = useGetEngagementLevelsQuery({ timeRange: apiTimeRange });
+  const { data: sessTr } = useGetSessionDurationTrendQuery({ timeRange: apiTimeRange });
+  const { data: invOv } = useGetInventoryOverviewQuery({ timeRange: apiTimeRange });
+  const { data: userDir } = useGetUserDirectoryQuery({ timeRange: apiTimeRange });
+  const { data: byRole } = useGetUsersByRoleQuery({ timeRange: apiTimeRange });
+  const { data: permOv } = useGetPermissionOverviewQuery({ timeRange: apiTimeRange });
+  const { data: authOv } = useGetAuthOverviewQuery({ timeRange: apiTimeRange });
+  const { data: authEv } = useGetAuthEventsQuery({ timeRange: apiTimeRange });
+  const { data: loginTr } = useGetLoginActivityTrendQuery({ timeRange: apiTimeRange });
+  const { data: secAl } = useGetSecurityAlertsQuery({ timeRange: apiTimeRange });
+  const [triggerExport] = useLazyGetUserActivityExportQuery();
+
+  const data = {
+    summary: { totalUsers: overview?.data?.totalUsers?.value ?? 0, activeUsers: overview?.data?.activeUsers?.value ?? 0, loginsToday: overview?.data?.loginsToday?.value ?? 0, avgSession: `${overview?.data?.avgSession?.value ?? 0} min`, failedLogins: overview?.data?.failedLogins?.value ?? 0 },
+    activityLog: { totalActions: auditOv?.data?.totalActions?.value ?? 0, successRate: auditOv?.data?.successful?.value ?? 0, failedActions: auditOv?.data?.failed?.value ?? 0, uniqueUsers: auditOv?.data?.uniqueUsers?.value ?? 0, recentActivity: (recentAct?.data ?? []).map((a: any) => ({ id: a.id, timestamp: new Date(a.timestamp).toLocaleString(), user: a.user, action: a.action, resource: a.resource, ip: a.ipAddress, status: a.status })), actionDistribution: (actDist?.data ?? []).map((a: any) => ({ name: a.label, value: a.value })) },
+    userAdoption: { monthlyActiveUsers: adoptOv?.data?.activeUsers?.value ?? 0, newUsers: adoptOv?.data?.newUsers?.value ?? 0, avgSessionDuration: `${adoptOv?.data?.avgSessionDuration?.value ?? 0} min`, growthRate: adoptOv?.data?.growthRate?.value ?? '0%', adoptionTrend: (adoptTr?.data ?? []).map((a: any) => ({ month: a.label, activeUsers: a.activeUsers, newUsers: a.newUsers })), featureUsage: (featUse?.data ?? []).map((f: any) => ({ feature: f.name, rate: parseInt(String(f.percentage ?? '0')), users: f.users, trend: f.growth })), engagementLevels: engLvl?.data ? [{ level: 'Highly Engaged', users: engLvl.data.highlyEngaged?.users ?? 0, description: engLvl.data.highlyEngaged?.label ?? '' }, { level: 'Moderately Engaged', users: engLvl.data.moderatelyEngaged?.users ?? 0, description: engLvl.data.moderatelyEngaged?.label ?? '' }, { level: 'Low Engagement', users: engLvl.data.lowEngagement?.users ?? 0, description: engLvl.data.lowEngagement?.label ?? '' }] : [], sessionDuration: (sessTr?.data ?? []).map((s: any) => ({ month: s.label, duration: s.duration })) },
+    userInventory: { totalUsers: invOv?.data?.totalUsers?.value ?? 0, activeUsers: invOv?.data?.active?.value ?? 0, inactiveUsers: invOv?.data?.inactive?.value ?? 0, organizations: invOv?.data?.organizations?.value ?? 0, users: (userDir?.data ?? []).map((u: any) => ({ id: u.id, name: u.name, email: u.email, role: u.role, org: u.organization, status: u.status, lastLogin: u.lastLogin ?? 'N/A' })), roleDistribution: (byRole?.data ?? []).map((r: any, i: number) => ({ name: r.role, value: r.count, color: ['#f59e0b', '#8b5cf6', '#10b981', '#3b82f6'][i % 4] })), permissions: (permOv?.data ?? []).map((p: any) => ({ name: p.label, count: p.value, description: p.description })) },
+    authentication: { successfulLogins: authOv?.data?.successLogins?.value ?? 0, failedAttempts: authOv?.data?.failedAttempts?.value ?? 0, twoFactorVerified: authOv?.data?.twoFactorVerified?.value ?? 0, successRate: authOv?.data?.successRate?.value ?? '0%', authEvents: (authEv?.data ?? []).map((e: any) => ({ id: e.id, timestamp: e.timestamp, user: e.user, action: e.action, status: e.status, ip: e.ipAddress, location: e.location ?? 'N/A', device: e.device ?? 'N/A' })), loginActivity: (loginTr?.data ?? []).map((l: any) => ({ time: l.label, successful: l.successfulLogins, failed: l.failedAttempts })), securityAlerts: (secAl?.data ?? []).map((a: any) => ({ type: a.type === 'SUCCESS' ? 'success' : a.type === 'WARNING' ? 'warning' : 'error', title: a.title, description: a.description, time: a.timestamp })) },
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      const res = await triggerExport({ timeRange: apiTimeRange }).unwrap();
+      const exp = res?.data;
+      const doc = new jsPDF();
+      doc.setFontSize(16); doc.text('User Activity Report', 14, 15);
+      doc.setFontSize(10); doc.text(`Exported: ${new Date().toLocaleString()}`, 14, 22);
+      doc.setFontSize(13); doc.text('Summary', 14, 30);
+      autoTable(doc, { startY: 34, head: [['Metric', 'Value']], body: [['Total Users', exp?.summary?.totalUsers?.value ?? 0], ['Active Users', exp?.summary?.activeUsers?.value ?? 0], ['Logins Today', exp?.summary?.loginsToday?.value ?? 0], ['Failed Logins', exp?.summary?.failedLogins?.value ?? 0]] });
+      let y: number = (doc as any).lastAutoTable.finalY + 10;
+      doc.setFontSize(13); doc.text('Audit Overview', 14, y);
+      autoTable(doc, { startY: y + 4, head: [['Metric', 'Value']], body: [['Total Actions', exp?.audit?.overview?.totalActions?.value ?? 0], ['Successful', exp?.audit?.overview?.successful?.value ?? 0], ['Failed', exp?.audit?.overview?.failed?.value ?? 0], ['Unique Users', exp?.audit?.overview?.uniqueUsers?.value ?? 0]] });
+      y = (doc as any).lastAutoTable.finalY + 10;
+      if ((exp?.audit?.recentActivity ?? []).length) {
+        doc.setFontSize(13); doc.text('Recent Activity', 14, y);
+        autoTable(doc, { startY: y + 4, head: [['ID', 'Timestamp', 'User', 'Action', 'Resource', 'Status']], body: exp.audit.recentActivity.map((a: any) => [a.id, a.timestamp, a.user, a.action, a.resource, a.status]) });
+        y = (doc as any).lastAutoTable.finalY + 10;
+      }
+      if ((exp?.inventory?.directory ?? []).length) {
+        doc.setFontSize(13); doc.text('User Directory', 14, y);
+        autoTable(doc, { startY: y + 4, head: [['ID', 'Name', 'Email', 'Role', 'Status']], body: exp.inventory.directory.map((u: any) => [u.id, u.name, u.email, u.role, u.status]) });
+      }
+      doc.save('user-activity-report.pdf');
+    } catch (e) { console.error('PDF export failed', e); }
+    setShowExportMenu(false);
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const res = await triggerExport({ timeRange: apiTimeRange }).unwrap();
+      const exp = res?.data;
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Metric', 'Value'], ['Total Users', exp?.summary?.totalUsers?.value ?? 0], ['Active Users', exp?.summary?.activeUsers?.value ?? 0], ['Logins Today', exp?.summary?.loginsToday?.value ?? 0], ['Failed Logins', exp?.summary?.failedLogins?.value ?? 0]]), 'Summary');
+      if ((exp?.audit?.recentActivity ?? []).length) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['ID', 'Timestamp', 'User', 'Action', 'Resource', 'IP', 'Status'], ...exp.audit.recentActivity.map((a: any) => [a.id, a.timestamp, a.user, a.action, a.resource, a.ipAddress, a.status])]), 'Recent Activity');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['ID', 'Name', 'Email', 'Role', 'Org', 'Status', 'Last Login'], ...(exp?.inventory?.directory ?? []).map((u: any) => [u.id, u.name, u.email, u.role, u.organization, u.status, u.lastLogin ?? 'N/A'])]), 'User Directory');
+      if ((exp?.usage?.features ?? []).length) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Feature', 'Users', '%', 'Growth'], ...exp.usage.features.map((f: any) => [f.name, f.users, f.percentage, f.growth])]), 'Feature Usage');
+      XLSX.writeFile(wb, 'user-activity-report.xlsx');
+    } catch (e) { console.error('Excel export failed', e); }
+    setShowExportMenu(false);
+  };
 
   return (
     <div className="min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200">
@@ -151,14 +230,14 @@ const UserActivityReports = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-6">
-            <Link href="/admin/dashboard">
+              <Link href="/admin/dashboard">
                 <Home className="w-4 h-4 cursor-pointer hover:text-bgBlue" />
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span>Reports & Analytics</span>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-bgBlue dark:text-blue-400 font-medium">User & Activity Reports</span>
-          </div> 
+              </Link>
+              <ChevronRight className="w-4 h-4" />
+              <span>Reports & Analytics</span>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-bgBlue dark:text-blue-400 font-medium">User & Activity Reports</span>
+            </div>
             <h1 className="text-2xl md:text-3xl font-bold mb-1">User & Activity Reports</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               User behavior, system access, and accountability tracking
@@ -172,10 +251,21 @@ const UserActivityReports = () => {
               onChange={(label) => setTimeRange(timeRanges.find(t => t.label === label)?.value || 30)}
             />
 
-            <button className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg shadow-customShadow flex items-center gap-2 transition-colors text-sm cursor-pointer">
-              <Download className="w-4 h-4" />
-              Export Report
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(prev => !prev)}
+                className="px-4 py-2 border border-bgBlue text-bgBlue rounded-lg shadow-customShadow flex items-center gap-2 transition-colors text-sm cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                Export Report
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 mt-1 bg-navbarBg border border-border rounded-lg shadow-lg z-10 min-w-[140px]">
+                  <button onClick={handleExportPDF} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-t-lg cursor-pointer">📄 PDF</button>
+                  <button onClick={handleExportExcel} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded-b-lg cursor-pointer">📊 Excel</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -187,7 +277,7 @@ const UserActivityReports = () => {
               <Users className="w-4 h-4 text-gray-400" />
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.totalUsers}</div>
-            <div className="text-xs text-green-500">+2.5% this month</div>
+            <div className="text-xs text-green-500">{overview?.data?.totalUsers?.growth > 0 ? '+' : ''}{overview?.data?.totalUsers?.growth ?? 0}% {overview?.data?.totalUsers?.label ?? 'this month'}</div>
           </div>
 
           <div className="bg-navbarBg rounded-lg p-4 border border-border">
@@ -196,7 +286,7 @@ const UserActivityReports = () => {
               <Activity className="w-4 h-4 text-gray-400" />
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.activeUsers}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">92.8% of total</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{overview?.data?.activeUsers?.percentage ?? 0}% {overview?.data?.activeUsers?.label ?? 'of total'}</div>
           </div>
 
           <div className="bg-navbarBg rounded-lg p-4 border border-border">
@@ -205,7 +295,7 @@ const UserActivityReports = () => {
               <LogIn className="w-4 h-4 text-gray-400" />
             </div>
             <div className="text-2xl font-bold mb-1 text-green-500">{data.summary.loginsToday}</div>
-            <div className="text-xs text-green-500">+8.5% increase rate</div>
+            <div className="text-xs text-green-500">{overview?.data?.loginsToday?.growth > 0 ? '+' : ''}{overview?.data?.loginsToday?.growth ?? 0}% {overview?.data?.loginsToday?.label ?? 'increase rate'}</div>
           </div>
 
           <div className="bg-navbarBg rounded-lg p-4 border border-border">
@@ -214,7 +304,7 @@ const UserActivityReports = () => {
               <Clock className="w-4 h-4 text-gray-400" />
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.avgSession}</div>
-            <div className="text-xs text-green-500">+5 min increase</div>
+            <div className="text-xs text-green-500">{overview?.data?.avgSession?.increase > 0 ? '+' : ''}{overview?.data?.avgSession?.increase ?? 0} {overview?.data?.avgSession?.label ?? 'min increase'}</div>
           </div>
 
           <div className="bg-navbarBg rounded-lg p-4 border border-border">
@@ -223,7 +313,7 @@ const UserActivityReports = () => {
               <AlertTriangle className="w-4 h-4 text-gray-400" />
             </div>
             <div className="text-2xl font-bold mb-1">{data.summary.failedLogins}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">1.5% of attempts</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{overview?.data?.failedLogins?.percentage ?? 0}% {overview?.data?.failedLogins?.label ?? 'of attempts'}</div>
           </div>
         </div>
 
@@ -234,8 +324,8 @@ const UserActivityReports = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 text-sm rounded-full font-medium whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0${activeTab === tab.id
-                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-customShadow ring-1 ring-blue-100 dark:ring-blue-800'
-                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-customShadow ring-1 ring-blue-100 dark:ring-blue-800'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
             >
               {tab.label}
@@ -303,7 +393,7 @@ const UserActivityReports = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.activityLog.recentActivity.map((activity, idx) => (
+                      {data.activityLog.recentActivity.map((activity: any, idx: number) => (
                         <tr key={idx} className="border-b border-border hover:bg-gray-50 dark:hover:bg-gray-700/50">
                           <td className="py-3 px-4 text-sm">{activity.id}</td>
                           <td className="py-3 px-4 text-sm">{activity.timestamp}</td>
@@ -318,8 +408,8 @@ const UserActivityReports = () => {
                           <td className="py-3 px-4 text-sm">{activity.ip}</td>
                           <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded-full text-xs ${activity.status === 'Success'
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                              : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                               }`}>
                               {activity.status}
                             </span>
@@ -361,7 +451,7 @@ const UserActivityReports = () => {
                       <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <div className="font-medium text-red-700 dark:text-red-400">Unauthorized Access Attempts</div>
-                        <div className="text-sm text-red-600 dark:text-red-500 mt-1">12 blocked this week</div>
+                        <div className="text-sm text-red-600 dark:text-red-500 mt-1">{secEv?.data?.unauthorized?.count ?? 0} {secEv?.data?.unauthorized?.label ?? 'blocked this period'}</div>
                       </div>
                     </div>
                   </div>
@@ -370,7 +460,7 @@ const UserActivityReports = () => {
                       <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <div className="font-medium text-yellow-700 dark:text-yellow-400">Permission Changes</div>
-                        <div className="text-sm text-yellow-600 dark:text-yellow-500 mt-1">23 this month</div>
+                        <div className="text-sm text-yellow-600 dark:text-yellow-500 mt-1">{secEv?.data?.permissions?.count ?? 0} {secEv?.data?.permissions?.label ?? 'this month'}</div>
                       </div>
                     </div>
                   </div>
@@ -379,7 +469,7 @@ const UserActivityReports = () => {
                       <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <div className="font-medium text-green-700 dark:text-green-400">Audit Compliance</div>
-                        <div className="text-sm text-green-600 dark:text-green-500 mt-1">100% logging active</div>
+                        <div className="text-sm text-green-600 dark:text-green-500 mt-1">{secEv?.data?.auditCompliance?.percentage ?? 100}% {secEv?.data?.auditCompliance?.label ?? 'logging active'}</div>
                       </div>
                     </div>
                   </div>
@@ -485,7 +575,7 @@ const UserActivityReports = () => {
             <div className="bg-navbarBg rounded-lg p-6 border border-border">
               <h3 className="font-semibold mb-4">Feature Usage</h3>
               <div className="space-y-4">
-                {data.userAdoption.featureUsage.map((feature, idx) => (
+                {data.userAdoption.featureUsage.map((feature: any, idx: number) => (
                   <div key={idx}>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">{feature.feature}</span>
@@ -514,22 +604,22 @@ const UserActivityReports = () => {
                 <div className="space-y-3">
                   {data.userAdoption.engagementLevels.map((level, idx) => (
                     <div key={idx} className={`p-4 rounded-lg ${idx === 0 ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
-                        idx === 1 ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
-                          'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
+                      idx === 1 ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
+                        'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
                       }`}>
                       <div className="flex items-center justify-between mb-1">
                         <span className={`font-medium ${idx === 0 ? 'text-green-700 dark:text-green-400' :
-                            idx === 1 ? 'text-blue-700 dark:text-blue-400' :
-                              'text-yellow-700 dark:text-yellow-400'
+                          idx === 1 ? 'text-blue-700 dark:text-blue-400' :
+                            'text-yellow-700 dark:text-yellow-400'
                           }`}>{level.level}</span>
                         <span className={`text-lg font-bold ${idx === 0 ? 'text-green-700 dark:text-green-400' :
-                            idx === 1 ? 'text-blue-700 dark:text-blue-400' :
-                              'text-yellow-700 dark:text-yellow-400'
+                          idx === 1 ? 'text-blue-700 dark:text-blue-400' :
+                            'text-yellow-700 dark:text-yellow-400'
                           }`}>{level.users} users</span>
                       </div>
                       <div className={`text-xs ${idx === 0 ? 'text-green-600 dark:text-green-500' :
-                          idx === 1 ? 'text-blue-600 dark:text-blue-500' :
-                            'text-yellow-600 dark:text-yellow-500'
+                        idx === 1 ? 'text-blue-600 dark:text-blue-500' :
+                          'text-yellow-600 dark:text-yellow-500'
                         }`}>{level.description}</div>
                     </div>
                   ))}
@@ -641,16 +731,16 @@ const UserActivityReports = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.userInventory.users.map((user, idx) => (
+                      {data.userInventory.users.map((user: any, idx: number) => (
                         <tr key={idx} className="border-b border-border hover:bg-gray-50 dark:hover:bg-gray-700/50">
                           <td className="py-3 px-4 text-sm">{user.id}</td>
                           <td className="py-3 px-4 text-sm font-medium">{user.name}</td>
                           <td className="py-3 px-4 text-sm">{user.email}</td>
                           <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded-full text-xs ${user.role === 'Super Admin' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' :
-                                user.role === 'Admin' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
-                                  user.role === 'Editor' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
-                                    'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
+                              user.role === 'Admin' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                user.role === 'Editor' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                                  'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
                               }`}>
                               {user.role}
                             </span>
@@ -658,8 +748,8 @@ const UserActivityReports = () => {
                           <td className="py-3 px-4 text-sm">{user.org}</td>
                           <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded-full text-xs ${user.status === 'Active'
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400'
                               }`}>
                               {user.status}
                             </span>
@@ -688,7 +778,7 @@ const UserActivityReports = () => {
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {data.userInventory.roleDistribution.map((entry, index) => (
+                      {data.userInventory.roleDistribution.map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -696,7 +786,7 @@ const UserActivityReports = () => {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="mt-4 space-y-2">
-                  {data.userInventory.roleDistribution.map((role, idx) => (
+                  {data.userInventory.roleDistribution.map((role: any, idx: number) => (
                     <div key={idx} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: role.color }}></div>
@@ -711,7 +801,7 @@ const UserActivityReports = () => {
               <div className="bg-navbarBg rounded-lg p-6 border border-border">
                 <h3 className="font-semibold mb-4">Permission Overview</h3>
                 <div className="space-y-4">
-                  {data.userInventory.permissions.map((perm, idx) => (
+                  {data.userInventory.permissions.map((perm: any, idx: number) => (
                     <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                       <div className="flex-1">
                         <div className="font-medium text-sm">{perm.name}</div>
@@ -790,7 +880,7 @@ const UserActivityReports = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.authentication.authEvents.map((event, idx) => (
+                      {data.authentication.authEvents.map((event: any, idx: number) => (
                         <tr key={idx} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                           <td className="py-3 px-4 text-sm">{event.id}</td>
                           <td className="py-3 px-4 text-sm">{event.timestamp}</td>
@@ -805,8 +895,8 @@ const UserActivityReports = () => {
                           </td>
                           <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded-full text-xs ${event.status === 'Success'
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                              : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                               }`}>
                               {event.status}
                             </span>
@@ -853,10 +943,10 @@ const UserActivityReports = () => {
               <div className="bg-navbarBg rounded-lg p-6 border border-border">
                 <h3 className="font-semibold mb-4">Security Alerts</h3>
                 <div className="space-y-3">
-                  {data.authentication.securityAlerts.map((alert, idx) => (
+                  {data.authentication.securityAlerts.map((alert: any, idx: number) => (
                     <div key={idx} className={`rounded-lg p-4 border ${alert.type === 'error' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' :
-                        alert.type === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' :
-                          'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                      alert.type === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' :
+                        'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
                       }`}>
                       <div className="flex items-start gap-3">
                         {alert.type === 'error' ? <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" /> :
@@ -864,17 +954,17 @@ const UserActivityReports = () => {
                             <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />}
                         <div className="flex-1">
                           <div className={`font-medium ${alert.type === 'error' ? 'text-red-700 dark:text-red-400' :
-                              alert.type === 'warning' ? 'text-yellow-700 dark:text-yellow-400' :
-                                'text-green-700 dark:text-green-400'
+                            alert.type === 'warning' ? 'text-yellow-700 dark:text-yellow-400' :
+                              'text-green-700 dark:text-green-400'
                             }`}>{alert.title}</div>
                           <div className={`text-sm mt-1 ${alert.type === 'error' ? 'text-red-600 dark:text-red-500' :
-                              alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-500' :
-                                'text-green-600 dark:text-green-500'
+                            alert.type === 'warning' ? 'text-yellow-600 dark:text-yellow-500' :
+                              'text-green-600 dark:text-green-500'
                             }`}>{alert.description}</div>
                           {alert.time && (
                             <div className={`text-xs mt-2 ${alert.type === 'error' ? 'text-red-500 dark:text-red-600' :
-                                alert.type === 'warning' ? 'text-yellow-500 dark:text-yellow-600' :
-                                  'text-green-500 dark:text-green-600'
+                              alert.type === 'warning' ? 'text-yellow-500 dark:text-yellow-600' :
+                                'text-green-500 dark:text-green-600'
                               }`}>{alert.time}</div>
                           )}
                         </div>
