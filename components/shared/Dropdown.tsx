@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
 
@@ -25,13 +25,28 @@ const Dropdown: React.FC<DropdownProps> = ({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const updatePosition = () => {
       if (triggerRef.current) {
         const rect = triggerRef.current.getBoundingClientRect();
+        const menuWidth = rect.width;
+        let left = rect.left;
+
+        // Viewport boundary check (right side)
+        if (typeof window !== 'undefined') {
+          const padding = 10;
+          if (left + menuWidth > window.innerWidth - padding) {
+            left = window.innerWidth - menuWidth - padding;
+          }
+          // Viewport boundary check (left side)
+          if (left < padding) {
+            left = padding;
+          }
+        }
+
         setCoords({
           top: rect.bottom + 4, // 4px gap
-          left: rect.left,
+          left: left,
           width: rect.width,
         });
       }
@@ -53,9 +68,21 @@ const Dropdown: React.FC<DropdownProps> = ({
   const toggleDropdown = () => {
     if (!isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
+      const menuWidth = rect.width;
+      let left = rect.left;
+
+      // Initial boundary check
+      if (typeof window !== 'undefined') {
+        const padding = 10;
+        if (left + menuWidth > window.innerWidth - padding) {
+          left = window.innerWidth - menuWidth - padding;
+        }
+        if (left < padding) left = padding;
+      }
+
       setCoords({
         top: rect.bottom + 4,
-        left: rect.left,
+        left: left,
         width: rect.width,
       });
     }
@@ -69,12 +96,12 @@ const Dropdown: React.FC<DropdownProps> = ({
         onClick={() => setIsOpen(false)}
       />
       <div
-        className="fixed z-[9999] bg-navbarBg border border-border rounded-lg shadow-lg py-1 animate-in fade-in duration-200 overflow-hidden"
+        className="fixed z-[9999] bg-navbarBg border border-border rounded-lg shadow-lg py-1 animate-in fade-in duration-200"
         style={{
           top: `${coords.top}px`,
           left: `${coords.left}px`,
           width: `${coords.width}px`,
-          maxHeight: '300px',
+          maxHeight: '250px',
           overflowY: 'auto',
           transformOrigin: 'top',
         }}

@@ -114,7 +114,7 @@ const AddContentDialog = ({ open, setOpen }: AddContentDialogProps) => {
       </div>
 
       {/* Content List */}
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-border max-h-[400px] overflow-y-auto pr-2">
         {filteredContent.map((item) => {
           const isSelected = selectedItems.includes(item.id);
           return (

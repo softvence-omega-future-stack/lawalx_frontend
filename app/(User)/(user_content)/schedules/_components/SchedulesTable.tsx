@@ -1,7 +1,7 @@
 import React from "react";
 import { Video, Clock, Play, Pause, Edit2, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { Schedule } from "../_data";
+import { Schedule } from "@/redux/api/users/schedules/schedules.type";
 import { cn } from "@/lib/utils";
 
 interface SchedulesTableProps {
@@ -11,6 +11,23 @@ interface SchedulesTableProps {
     totalPages: number;
     setCurrentPage: (page: number | ((p: number) => number)) => void;
 }
+
+/**
+ * Format an epoch-based ISO time string (e.g. "1970-01-01T08:00:00.000Z")
+ * into a human-readable "HH:MM AM/PM" format.
+ */
+const formatTime = (isoTime: string): string => {
+    try {
+        const date = new Date(isoTime);
+        const hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+        const ampm = hours >= 12 ? "PM" : "AM";
+        const displayHours = hours % 12 || 12;
+        return `${displayHours}:${String(minutes).padStart(2, "0")} ${ampm}`;
+    } catch {
+        return isoTime;
+    }
+};
 
 const SchedulesTable: React.FC<SchedulesTableProps> = ({
     schedules,
@@ -41,28 +58,32 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-2 text-sm text-headings">
                                         <Video className="w-4 h-4 text-muted" />
-                                        <span>{schedule.content[0]?.name || "No content"}</span>
+                                        <span>{schedule.file?.originalName || "No content"}</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-2 text-sm text-headings">
                                         <Clock className="w-4 h-4 text-muted" />
-                                        <span>{schedule.scheduleTime}</span>
+                                        <span>{formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="flex flex-col gap-1">
-                                        {schedule.assignedScreens.map((group) => (
-                                            <div key={group.groupId} className="text-sm text-muted">
-                                                {group.groupName}
-                                            </div>
-                                        ))}
+                                        {schedule.programs && schedule.programs.length > 0 ? (
+                                            schedule.programs.map((program) => (
+                                                <div key={program.id} className="text-sm text-muted">
+                                                    {program.name}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-sm text-muted">No programs assigned</div>
+                                        )}
                                     </div>
                                 </td>
                                 <td className="px-6 py-5">
                                     <div className="flex items-center justify-end gap-3">
-                                        <button className={cn("p-2 rounded-lg transition-colors cursor-pointer", schedule.active ? "text-muted hover:bg-gray-100" : "text-green-500 hover:bg-green-100")}>
-                                            {schedule.active ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
+                                        <button className={cn("p-2 rounded-lg transition-colors cursor-pointer", schedule.isActive ? "text-muted hover:bg-gray-100" : "text-green-500 hover:bg-green-100")}>
+                                            {schedule.isActive ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
                                         </button>
                                         <Link href={`/schedules/${schedule.id}`} className="p-2 text-muted hover:text-bgBlue hover:bg-blue-50 rounded-lg transition-colors cursor-pointer">
                                             <Edit2 className="w-5 h-5" />
