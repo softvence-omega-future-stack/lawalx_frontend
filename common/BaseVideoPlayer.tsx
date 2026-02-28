@@ -60,11 +60,15 @@ const BaseVideoPlayer = ({
         }
 
         return () => {
-          if (typeof instance.off === "function") {
-            instance.off("ended", handleEnded);
-          }
-          if (typeof instance.pause === "function") {
-            instance.pause();
+          try {
+            if (instance && typeof instance.off === "function") {
+              instance.off("ended", handleEnded);
+            }
+            if (instance && typeof instance.pause === "function") {
+              instance.pause();
+            }
+          } catch (error) {
+            // Plyr might already be destroyed, ignore these errors
           }
         };
       } else if (checkCount < maxChecks) {

@@ -3,9 +3,10 @@
 
 import React from "react";
 import { Music } from "lucide-react";
+import NextImage from "next/image";
 import BaseSelect from "@/common/BaseSelect";
 import BaseVideoPlayer from "@/common/BaseVideoPlayer";
-import { ContentItem, mockContent } from "../../_data";
+import { ContentItem } from "@/types/content";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -152,7 +153,7 @@ const Step2LowerThird: React.FC<Step2LowerThirdProps> = ({
                         <div className="relative w-full aspect-video bg-gray-900 overflow-hidden">
                             {data.selectedContent.type === "video" ? (
                                 <BaseVideoPlayer
-                                    src={data.selectedContent.url || ""}
+                                    src={data.selectedContent.video || data.selectedContent.audio || ""}
                                     poster={data.selectedContent.thumbnail}
                                     autoPlay={false}
                                     rounded="rounded-none"
@@ -163,9 +164,11 @@ const Step2LowerThird: React.FC<Step2LowerThirdProps> = ({
                                 </div>
                             ) : (
                                 data.selectedContent.thumbnail && (
-                                    <img
+                                    <NextImage
                                         src={data.selectedContent.thumbnail}
-                                        alt={data.selectedContent.name}
+                                        alt={data.selectedContent.title}
+                                        width={1920}
+                                        height={1080}
                                         className="w-full h-full object-cover"
                                     />
                                 )

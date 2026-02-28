@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { mockSchedules } from "./_data";
 import SchedulesHeader from "./_components/SchedulesHeader";
 import SearchFilterBar from "./_components/SearchFilterBar";
 import SchedulesTable from "./_components/SchedulesTable";
 import CalendarView from "./_components/CalendarView";
+import { useGetAllSchedulesDataQuery } from "@/redux/api/users/schedules/schedules.api";
 
 export default function SchedulesPage() {
+  const { data: schedulesData } = useGetAllSchedulesDataQuery(undefined);
   const [view, setView] = useState<"list" | "calendar">("list");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("Recent");
@@ -20,10 +21,12 @@ export default function SchedulesPage() {
     { label: "Name Z-A", value: "Z-A" },
   ];
 
+  const allSchedules = schedulesData?.data || [];
+
   const filteredSchedules = useMemo(() => {
-    let result = [...mockSchedules].filter((s) =>
+    let result = [...allSchedules].filter((s) =>
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.description.toLowerCase().includes(searchQuery.toLowerCase())
+      (s.description && s.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     if (sortOption === "A-Z") {
@@ -35,7 +38,7 @@ export default function SchedulesPage() {
     }
 
     return result;
-  }, [searchQuery, sortOption]);
+  }, [allSchedules, searchQuery, sortOption]);
 
   const paginatedSchedules = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;

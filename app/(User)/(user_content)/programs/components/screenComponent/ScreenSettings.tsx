@@ -13,21 +13,27 @@ import { useDeleteProgramMutation } from "@/redux/api/users/programs/programs.ap
 
 interface ScreenSettingsProps {
     program: Program;
+    name: string;
+    setName: (name: string) => void;
+    description: string;
+    setDescription: (desc: string) => void;
 }
 
-const ScreenSettings: FC<ScreenSettingsProps> = ({ program }) => {
+const ScreenSettings: FC<ScreenSettingsProps> = ({
+    program,
+    name,
+    setName,
+    description: desc,
+    setDescription: setDesc,
+}) => {
     const router = useRouter();
     const [deleteProgram, { isLoading: isDeleting }] = useDeleteProgramMutation();
-    const [name, setName] = useState(program.name);
-    const [desc, setDesc] = useState(program.description);
     const [connectedDevices, setConnectedDevices] = useState<Device[]>([]);
     const [open, setOpen] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     useEffect(() => {
         if (program) {
-            setName(program.name);
-            setDesc(program.description);
             setConnectedDevices(program.devices || []);
         }
     }, [program]);

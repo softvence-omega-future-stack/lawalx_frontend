@@ -18,7 +18,6 @@ import ScreenSettings from "../components/screenComponent/ScreenSettings";
 import MapLocation from "../components/screenComponent/MapLocation";
 import BaseVideoPlayer from "@/common/BaseVideoPlayer";
 import Breadcrumb from "@/common/BreadCrumb";
-import ActionButton from "@/components/ActionButton";
 import { useGetSingleProgramDataQuery, useUpdateSingleProgramMutation } from "@/redux/api/users/programs/programs.api";
 import { toast } from "sonner";
 import { Timeline } from "@/redux/api/users/programs/programs.type";
@@ -42,13 +41,21 @@ const ScreenCardDetails = () => {
   const [localTimeline, setLocalTimeline] = useState<Timeline[]>([]);
   const [hasMounted, setHasMounted] = useState(false);
 
+  // Lifted state for ScreenSettings
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
   useEffect(() => {
-    if (program?.timeline) {
-      setLocalTimeline(program.timeline);
+    if (program) {
+      if (program.timeline) {
+        setLocalTimeline(program.timeline);
+      }
+      setName(program.name || "");
+      setDescription(program.description || "");
     }
   }, [program]);
 
@@ -98,9 +105,18 @@ const ScreenCardDetails = () => {
   const handleSave = async () => {
     try {
       const content_ids = localTimeline.map((item) => item.fileId);
+      const device_ids = program.devices?.map((d) => d.id) || [];
+
       const res = await updateProgram({
         id: String(id),
-        data: { content_ids },
+        data: {
+          name,
+          description,
+          content_ids,
+          device_ids,
+          serene_size: program.serene_size || "1920x1080",
+          status: (program.status.toUpperCase() as any) || "DRAFT",
+        },
       }).unwrap();
       toast.success(res.message || "Program updated successfully");
     } catch (error: any) {
@@ -183,7 +199,15 @@ const ScreenCardDetails = () => {
               />
             )}
             {activeTab === "schedule" && <ContentSchedule schedules={program.schedules || []} />}
-            {activeTab === "settings" && <ScreenSettings program={program} />}
+            {activeTab === "settings" && (
+              <ScreenSettings
+                program={program}
+                name={name}
+                setName={setName}
+                description={description}
+                setDescription={setDescription}
+              />
+            )}
           </div>
 
           {/* Right side */}

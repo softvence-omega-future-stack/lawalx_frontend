@@ -4,9 +4,10 @@ import { Plus, GripVertical, MoreVertical, Trash2, ArrowUp, ArrowDown, ChevronDo
 import { useState, useRef, useEffect } from "react";
 import AddContentDialog from "./AddContentDialog";
 
-import { Timeline } from "@/redux/api/users/programs/programs.type";
+import { Timeline, FileData } from "@/redux/api/users/programs/programs.type";
 import { useDeleteProgramMutation } from "@/redux/api/users/programs/programs.api";
 import { toast } from "sonner";
+import { useUploadFileMutation } from "@/redux/api/users/content/content.api";
 
 interface ContentTimelineProps {
   timeline: Timeline[];
@@ -16,12 +17,14 @@ interface ContentTimelineProps {
 }
 
 const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline, onSelect, selectedId, onChange }) => {
+  const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
   const [contentDelete] = useDeleteProgramMutation();
   const [items, setItems] = useState<Timeline[]>([]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -47,7 +50,7 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline, onSelect, s
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [openMenuId]);
+  }, [openMenuId, isDropdownOpen]);
 
   const calculateTotal = () => {
     const totalSeconds = items.reduce((sum, item) => sum + item.duration, 0);
@@ -128,6 +131,46 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline, onSelect, s
     onChange?.(newItems);
   };
 
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append("file", files[i]);
+    }
+
+    try {
+      const res = await uploadFile(formData).unwrap();
+      const uploadedFiles = Array.isArray(res.data) ? res.data : [res.data];
+
+      const newTimelineItems: Timeline[] = uploadedFiles.map((file: FileData) => ({
+        id: `temp-${Math.random().toString(36).substr(2, 9)}`,
+        fileId: file.id,
+        duration: file.duration || 10, // Default 10s for images if not specified
+        position: items.length,
+        createdAt: new Date().toISOString(),
+        programId: "", // Will be assigned on save
+        file: file
+      }));
+
+      const updatedItems = [...items, ...newTimelineItems];
+      setItems(updatedItems);
+      onChange?.(updatedItems);
+
+      toast.success(res?.message || "File(s) uploaded and added to timeline");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string } };
+      console.error("Upload failed:", err);
+      toast.error(error?.data?.message || "Upload failed. Please try again.");
+    }
+  };
+
   return (
     <div className="mx-auto">
       <div className="bg-navbarBg rounded-xl border border-border p-4 sm:p-6">
@@ -135,6 +178,15 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline, onSelect, s
           <h2 className="text-xl md:text-2xl font-semibold text-headings">Content Timeline</h2>
           <p className="text-sm text-muted">Total: {items.length ? calculateTotal() : "00 min 00 sec"}</p>
         </div>
+
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          multiple
+        />
 
         {/* Add Schedule Button with Dropdown */}
         <div className="relative w-full sm:w-auto mb-4 sm:mb-6" ref={dropdownRef}>
@@ -148,7 +200,7 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline, onSelect, s
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute left-0 sm:right-0 top-full mt-2 z-50 bg-navbarBg rounded-lg shadow-xl border border-border py-2 w-full sm:w-48">
+            <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 z-50 bg-navbarBg rounded-lg shadow-xl border border-border py-2 w-full sm:w-48">
               <button
                 onClick={() => {
                   setIsDropdownOpen(false);
@@ -162,17 +214,19 @@ const ContentTimeline: React.FC<ContentTimelineProps> = ({ timeline, onSelect, s
               <button
                 onClick={() => {
                   setIsDropdownOpen(false);
-                  // Add your logic here
+                  handleUploadClick();
                 }}
-                className="w-full px-4 py-2.5 text-left text-sm font-medium text-body hover:text-bgBlue transition-colors cursor-pointer flex items-center gap-2"
+                className={`w-full px-4 py-2.5 text-left text-sm font-medium text-body hover:text-bgBlue transition-colors cursor-pointer flex items-center gap-2 ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={isUploading}
               >
-                <CloudUpload className="w-4 h-4 md:w-5 md:h-5" /> Upload New
+                <CloudUpload className={`w-4 h-4 md:w-5 md:h-5 ${isUploading ? "animate-bounce" : ""}`} />
+                {isUploading ? "Uploading..." : "Upload New"}
               </button>
             </div>
           )}
         </div>
-
-        <div className="space-y-3">
+        {/* Content List */}
+        <div className="divide-y divide-border max-h-[400px] overflow-y-auto">
           {items.map((item, index) => (
             <div
               key={item.id}

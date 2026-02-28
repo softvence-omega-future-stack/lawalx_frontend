@@ -44,10 +44,12 @@ const customIcon = L.divIcon({
 const ZoomControls: React.FC = () => {
   const map = useMap();
 
+  if (!map) return null;
+
   return (
     <div className="absolute top-4 left-4 z-500 flex flex-col gap-2">
       <button
-        onClick={() => map.zoomIn()}
+        onClick={() => map?.zoomIn()}
         className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
         aria-label="Zoom in"
         type="button"
@@ -55,7 +57,7 @@ const ZoomControls: React.FC = () => {
         <ZoomIn className="w-5 h-5 text-gray-700" />
       </button>
       <button
-        onClick={() => map.zoomOut()}
+        onClick={() => map?.zoomOut()}
         className="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
         aria-label="Zoom out"
         type="button"

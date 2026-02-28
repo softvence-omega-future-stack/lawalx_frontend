@@ -13,6 +13,7 @@ interface Step4Props {
         selectedDates: number[];
         playTime: string;
         startDate: string;
+        endDate?: string;
     };
     onChange: (data: any) => void;
 }
@@ -109,17 +110,31 @@ const Step4ScheduleSettings: React.FC<Step4Props> = ({ data, onChange }) => {
                 </div>
             )}
 
-            {/* Play Time */}
-            <div className="space-y-2">
-                <Label className="text-sm font-medium text-headings">
-                    Play Time <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                    type="time"
-                    value={data.playTime}
-                    onChange={(e) => onChange({ ...data, playTime: e.target.value })}
-                    className="bg-input border-borderGray text-headings"
-                />
+            {/* Play Times */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium text-headings">
+                        Start Time <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                        type="time"
+                        value={data.playTime}
+                        onChange={(e) => onChange({ ...data, playTime: e.target.value })}
+                        className="bg-input border-borderGray text-headings"
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium text-headings">
+                        End Time <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                        type="time"
+                        value={(data as any).endTime}
+                        onChange={(e) => onChange({ ...data, endTime: e.target.value })}
+                        className="bg-input border-borderGray text-headings"
+                    />
+                </div>
             </div>
 
             {/* Start Date Fields */}
@@ -139,12 +154,12 @@ const Step4ScheduleSettings: React.FC<Step4Props> = ({ data, onChange }) => {
                 {data.repeat !== "run-once" && (
                     <div className="space-y-2">
                         <Label className="text-sm font-medium text-headings">
-                            Start Date <span className="text-red-500">*</span>
+                            End Date <span className="text-red-500">*</span>
                         </Label>
                         <Input
                             type="date"
-                            value={data.startDate}
-                            onChange={(e) => onChange({ ...data, startDate: e.target.value })}
+                            value={data.endDate || ""}
+                            onChange={(e) => onChange({ ...data, endDate: e.target.value })}
                             className="bg-input border-borderGray text-headings"
                         />
                     </div>
