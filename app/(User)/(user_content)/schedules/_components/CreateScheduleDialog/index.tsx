@@ -9,10 +9,10 @@ import Step2ContentSelection from "./Step2ContentSelection";
 import Step2LowerThird from "./Step2LowerThird";
 import Step3ScreenSelection from "./Step3ScreenSelection";
 import Step4ScheduleSettings from "./Step4ScheduleSettings";
-import { ContentItem } from "../../_data";
+import { ContentItem } from "@/types/content";
 import { FileText, Settings, TvMinimal, Video, X } from "lucide-react";
-import { usePostSchedulesMutation } from "@/redux/api/userDashboard/schedules/schedules.api";
-import { SchedulePayload } from "@/types/schedule";
+import { useCreateScheduleMutation } from "@/redux/api/users/schedules/schedules.api";
+import { StoreMorningPromo, ContentType, RecurrenceType, DayOfWeek } from "@/redux/api/users/schedules/schedules.type";
 
 interface CreateScheduleDialogProps {
     open: boolean;
@@ -27,7 +27,7 @@ const STEPS = [
 ];
 
 const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOpen }) => {
-    const [createSchedules] = usePostSchedulesMutation();
+    const [createSchedule] = useCreateScheduleMutation();
     const [currentStep, setCurrentStep] = useState(1);
     const [showLowerThird, setShowLowerThird] = useState(false);
 
@@ -36,7 +36,7 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
     const [step2Data, setStep2Data] = useState<{
         contentType: string;
         selectedContent: ContentItem | null;
-    }>({ contentType: "image-video", selectedContent: null });
+    }>({ contentType: "all", selectedContent: null });
 
     const [lowerThirdData, setLowerThirdData] = useState({
         selectedContent: null as ContentItem | null,
@@ -99,93 +99,74 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
         setCurrentStep(1);
         setShowLowerThird(false);
         setStep1Data({ name: "", description: "" });
-        setStep2Data({ contentType: "image-video", selectedContent: null });
+        setStep2Data({ contentType: "all", selectedContent: null });
         setStep3Data({ selectedScreens: [] });
         setStep4Data({ repeat: "run-once", selectedDays: [], selectedDates: [], playTime: "03:00", endTime: "05:00", startDate: "", endDate: "" });
         setOpen(false);
     };
 
     const handleSubmit = async () => {
-        // Determine active content
+        // Determine active content (file selected in Step 2)
         const activeContent = showLowerThird ? lowerThirdData.selectedContent : step2Data.selectedContent;
 
-        // Map contentType from form to API payload
-        let contentType: "IMAGE_TEXT" | "IMAGE" | "VIDEO" | "TEXT" = "IMAGE";
-        if (showLowerThird) {
-            contentType = "IMAGE_TEXT";
-        } else if (step2Data.contentType === "video") {
-            contentType = "VIDEO";
-        } else if (step2Data.contentType === "text") {
-            contentType = "TEXT";
+        // Map contentType from selected content to API enum
+        // API accepts: IMAGE_VIDEO, AUDIO, LOWERTHIRD
+        let contentType: ContentType = "IMAGE_VIDEO";
+        if (activeContent?.type === "audio") {
+            contentType = "AUDIO";
+        } else if (showLowerThird) {
+            contentType = "LOWERTHIRD";
         }
 
-        // Map fontSize from numeric to named size
-        const fontSizeMap: { [key: string]: "Small" | "Medium" | "Large" } = {
-            "16": "Small",
-            "24": "Medium",
-            "32": "Large",
-        };
+        // Format startDate / endDate as full ISO strings
+        const startDate = step4Data.startDate
+            ? new Date(step4Data.startDate + "T00:00:00Z").toISOString()
+            : new Date().toISOString();
 
-        const fontSize: "Small" | "Medium" | "Large" =
-            fontSizeMap[lowerThirdData.lowerThirdConfig.fontSize] || "Medium";
+        const endDate = step4Data.endDate
+            ? new Date(step4Data.endDate + "T23:59:59Z").toISOString()
+            : new Date().toISOString();
 
-        // Convert play time (HH:MM) to ISO time format
-        const [hours, minutes] = step4Data.playTime.split(":").map(Number);
-        const [endHours, endMinutes] = step4Data.endTime.split(":").map(Number);
+        // Format startTime / endTime as epoch-based ISO (1970-01-01T...Z)
+        const startTime = `1970-01-01T${step4Data.playTime}:00Z`;
+        const endTime = `1970-01-01T${step4Data.endTime}:00Z`;
 
-        // Construct ISO format date-time strings
-        const startDateTime = step4Data.startDate 
-            ? new Date(step4Data.startDate).toISOString().split("T")[0] + `T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00.000Z`
-            : undefined;
+        // Map recurrence type
+        const recurrenceType: RecurrenceType = step4Data.repeat === "run-once"
+            ? "once"
+            : (step4Data.repeat as RecurrenceType);
 
-        const endDateTime = step4Data.endDate
-            ? new Date(step4Data.endDate).toISOString().split("T")[0] + `T${String(endHours).padStart(2, "0")}:${String(endMinutes).padStart(2, "0")}:00.000Z`
-            : undefined;
-
-        // Construct the API payload
-        const payload: SchedulePayload = {
+        // Construct the API payload matching StoreMorningPromo
+        const payload: StoreMorningPromo = {
             name: step1Data.name,
             description: step1Data.description,
-            text: lowerThirdData.lowerThirdConfig.message,
-            textColor: lowerThirdData.lowerThirdConfig.textColor,
-            fontSize: fontSize,
-            font: lowerThirdData.lowerThirdConfig.fontFamily,
-            backgroundColor: lowerThirdData.lowerThirdConfig.backgroundColor,
-            backgroundOpacity: lowerThirdData.lowerThirdConfig.backgroundOpacity,
-            animation: lowerThirdData.lowerThirdConfig.animationDirection,
-            loop: lowerThirdData.lowerThirdConfig.loop,
-            position: (lowerThirdData.lowerThirdConfig.position.charAt(0).toUpperCase() +
-                lowerThirdData.lowerThirdConfig.position.slice(1)) as "Top" | "Middle" | "Bottom",
-            contentType: contentType,
-            recurrenceType: step4Data.repeat === "run-once" ? undefined : (step4Data.repeat as "daily" | "weekly" | "monthly"),
-            startDate: step4Data.startDate,
-            endDate: step4Data.endDate,
-            startTime: startDateTime,
-            endTime: endDateTime,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            daysOfWeek: step4Data.selectedDays as ("Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun")[],
+            contentType,
+            recurrenceType,
+            startDate,
+            endDate,
+            startTime,
+            endTime,
+            daysOfWeek: step4Data.selectedDays as DayOfWeek[],
             dayOfMonth: step4Data.selectedDates,
-            contentId: activeContent?.id,
-            deviceId: step3Data.selectedScreens[0], // First selected screen
+            programIds: step3Data.selectedScreens,
+            deviceIds: [],
+            fileId: activeContent?.id || "",
+            lowerThirdId: showLowerThird ? lowerThirdData.selectedContent?.id : undefined,
+            status: "playing",
         };
 
         console.log("=== SUBMITTING SCHEDULE PAYLOAD ===");
         console.log(payload);
 
         try {
-            // Call the API mutation
-            const result = await createSchedules(payload).unwrap();
-            console.log("Schedule created successfully:", result);
-
-            // Show success message
-            toast.success("Schedule created successfully!");
-
-            // Close dialog
+            const res = await createSchedule(payload).unwrap();
+            console.log("Schedule created successfully:", res);
+            toast.success(res?.message || "Schedule created successfully!");
             handleCancel();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating schedule:", error);
-            // Show error message
-            toast.error("Failed to create schedule. Please try again.");
+            const errorMessage = error?.data?.message || error?.message || "Failed to create schedule. Please try again.";
+            toast.error(errorMessage);
         }
     };
 

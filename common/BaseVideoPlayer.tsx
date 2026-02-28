@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "plyr-react/plyr.css";
 import type { APITypes } from "plyr-react";
@@ -14,6 +14,7 @@ interface VideoPlayerProps {
   poster?: string;
   autoPlay?: boolean;
   rounded?: string;
+  onEnded?: () => void;
 }
 
 const BaseVideoPlayer = ({
@@ -21,28 +22,68 @@ const BaseVideoPlayer = ({
   poster,
   autoPlay = false,
   rounded = "rounded-xl",
+  onEnded,
 }: VideoPlayerProps) => {
   const playerRef = useRef<APITypes>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const instance = playerRef.current?.plyr;
-    if (!instance) return;
+    setIsMounted(true);
+  }, []);
 
-    if (autoPlay) {
-      setTimeout(() => {
-        const playResult = instance.play?.();
-        if (playResult instanceof Promise) {
-          playResult.catch(() => {
-            console.warn("Autoplay blocked by browser");
-          });
+  useEffect(() => {
+    if (!isMounted) return;
+
+    let timer: NodeJS.Timeout;
+    let checkCount = 0;
+    const maxChecks = 20; // 2 seconds max
+
+    const initPlayer = () => {
+      const instance = playerRef.current?.plyr;
+
+      if (instance && typeof instance.on === "function") {
+        const handleEnded = () => {
+          if (onEnded) onEnded();
+        };
+
+        instance.on("ended", handleEnded);
+
+        if (autoPlay) {
+          setTimeout(() => {
+            const playResult = instance.play?.();
+            if (playResult instanceof Promise) {
+              playResult.catch(() => {
+                console.warn("Autoplay blocked by browser");
+              });
+            }
+          }, 200);
         }
-      }, 200);
-    }
+
+        return () => {
+          try {
+            if (instance && typeof instance.off === "function") {
+              instance.off("ended", handleEnded);
+            }
+            if (instance && typeof instance.pause === "function") {
+              instance.pause();
+            }
+          } catch (error) {
+            // Plyr might already be destroyed, ignore these errors
+          }
+        };
+      } else if (checkCount < maxChecks) {
+        checkCount++;
+        timer = setTimeout(initPlayer, 100);
+      }
+    };
+
+    const cleanup = initPlayer();
 
     return () => {
-      instance.pause?.();
+      if (timer) clearTimeout(timer);
+      if (cleanup) cleanup();
     };
-  }, [src, autoPlay]);
+  }, [src, autoPlay, onEnded, isMounted]);
 
   // Source configuration
   const getSource = () => {
@@ -81,22 +122,26 @@ const BaseVideoPlayer = ({
   return (
     <div className={`relative w-full pt-[56.25%] ${rounded} bg-black overflow-hidden`}>
       <div className="absolute inset-0">
-        <Plyr
-          ref={playerRef}
-          source={getSource()}
-          options={{
-            controls: [
-              "play",
-              "progress",
-              "current-time",
-              "duration",
-              "mute",
-              "volume",
-              "settings",
-              "fullscreen",
-            ],
-          }}
-        />
+        {isMounted ? (
+          <Plyr
+            ref={playerRef}
+            source={getSource()}
+            options={{
+              controls: [
+                "play",
+                "progress",
+                "current-time",
+                "duration",
+                "mute",
+                "volume",
+                "settings",
+                "fullscreen",
+              ],
+            }}
+          />
+        ) : (
+          <div className="w-full h-full bg-black" />
+        )}
       </div>
     </div>
   );

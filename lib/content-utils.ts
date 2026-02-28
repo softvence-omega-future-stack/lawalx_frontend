@@ -31,7 +31,7 @@ const getUrl = (url: string | null) => {
 
     // Handle relative paths
     const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || "").replace(/\/$/, "");
-    
+
     // If it's an upload path (starts with /uploads or uploads/), use the origin, not the full API base
     // The API base might include /api/v1, but uploads are usually at the root
     if (cleanUrl.startsWith("/") || cleanUrl.startsWith("uploads/")) {
@@ -51,7 +51,7 @@ const getUrl = (url: string | null) => {
 export const transformFile = (file: any, isMounted: boolean): ContentItem => ({
     id: file.id,
     title: file.originalName,
-    type: file.type === "IMAGE" ? "image" : file.type === "VIDEO" ? "video" : "playlist",
+    type: file.type === "IMAGE" ? "image" : file.type === "VIDEO" ? "video" : file.type === "AUDIO" ? "audio" : "playlist",
     size: formatBytes(file.size),
     duration: formatDuration(file.duration),
     thumbnail: (file.type === "IMAGE") ? getUrl(file.url) : undefined,

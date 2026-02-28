@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
-import { Search, Image as ImageIcon, Video, AudioLines, FilePlay, ArrowRight, Play } from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Search, Image as ImageIcon, Video, AudioLines, FilePlay, ArrowRight, Play, Loader2 } from "lucide-react";
+import NextImage from "next/image";
 import BaseSelect from "@/common/BaseSelect";
-import { mockContent, ContentItem } from "../../_data";
 import { Input } from "@/components/ui/input";
+import { useGetAllFilesQuery } from "@/redux/api/users/content/content.api";
+import { transformFile } from "@/lib/content-utils";
+import { ContentItem } from "@/types/content";
 
 interface Step2Props {
     data: {
@@ -16,19 +20,42 @@ interface Step2Props {
 }
 
 const Step2ContentSelection: React.FC<Step2Props> = ({ data, onChange, onContentSelect }) => {
+    const { data: allFiles, isLoading } = useGetAllFilesQuery(undefined);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    const transformedContent = useMemo(() => {
+        if (!allFiles?.data) return [];
+        return allFiles.data.map((file: any) => {
+            const transformed = transformFile(file, isMounted);
+            // Map to the local ContentItem shape if needed (Schedules _data.ts uses 'name' whereas transformFile uses 'title')
+            return {
+                ...transformed,
+                name: transformed.title, // Add 'name' for compatibility with existing code
+            } as any;
+        });
+    }, [allFiles, isMounted]);
+
     const [searchQuery, setSearchQuery] = useState("");
 
     const contentTypeOptions = [
+        { label: "All Content", value: "all", icon: <FilePlay className="w-5 h-5 text-body" /> },
         { label: "Image or Video", value: "image-video", icon: <FilePlay className="w-5 h-5 text-body" /> },
         { label: "Audio", value: "audio", icon: <AudioLines className="w-5 h-5 text-body" /> }
     ];
 
     // Filter content based on selected type and search query
-    const filteredContent = mockContent.filter((item) => {
+    // Filter content based on selected type and search query
+    const filteredContent = transformedContent.filter((item: any) => {
         const matchesType =
-            data.contentType === "image-video"
-                ? item.type === "image" || item.type === "video"
-                : item.type === "audio";
+            data.contentType === "all"
+                ? true
+                : data.contentType === "image-video"
+                    ? item.type === "image" || item.type === "video"
+                    : item.type === "audio";
 
         const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -47,21 +74,31 @@ const Step2ContentSelection: React.FC<Step2Props> = ({ data, onChange, onContent
                 required
             />
 
-            {/* Search Field */}
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-                <Input
-                    type="text"
-                    placeholder="Search Content"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-input border-borderGray text-headings"
-                />
+            {/* Select Content Field */}
+            <div className="space-y-3">
+                <label className="block text-sm font-semibold text-headings">
+                    Select Content
+                </label>
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+                    <Input
+                        type="text"
+                        placeholder="Search Content"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 bg-input border-borderGray text-headings"
+                    />
+                </div>
             </div>
 
             {/* Content Grid */}
-            <div className="max-h-[300px] overflow-y-auto pr-2 space-y-2">
-                {filteredContent.length === 0 ? (
+            <div className="max-h-[300px] overflow-y-auto pr-2 space-y-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-muted">
+                        <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                        <span>Loading content...</span>
+                    </div>
+                ) : filteredContent.length === 0 ? (
                     <div className="text-center py-8 text-muted">
                         No content found
                     </div>
@@ -75,16 +112,34 @@ const Step2ContentSelection: React.FC<Step2Props> = ({ data, onChange, onContent
                             {/* Thumbnail or Icon */}
                             <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer">
                                 {item.type === "audio" ? (
-                                    <AudioLines className="w-6 h-6 text-bgBlue" />
+                                    <div
+                                        className="w-full h-full flex items-center justify-center bg-blue-50 dark:bg-blue-950/20"
+                                        onMouseEnter={(e) => {
+                                            const audio = e.currentTarget.querySelector('audio');
+                                            if (audio) audio.play();
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            const audio = e.currentTarget.querySelector('audio');
+                                            if (audio) {
+                                                audio.pause();
+                                                audio.currentTime = 0;
+                                            }
+                                        }}
+                                    >
+                                        <AudioLines className="w-6 h-6 text-bgBlue" />
+                                        <audio src={item.audio} muted={false} />
+                                    </div>
                                 ) : item.type === "video" ? (
-                                    item.thumbnail ? (
-                                        <img src={item.thumbnail} alt={item.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <Video className="w-6 h-6 text-bgBlue" />
-                                    )
+                                    <video
+                                        src={item.video}
+                                        className="w-full h-full object-cover"
+                                        muted
+                                        onMouseEnter={(e) => e.currentTarget.play()}
+                                        onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                                    />
                                 ) : (
                                     item.thumbnail ? (
-                                        <img src={item.thumbnail} alt={item.name} className="w-full h-full object-cover" />
+                                        <NextImage src={item.thumbnail} alt={item.name} width={48} height={48} className="w-full h-full object-cover" />
                                     ) : (
                                         <ImageIcon className="w-6 h-6 text-bgBlue" />
                                     )
