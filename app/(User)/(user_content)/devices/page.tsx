@@ -303,7 +303,7 @@ export default function DevicesPage() {
         </div>
       </div> */}
 
-      <h2 className="text-xl font-semibold text-[#737373] dark:text-white mb-4">{allDevices.length} Devices</h2>
+      <h2 className="text-xl font-semibold text-[#1A1A1A] dark:text-white mb-4">{allDevices.length} Devices</h2>
 
       {/* Management + Table */}
       <div className="space-y-4">
