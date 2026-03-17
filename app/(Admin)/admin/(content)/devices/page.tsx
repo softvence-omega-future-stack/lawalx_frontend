@@ -2,67 +2,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { Monitor, Wifi, WifiOff, Clock, Search, Download, ChevronDown, MoreVertical, X, Trash2, Edit, UserCheck, ChevronRight, HomeIcon } from 'lucide-react';
-import PreviewDeviceModal from '@/components/devices/modals/PreviewDeviceModal';
 import GoogleMapModal from '@/components/shared/modals/GoogleMapModal';
+import { useDeleteDeviceMutation, useGetDeviceDetailsQuery, useGetGlobalDevicesQuery, useLazyExportGlobalDevicesQuery } from '@/redux/api/admin/globalDevicesApi';
 import Link from 'next/link';
-
-// Generate demo data with dates - ensuring data for each time range
-const generateDevicesData = () => {
-  const devices = [
-    // Last 1 day devices (0-1 days ago)
-    { device: 'Reception Display', model: 'TV-001-NYC', customer: 'TechCorp Inc.', location: 'New York, NY', type: 'Android TV', status: 'Online', storage: '8.5 GB / 16 GB', uptime: '99.8%', daysAgo: 0.5, lat: 40.7128, lng: -74.0060 },
-    { device: 'Menu Board', model: 'TV-002-LA', customer: 'Restaurant Group', location: 'Los Angeles, CA', type: 'Fire TV', status: 'Online', storage: '3.2 GB / 8 GB', uptime: '98.5%', daysAgo: 0.8, lat: 34.0522, lng: -118.2437 },
-
-    // Last 7 days devices (2-6 days ago)
-    { device: 'Lobby Screen', model: 'TV-003-CHI', customer: 'Healthcare Network', location: 'Chicago, IL', type: 'Samsung Tizen', status: 'Offline', storage: '12.8 GB / 16 GB', uptime: '95.2%', daysAgo: 3, lat: 41.8781, lng: -87.6298 },
-    { device: 'Store Display', model: 'TV-004-MIA', customer: 'RetailStore Chain', location: 'Miami, FL', type: 'LG webOS', status: 'Syncing', storage: '5.7 GB / 32 GB', uptime: '99.1%', daysAgo: 5, lat: 25.7617, lng: -80.1918 },
-    { device: 'Conference Room', model: 'TV-005-BOS', customer: 'Tech Solutions', location: 'Boston, MA', type: 'Android TV', status: 'Online', storage: '4.2 GB / 16 GB', uptime: '97.8%', daysAgo: 6, lat: 42.3601, lng: -71.0589 },
-
-    // Last 30 days devices (8-28 days ago)
-    { device: 'Lobby Display', model: 'TV-006-SEA', customer: 'Coffee Chain', location: 'Seattle, WA', type: 'Fire TV', status: 'Online', storage: '6.1 GB / 16 GB', uptime: '99.3%', daysAgo: 15, lat: 47.6062, lng: -122.3321 },
-    { device: 'Menu Board', model: 'TV-007-DEN', customer: 'FastFood Group', location: 'Denver, CO', type: 'Samsung Tizen', status: 'Online', storage: '7.8 GB / 16 GB', uptime: '98.9%', daysAgo: 20, lat: 39.7392, lng: -104.9903 },
-    { device: 'Waiting Room', model: 'TV-008-PHX', customer: 'Medical Center', location: 'Phoenix, AZ', type: 'LG webOS', status: 'Syncing', storage: '5.3 GB / 32 GB', uptime: '99.5%', daysAgo: 28, lat: 33.4484, lng: -112.0740 },
-
-    // Last 1 year devices (31-364 days ago)
-    { device: 'Retail Display', model: 'TV-009-ATL', customer: 'Shopping Mall', location: 'Atlanta, GA', type: 'Android TV', status: 'Online', storage: '9.2 GB / 16 GB', uptime: '96.7%', daysAgo: 45, lat: 33.7490, lng: -84.3880 },
-    { device: 'Office Screen', model: 'TV-010-DAL', customer: 'Corporate HQ', location: 'Dallas, TX', type: 'Fire TV', status: 'Online', storage: '5.8 GB / 16 GB', uptime: '98.2%', daysAgo: 90, lat: 32.7767, lng: -96.7970 },
-    { device: 'Hotel Lobby', model: 'TV-011-LAS', customer: 'Hotel Chain', location: 'Las Vegas, NV', type: 'Samsung Tizen', status: 'Online', storage: '11.4 GB / 16 GB', uptime: '97.5%', daysAgo: 180, lat: 36.1699, lng: -115.1398 },
-    { device: 'Store Front', model: 'TV-012-POR', customer: 'Electronics Store', location: 'Portland, OR', type: 'LG webOS', status: 'Offline', storage: '6.9 GB / 32 GB', uptime: '94.8%', daysAgo: 300, lat: 45.5152, lng: -122.6784 },
-  ];
-
-  const now = new Date();
-  return devices.map((device, index) => {
-    const lastSyncDate = new Date(now.getTime() - device.daysAgo * 24 * 60 * 60 * 1000);
-
-    let lastSync;
-    if (device.status === 'Syncing') {
-      lastSync = 'Syncing now';
-    } else if (device.daysAgo < 1) {
-      const minutesAgo = Math.floor(device.daysAgo * 24 * 60);
-      if (minutesAgo < 60) {
-        lastSync = `${minutesAgo} minutes ago`;
-      } else {
-        const hours = Math.floor(minutesAgo / 60);
-        lastSync = `${hours} hours ago`;
-      }
-    } else if (device.daysAgo < 7) {
-      lastSync = `${Math.floor(device.daysAgo)} days ago`;
-    } else if (device.daysAgo < 30) {
-      const weeks = Math.floor(device.daysAgo / 7);
-      lastSync = `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-    } else {
-      const months = Math.floor(device.daysAgo / 30);
-      lastSync = `${months} ${months === 1 ? 'month' : 'months'} ago`;
-    }
-
-    return {
-      id: index + 1,
-      ...device,
-      lastSyncDate,
-      lastSync,
-    };
-  });
-};
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 // Reusable Dropdown Component
 type DropdownProps = {
@@ -160,7 +105,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle, icon: Icon,
 
 // Action Menu Component
 type Device = {
-  id: number;
+  id: string;
   device: string;
   model: string;
   customer: string;
@@ -172,6 +117,7 @@ type Device = {
   daysAgo: number;
   lastSyncDate?: Date;
   lastSync?: string;
+  last_Sync?: string | null;
   lat: number;
   lng: number;
 };
@@ -187,9 +133,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ device, onAction, isLastRows, i
   const [isOpen, setIsOpen] = useState(false);
 
   const actions = [
-    { label: 'View Details', icon: Monitor, color: 'text-blue-600 dark:text-blue-400' },
-    { label: 'Edit', icon: Edit, color: 'text-gray-600 dark:text-gray-400' },
-    { label: 'Suspend Account', icon: UserCheck, color: 'text-orange-600 dark:text-orange-400' },
+    // { label: 'View Details', icon: Monitor, color: 'text-blue-600 dark:text-blue-400' },
     { label: 'Delete Client', icon: Trash2, color: 'text-red-600 dark:text-red-400' },
   ];
 
@@ -238,9 +182,121 @@ export default function GlobalDevices() {
   const [modalContent, setModalContent] = useState<{ title: string; device: Device | null; action: string }>({ title: '', device: null, action: '' });
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; label: string; device: Device | null }>({ lat: 0, lng: 0, label: '', device: null });
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
 
-  // All devices data
-  const allDevices = useMemo(() => generateDevicesData(), []);
+  const periodMap: Record<string, string> = {
+    'Last 1 day': '1day',
+    'Last 7 days': '7days',
+    'Last 30 days': '30days',
+    'Last 1 year': '1year',
+  };
+
+  const [exportGlobalDevices] = useLazyExportGlobalDevicesQuery();
+  const [deleteDevice] = useDeleteDeviceMutation();
+
+  const downloadPDF = async (data: any[]) => {
+    const doc = new jsPDF();
+    const tableColumn = ['Name', 'Serial', 'Customer', 'Owner', 'Type', 'Status', 'Active Program', 'Storage Used', 'Last Seen', 'Uptime', 'Created At'];
+    const tableRows = data.map(device => [
+      device.name || 'N/A',
+      device.serial || 'N/A',
+      device.customer || 'N/A',
+      device.owner || 'N/A',
+      device.type || 'N/A',
+      device.status || 'N/A',
+      device.activeProgram || 'N/A',
+      device.storageUsed || 'N/A',
+      device.lastSeen ? new Date(device.lastSeen).toLocaleString() : 'N/A',
+      device.uptime || 'N/A',
+      device.createdAt ? new Date(device.createdAt).toLocaleString() : 'N/A',
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+    doc.text('Global Devices Report', 14, 15);
+    doc.save('devices_report.pdf');
+  };
+
+  const downloadExcel = (data: any[]) => {
+    const worksheet = XLSX.utils.json_to_sheet(data.map(device => ({
+      Name: device.name || 'N/A',
+      Serial: device.serial || 'N/A',
+      Customer: device.customer || 'N/A',
+      Owner: device.owner || 'N/A',
+      Type: device.type || 'N/A',
+      Status: device.status || 'N/A',
+      'Active Program': device.activeProgram || 'N/A',
+      'Storage Used': device.storageUsed || 'N/A',
+      'Last Seen': device.lastSeen ? new Date(device.lastSeen).toLocaleString() : 'N/A',
+      Uptime: device.uptime || 'N/A',
+      'Created At': device.createdAt ? new Date(device.createdAt).toLocaleString() : 'N/A',
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Devices');
+    XLSX.writeFile(workbook, 'devices_report.xlsx');
+  };
+
+  const handleExport = async (format: 'pdf' | 'excel') => {
+    try {
+      const result = await exportGlobalDevices({
+        page: currentPage,
+        limit: itemsPerPage,
+        search: searchQuery || undefined,
+        status: statusFilter !== 'All Status' ? statusFilter : undefined,
+        type: typeFilter !== 'All Types' ? typeFilter : undefined,
+        period: periodMap[timeRange] ?? 'all',
+      }).unwrap();
+      if (format === 'pdf') {
+        downloadPDF(result.data);
+      } else {
+        downloadExcel(result.data);
+      }
+      setExportDropdownOpen(false);
+    } catch (error) {
+      console.error('Failed to export devices:', error);
+    }
+  };
+
+  const { data: deviceDetails, isLoading: isLoadingDetails } = useGetDeviceDetailsQuery(
+    { id: modalContent.device?.id },
+    { skip: !modalOpen || modalContent.action !== 'View Details' || !modalContent.device?.id }
+  );
+
+  const { data, isLoading, isError, refetch } = useGetGlobalDevicesQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchQuery || undefined,
+    status: statusFilter !== 'All Status' ? statusFilter : undefined,
+    type: typeFilter !== 'All Types' ? typeFilter : undefined,
+    period: periodMap[timeRange] ?? 'all',
+  });
+
+  const allDevices: Device[] = useMemo(() => {
+    const apiDevices = data?.data?.devices ?? [];
+    return apiDevices.map((device: any, index: number) => {
+      const daysAgo = device.lastSeen ? Math.max(0, Math.round((Date.now() - new Date(device.lastSeen).getTime()) / (1000 * 60 * 60 * 24))) : 365;
+      const uptime = data?.data?.stats?.avgUptime ?? 'N/A';
+      return {
+        id: device.id,
+        device: device.name ?? 'N/A',
+        model: device.model ?? 'N/A',
+        customer: device.user?.full_name ?? 'N/A',
+        location: device.location ?? 'N/A',
+        type: device.deviceType ?? 'N/A',
+        status: device.status ?? 'Offline',
+        storage: device.storage ? String(device.storage) : 'N/A',
+        uptime,
+        daysAgo,
+        lastSync: device.last_Sync ? new Date(device.last_Sync).toLocaleString() : 'N/A',
+        last_Sync: device.last_Sync,
+        lat: device.location ? 23.8103 : 0,
+        lng: device.location ? 90.4125 : 0,
+      } as Device;
+    });
+  }, [data]);
 
   // Get days from time range
   type TimeRange = 'Last 1 day' | 'Last 7 days' | 'Last 30 days' | 'Last 1 year';
@@ -257,7 +313,7 @@ export default function GlobalDevices() {
       'Last 1 day': 1,
       'Last 7 days': 7,
       'Last 30 days': 30,
-      'Last 1 year': 365
+      'Last 1 year': 365,
     };
     return rangeMap[(range as TimeRange)] ?? 30;
   };
@@ -265,33 +321,26 @@ export default function GlobalDevices() {
   // Filter devices by time range
   const devicesInRange = useMemo(() => {
     const days = getDaysFromRange(timeRange);
-    return allDevices.filter(device => device.daysAgo <= days);
+    return allDevices.filter((device: Device) => device.daysAgo <= days);
   }, [allDevices, timeRange]);
 
   // Calculate stats based on filtered devices
   const stats = useMemo(() => {
     const total = devicesInRange.length;
-    const online = devicesInRange.filter(d => d.status === 'Online').length;
-    const offline = devicesInRange.filter(d => d.status === 'Offline').length;
-    const uptimes = devicesInRange.map(d => parseFloat(d.uptime.replace('%', '')));
-    const avgUptime = uptimes.length > 0
-      ? (uptimes.reduce((a, b) => a + b, 0) / uptimes.length).toFixed(1) + '%'
-      : '0%';
-
-    // Calculate trend (comparing to previous period)
+    const online = devicesInRange.filter((d: Device) => d.status === 'Online' || d.status === 'ONLINE').length;
+    const offline = devicesInRange.filter((d: Device) => d.status === 'Offline' || d.status === 'OFFLINE').length;
+    const uptimes = devicesInRange.map((d: Device) => parseFloat(String(d.uptime).replace('%', '')) || 0);
+    const avgUptime = uptimes.length > 0 ? (uptimes.reduce((a: number, b: number) => a + b, 0) / uptimes.length).toFixed(1) + '%' : '0%';
     const previousDays = getDaysFromRange(timeRange);
-    const previousDevices = allDevices.filter(d =>
-      d.daysAgo > previousDays && d.daysAgo <= previousDays * 2
-    );
+    const previousDevices = allDevices.filter((d: Device) => d.daysAgo > previousDays && d.daysAgo <= previousDays * 2);
     const trend = total - previousDevices.length;
     const trendText = trend > 0 ? `+${trend} from last period` : trend < 0 ? `${trend} from last period` : 'No change';
-
     return { total, online, offline, avgUptime, trendText };
   }, [devicesInRange, allDevices, timeRange]);
 
   // Filter devices by search and filters
   const filteredDevices = useMemo(() => {
-    return devicesInRange.filter(device => {
+    return devicesInRange.filter((device: Device) => {
       const matchesSearch =
         device.device.toLowerCase().includes(searchQuery.toLowerCase()) ||
         device.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -350,63 +399,24 @@ export default function GlobalDevices() {
     switch (modalContent.action) {
       case 'View Details':
         return (
-          <>
-            <PreviewDeviceModal isOpen={modalOpen} device={modalContent.device as any} onClose={() => setModalOpen(false)} />
-          </>
-        );
-
-      case 'Edit':
-        return (
           <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Device Name"
-              defaultValue={modalContent.device.device}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-            <input
-              type="text"
-              placeholder="Location"
-              defaultValue={modalContent.device.location}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        );
-
-      case 'Suspend Account':
-        return (
-          <div className="space-y-4">
-            <p className="text-gray-600 dark:text-gray-300">
-              Are you sure you want to suspend {modalContent.device.device}? The device will be temporarily disabled.
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
-              >
-                Suspend
-              </button>
-            </div>
+            {isLoadingDetails ? (
+              <div className="text-center py-4">Loading device details...</div>
+            ) : deviceDetails ? (
+              <div className="space-y-2">
+                <div><strong>Name:</strong> {deviceDetails.data?.name || 'N/A'}</div>
+                <div><strong>Model:</strong> {deviceDetails.data?.model || 'N/A'}</div>
+                <div><strong>Type:</strong> {deviceDetails.data?.deviceType || 'N/A'}</div>
+                <div><strong>Status:</strong> {deviceDetails.data?.status || 'N/A'}</div>
+                <div><strong>Location:</strong> {deviceDetails.data?.location || 'N/A'}</div>
+                <div><strong>IP:</strong> {deviceDetails.data?.ip || 'N/A'}</div>
+                <div><strong>Last Seen:</strong> {deviceDetails.data?.lastSeen ? new Date(deviceDetails.data.lastSeen).toLocaleString() : 'N/A'}</div>
+                <div><strong>Storage:</strong> {deviceDetails.data?.storage || 'N/A'}</div>
+                <div><strong>User:</strong> {deviceDetails.data?.user?.full_name || 'N/A'}</div>
+              </div>
+            ) : (
+              <div className="text-center py-4">No details available</div>
+            )}
           </div>
         );
 
@@ -424,7 +434,18 @@ export default function GlobalDevices() {
                 Cancel
               </button>
               <button
-                onClick={() => setModalOpen(false)}
+                onClick={async () => {
+                  if (modalContent.device) {
+                    try {
+                      await deleteDevice({ id: modalContent.device.id }).unwrap();
+                      refetch(); // Refetch the data after deletion
+                      setModalOpen(false);
+                    } catch (error) {
+                      console.error('Failed to delete device:', error);
+                      // Optionally show an error message
+                    }
+                  }
+                }}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
                 Delete
@@ -456,16 +477,40 @@ export default function GlobalDevices() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Global Devices</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">Monitor and manage all connected devices across customers</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-nowrap gap-2">
             <Dropdown
               value={timeRange}
               options={['Last 1 day', 'Last 7 days', 'Last 30 days', 'Last 1 year']}
               onChange={setTimeRange}
             />
-            <button className=" cursor-pointer flex items-center gap-2 px-4 py-2 bg-bgBlue text-white rounded-lg hover:bg-blue-500 transition-colors text-sm">
-              <Download className="w-4 h-4" />
-              Export Financial Report
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
+                className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-bgBlue text-white rounded-lg hover:bg-blue-500 transition-colors text-sm"
+              >
+                <Download className="w-4 h-4" />
+                Export Devices
+              </button>
+              {exportDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setExportDropdownOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-32 bg-navbarBg border border-border rounded-lg shadow-lg z-20">
+                    <button
+                      onClick={() => handleExport('pdf')}
+                      className="w-full cursor-pointer text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 first:rounded-t-lg"
+                    >
+                      PDF
+                    </button>
+                    <button
+                      onClick={() => handleExport('excel')}
+                      className="w-full cursor-pointer text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 last:rounded-b-lg"
+                    >
+                      Excel
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -525,76 +570,157 @@ export default function GlobalDevices() {
             </div>
           </div>
 
-
-
-          {/* Table */}
+          {/* Responsive Table/Card View */}
           <div className="overflow-x-auto scrollbar-hide">
-            <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Device</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Customer</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Location</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Storage</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Sync</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Uptime</th>
-                  <th className="px-6 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {paginatedDevices.length > 0 ? (
-                  paginatedDevices.map((device, index) => {
-                    const isLastRows = index >= paginatedDevices.length - 2;
-                    const isFirstRows = index < 2;
-                    return (
-                      <tr key={device.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <td className="px-6 py-4">
+            {/* Desktop Table View */}
+            <div className="hidden lg:block">
+              <table className="w-full">
+                <thead className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Device</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Customer</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Location</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Storage</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Last Sync</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Uptime</th>
+                    <th className="px-6 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {paginatedDevices.length > 0 ? (
+                    paginatedDevices.map((device, index) => {
+                      const isLastRows = index >= paginatedDevices.length - 2;
+                      const isFirstRows = index < 2;
+                      return (
+                        <tr key={device.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{device.device}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{device.model}</div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.customer}</td>
+                          <td className="px-6 py-4 text-sm">
+                            <button
+                              onClick={() => {
+                                setSelectedLocation({ lat: device.lat, lng: device.lng, label: device.location, device: device });
+                                setMapModalOpen(true);
+                              }}
+                              className="text-bgBlue hover:underline cursor-pointer transition-all"
+                            >
+                              {device.location}
+                            </button>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.type}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(device.status)}`}>
+                              {device.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.storage}</td>
+                          <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{device.lastSync}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                              <span className="text-sm text-gray-900 dark:text-white">{device.uptime}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <ActionMenu device={device} onAction={handleAction} isLastRows={isLastRows} isFirstRows={isFirstRows} />
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={9} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                        No devices found for the selected time range and filters.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="lg:hidden space-y-4 p-4">
+              {paginatedDevices.length > 0 ? (
+                paginatedDevices.map((device, index) => {
+                  const isLastRows = index >= paginatedDevices.length - 2;
+                  const isFirstRows = index < 2;
+                  return (
+                    <div key={device.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+                      {/* Header */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
                           <div className="text-sm font-medium text-gray-900 dark:text-white">{device.device}</div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">{device.model}</div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.customer}</td>
-                        <td className="px-6 py-4 text-sm">
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(device.status)}`}>
+                            {device.status}
+                          </span>
+                          <ActionMenu device={device} onAction={handleAction} isLastRows={isLastRows} isFirstRows={isFirstRows} />
+                        </div>
+                      </div>
+
+                      {/* Customer Info */}
+                      <div className="flex items-center justify-between text-sm">
+                        <div>
+                          <span className="text-gray-500 dark:text-gray-400">Customer:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">{device.customer}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 dark:text-gray-400">Type:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">{device.type}</span>
+                        </div>
+                      </div>
+
+                      {/* Location */}
+                      {device.location && device.location !== 'N/A' && (
+                        <div className="text-sm">
+                          <span className="text-gray-500 dark:text-gray-400">Location:</span>
                           <button
                             onClick={() => {
                               setSelectedLocation({ lat: device.lat, lng: device.lng, label: device.location, device: device });
                               setMapModalOpen(true);
                             }}
-                            className="text-bgBlue hover:underline cursor-pointer transition-all"
+                            className="ml-2 text-bgBlue hover:underline cursor-pointer transition-all"
                           >
                             {device.location}
                           </button>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.type}</td>
-                        <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(device.status)}`}>
-                            {device.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.storage}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{device.lastSync}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span className="text-sm text-gray-900 dark:text-white">{device.uptime}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <ActionMenu device={device} onAction={handleAction} isLastRows={isLastRows} isFirstRows={isFirstRows} />
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={9} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                      No devices found for the selected time range and filters.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                        </div>
+                      )}
+
+                      {/* Storage and Last Sync */}
+                      <div className="flex items-center justify-between text-sm">
+                        <div>
+                          <span className="text-gray-500 dark:text-gray-400">Storage:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">{device.storage}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 dark:text-gray-400">Last Sync:</span>
+                          <span className="ml-2 text-gray-600 dark:text-gray-400">{device.lastSync}</span>
+                        </div>
+                      </div>
+
+                      {/* Uptime */}
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-gray-500 dark:text-gray-400">Uptime:</span>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          <span className="text-gray-900 dark:text-white">{device.uptime}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No devices found for the selected time range and filters.
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Pagination */}
