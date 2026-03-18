@@ -46,6 +46,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onNext }) => {
         }
     };
 
+    const handleGoogleLogin = () => {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        window.location.href = `${baseUrl}/otp/google`;
+    };
+
     return (
         <div className="w-full space-y-8">
             <div className="space-y-2">
@@ -85,6 +90,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onNext }) => {
 
                 <button
                     type="button"
+                    onClick={handleGoogleLogin}
                     className="w-full h-12 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors shadow-customShadow cursor-pointer"
                 >
                     <Image
