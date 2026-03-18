@@ -36,7 +36,8 @@ const SignInEmailStep: React.FC<SignInEmailStepProps> = ({ onNext }) => {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = "https://lawaltwo.sakibalhasa.xyz/api/v1/otp/google";
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        window.location.href = `${baseUrl}/otp/google`;
     };
 
     return (
