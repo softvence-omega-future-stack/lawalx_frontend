@@ -240,7 +240,11 @@ const MyContent = () => {
           <CommonLoader size={48} text="Loading content..." />
         </div>
       ) : filteredContent.length === 0 ? (
-        <EmptyState contentFilter={contentFilter} searchQuery={searchQuery} />
+        <EmptyState
+          contentFilter={contentFilter}
+          searchQuery={searchQuery}
+          onUploadClick={() => setIsUploadModalOpen(true)}
+        />
       ) : (
         <div className={`flex flex-col ${viewMode === "list" ? "bg-navbarBg rounded-xl border border-border overflow-hidden" : ""} min-h-[600px] md:min-h-[750px]`}>
           <div className="flex-1 overflow-x-auto">
