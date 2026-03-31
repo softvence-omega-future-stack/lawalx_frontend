@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 
-export type OnboardingStep = "add-device" | "upload" | "program" | "schedule" | null;
+export type OnboardingStep = "add-device" | "upload" | "program" | null;
 
 export function useNavbarActions() {
     const [isAddDeviceOpen, setIsAddDeviceOpen] = useState(false);
     const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
-    const [isCreateScheduleOpen, setIsCreateScheduleOpen] = useState(false);
+    // const [isCreateScheduleOpen, setIsCreateScheduleOpen] = useState(false);
     const [isCreateProgramOpen, setIsCreateProgramOpen] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [onboardingStep, setOnboardingStep] = useState<OnboardingStep>(null);
@@ -28,9 +28,6 @@ export function useNavbarActions() {
             setOnboardingStep("program");
             setIsCreateProgramOpen(true);
         } else if (step === "program") {
-            setOnboardingStep("schedule");
-            setIsCreateScheduleOpen(true);
-        } else if (step === "schedule") {
             setOnboardingStep(null);
             localStorage.removeItem("is_new_user");
         }
@@ -45,8 +42,8 @@ export function useNavbarActions() {
         setIsAddDeviceOpen,
         isCreateFolderOpen,
         setIsCreateFolderOpen,
-        isCreateScheduleOpen,
-        setIsCreateScheduleOpen,
+        // isCreateScheduleOpen,
+        // setIsCreateScheduleOpen,
         isCreateProgramOpen,
         setIsCreateProgramOpen,
         isUploadModalOpen,

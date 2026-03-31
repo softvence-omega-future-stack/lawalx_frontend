@@ -94,7 +94,12 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
     const handleBack = () => {
         if (showLowerThird) {
             setShowLowerThird(false);
+            setStep2Data({ contentType: "all", selectedContent: null });
         } else if (currentStep > 1) {
+            // If going back to Step 2, reset contentType to 'all' and clear selectedContent
+            if (currentStep - 1 === 2) {
+                setStep2Data({ contentType: "all", selectedContent: null });
+            }
             setCurrentStep(currentStep - 1);
         }
     };
