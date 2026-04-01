@@ -94,7 +94,12 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
     const handleBack = () => {
         if (showLowerThird) {
             setShowLowerThird(false);
+            setStep2Data({ contentType: "all", selectedContent: null });
         } else if (currentStep > 1) {
+            // If going back to Step 2, reset contentType to 'all' and clear selectedContent
+            if (currentStep - 1 === 2) {
+                setStep2Data({ contentType: "all", selectedContent: null });
+            }
             setCurrentStep(currentStep - 1);
         }
     };
@@ -276,8 +281,6 @@ const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({ open, setOp
                         </div>
                     </div>
                 </div>
-
-
                 {/* Footer - Sticky at bottom */}
                 <div className="p-6 border-t border-border flex items-center justify-between bg-navbarBg/80 backdrop-blur-md">
                     <button

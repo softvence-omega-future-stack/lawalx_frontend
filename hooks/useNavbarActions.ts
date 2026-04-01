@@ -28,11 +28,10 @@ export function useNavbarActions() {
             setOnboardingStep("program");
             setIsCreateProgramOpen(true);
         } else if (step === "program") {
-            setOnboardingStep("schedule");
-            setIsCreateScheduleOpen(true);
-        } else if (step === "schedule") {
             setOnboardingStep(null);
             localStorage.removeItem("is_new_user");
+        } else if (step === "schedule") {
+            setOnboardingStep(null);
         }
     };
 

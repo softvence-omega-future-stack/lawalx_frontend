@@ -1,5 +1,5 @@
 import React from "react";
-import { Video, Clock, Play, Edit2, Trash2 } from "lucide-react";
+import { Video, Clock, Play, Trash2, PenLine } from "lucide-react";
 import Link from "next/link";
 import { Schedule } from "@/redux/api/users/schedules/schedules.type";
 import { cn } from "@/lib/utils";
@@ -126,7 +126,7 @@ const SchedulesTable: React.FC<SchedulesTableProps> = ({
                                             <Play className="w-5 h-5" />
                                         </button>
                                         <Link href={`/schedules/${schedule.id}`} className="p-2 text-muted hover:text-bgBlue hover:bg-blue-50 rounded-lg transition-colors cursor-pointer">
-                                            <Edit2 className="w-5 h-5" />
+                                            <PenLine className="w-5 h-5" />
                                         </Link>
                                         <button
                                             onClick={() => handleDeleteClick(schedule)}

@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Search, Image as ImageIcon, Video, AudioLines, FilePlay, ArrowRight, Play, Loader2, GalleryThumbnails } from "lucide-react";
+import { Search, Image as ImageIcon, AudioLines, FilePlay, ArrowRight, Play, Loader2, GalleryThumbnails } from "lucide-react";
 import NextImage from "next/image";
 import BaseSelect from "@/common/BaseSelect";
 import { Input } from "@/components/ui/input";
