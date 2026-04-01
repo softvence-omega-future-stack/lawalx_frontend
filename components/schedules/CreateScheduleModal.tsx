@@ -239,7 +239,7 @@ export default function ScheduleModal({
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder="e.g. Morning Welcome"
-                  className="w-full px-4 py-3 border border-borderGray dark:border-gray-600 bg-white dark:bg-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border border-border bg-white dark:bg-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-bgBlue text-gray-900 dark:text-white"
                 />
               </div>
               <div>
@@ -344,6 +344,7 @@ export default function ScheduleModal({
                       />
                       <span className="font-medium text-gray-900 dark:text-white">{screen.name}</span>
                     </div>
+                  
                     <span className={`text-xs px-3 py-1 rounded-full font-medium ${screen.status === "online"
                       ? "bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
                       : "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"

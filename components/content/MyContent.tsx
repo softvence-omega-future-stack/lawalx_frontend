@@ -282,7 +282,7 @@ const MyContent = () => {
       />
 
       {/* Full Page Loader Overlay - Lower z-index to stay BEHIND the modal but cover the content */}
-      {(isPageLoading || isFetching) && (
+      {isPageLoading && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/30 backdrop-blur-[2px]">
           <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 border border-gray-200 dark:border-gray-700">
             <CommonLoader size={56} text="Uploading files..." />
