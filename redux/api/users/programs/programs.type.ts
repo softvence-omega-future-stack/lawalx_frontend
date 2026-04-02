@@ -48,7 +48,7 @@ export interface Program {
   name: string;
   description: string;
   serene_size: string;
-  status: "DRAFT" | "PUBLISH";
+  status: WorkoutStatus;
   userId: string;
   created_at: string;
   updated_at: string;
@@ -84,7 +84,7 @@ export interface ProgramFile {
   filePath: string;
   fileType: string;
   url: string;
-  type: "VIDEO" | "IMAGE" | "AUDIO";
+  type: "VIDEO" | "IMAGE" | "AUDIO" | "CONTENT" | "FILE";
   duration: number;
 }
 
