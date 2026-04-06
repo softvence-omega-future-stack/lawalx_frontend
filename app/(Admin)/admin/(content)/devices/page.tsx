@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Monitor, Wifi, WifiOff, Clock, Search, Download, ChevronDown, MoreVertical, X, Trash2, Edit, UserCheck, ChevronRight, HomeIcon } from 'lucide-react';
+import { Monitor, Wifi, WifiOff, Clock, Search, Download, ChevronDown, MoreVertical, X, Trash2, Edit, UserCheck, ChevronRight, HomeIcon, ArrowUpRight } from 'lucide-react';
 import GoogleMapModal from '@/components/shared/modals/GoogleMapModal';
 import ReverseGeocode from '@/components/shared/ReverseGeocode';
-import { useDeleteDeviceMutation, useGetDeviceDetailsQuery, useGetGlobalDevicesQuery, useLazyExportGlobalDevicesQuery } from '@/redux/api/admin/globalDevicesApi';
+import { useDeleteDeviceMutation, useGetGlobalDeviceDetailsQuery, useGetGlobalDevicesQuery, useLazyExportGlobalDevicesQuery } from '@/redux/api/admin/globalDevicesApi';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
@@ -134,7 +135,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ device, onAction, isLastRows, i
   const [isOpen, setIsOpen] = useState(false);
 
   const actions = [
-    // { label: 'View Details', icon: Monitor, color: 'text-blue-600 dark:text-blue-400' },
+    { label: 'View Details', icon: ArrowUpRight, color: 'text-blue-600 dark:text-blue-400' },
     { label: 'Delete Device', icon: Trash2, color: 'text-red-600 dark:text-red-400' },
   ];
 
@@ -173,6 +174,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ device, onAction, isLastRows, i
 };
 
 export default function GlobalDevices() {
+  const router = useRouter();
   const [timeRange, setTimeRange] = useState('Last 30 days');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [typeFilter, setTypeFilter] = useState('All Types');
@@ -261,10 +263,7 @@ export default function GlobalDevices() {
     }
   };
 
-  const { data: deviceDetails, isLoading: isLoadingDetails } = useGetDeviceDetailsQuery(
-    { id: modalContent.device?.id },
-    { skip: !modalOpen || modalContent.action !== 'View Details' || !modalContent.device?.id }
-  );
+  // Removed useGetGlobalDeviceDetailsQuery from here as we navigate to a new page
 
   const { data, isLoading, isError, refetch } = useGetGlobalDevicesQuery({
     page: currentPage,
@@ -329,6 +328,16 @@ export default function GlobalDevices() {
 
   // Calculate stats based on filtered devices
   const stats = useMemo(() => {
+    if (data?.data?.stats) {
+      const s = data.data.stats;
+      return {
+        total: s.totalDevices,
+        online: s.onlineDevices,
+        offline: s.offlineDevices,
+        avgUptime: s.avgUptime,
+        trendText: `${s.onlinePercentage}% Online`
+      };
+    }
     const total = devicesInRange.length;
     const online = devicesInRange.filter((d: Device) => d.status === 'Online' || d.status === 'ONLINE').length;
     const offline = devicesInRange.filter((d: Device) => d.status === 'Offline' || d.status === 'OFFLINE').length;
@@ -339,7 +348,7 @@ export default function GlobalDevices() {
     const trend = total - previousDevices.length;
     const trendText = trend > 0 ? `+${trend} from last period` : trend < 0 ? `${trend} from last period` : 'No change';
     return { total, online, offline, avgUptime, trendText };
-  }, [devicesInRange, allDevices, timeRange]);
+  }, [devicesInRange, allDevices, timeRange, data]);
 
   // Filter devices by search and filters
   const filteredDevices = useMemo(() => {
@@ -375,6 +384,10 @@ export default function GlobalDevices() {
   }
 
   const handleAction = (action: string, device: Device): void => {
+    if (action === 'View Details') {
+      router.push(`/admin/devices/${device.id}`);
+      return;
+    }
     const content: ModalContent = { title: action, device, action };
     setModalContent(content);
     setModalOpen(true);
@@ -404,32 +417,6 @@ export default function GlobalDevices() {
     if (!modalContent.device) return null;
 
     switch (modalContent.action) {
-      case 'View Details':
-        return (
-          <div className="space-y-4">
-            {isLoadingDetails ? (
-              <div className="text-center py-4">Loading device details...</div>
-            ) : deviceDetails ? (
-              <div className="space-y-2">
-                <div><strong>Name:</strong> {deviceDetails.data?.name || 'N/A'}</div>
-                <div><strong>Model:</strong> {deviceDetails.data?.model || 'N/A'}</div>
-                <div><strong>Type:</strong> {deviceDetails.data?.deviceType || 'N/A'}</div>
-                <div><strong>Status:</strong> {deviceDetails.data?.status || 'N/A'}</div>
-                <div><strong>Location:</strong> {
-                  typeof deviceDetails.data?.location === 'object' && deviceDetails.data?.location !== null 
-                    ? `${deviceDetails.data.location.lat}, ${deviceDetails.data.location.lng}` 
-                    : (deviceDetails.data?.location || 'N/A')
-                }</div>
-                <div><strong>IP:</strong> {deviceDetails.data?.ip || 'N/A'}</div>
-                <div><strong>Last Seen:</strong> {deviceDetails.data?.lastSeen ? new Date(deviceDetails.data.lastSeen).toLocaleString() : 'N/A'}</div>
-                <div><strong>Storage:</strong> {deviceDetails.data?.storage || 'N/A'}</div>
-                <div><strong>User:</strong> {deviceDetails.data?.user?.full_name || 'N/A'}</div>
-              </div>
-            ) : (
-              <div className="text-center py-4">No details available</div>
-            )}
-          </div>
-        );
 
       case 'Delete Client':
         return (
