@@ -70,7 +70,7 @@ const Step2ContentSelection: React.FC<Step2Props> = ({ data, onChange, onContent
         { label: "Select Content Type", value: "all", icon: <FilePlay className="w-5 h-5 text-body" /> },
         { label: "Image or Video", value: "image-video", icon: <FilePlay className="w-5 h-5 text-body" /> },
         { label: "Audio", value: "audio", icon: <AudioLines className="w-5 h-5 text-body" /> },
-        { label: "Lower Third", value: "lower-third", icon: <GalleryThumbnails className="w-5 h-5 text-body" /> }
+        { label: "Text", value: "lower-third", icon: <GalleryThumbnails className="w-5 h-5 text-body" /> }
     ];
 
     // Filter content based on selected type and search query

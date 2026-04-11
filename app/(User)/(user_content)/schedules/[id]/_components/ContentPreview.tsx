@@ -68,37 +68,6 @@ const ContentPreview: React.FC<ContentPreviewProps> = ({
       </h2>
 
       <div className="bg-navbarBg border border-border rounded-xl overflow-hidden shadow-lg transition-shadow hover:shadow-xl flex flex-col">
-        {/* TOP TICKER */}
-        {lowerThird && lowerThird.text && lowerThird.position === "Top" && (
-          <div 
-            className="py-2.5 overflow-hidden"
-            style={{
-              backgroundColor: `${lowerThird.backgroundColor}${Math.round(
-                parseInt(lowerThird.backgroundOpacity || "80") * 2.55
-              ).toString(16).padStart(2, '0')}`
-            }}
-          >
-            <Marquee
-              speed={lowerThird.speed || 40}
-              direction={lowerThird.animation === "Left_to_Light" ? "left" : "right"}
-              gradient={false}
-              loop={lowerThird.loop ? 0 : 1}
-            >
-              <p
-                className="font-semibold px-4"
-                style={{
-                  color: lowerThird.textColor,
-                  fontSize: lowerThird.fontSize === "Small" ? "14px" : 
-                            lowerThird.fontSize === "Medium" ? "16px" : "20px",
-                  fontFamily: lowerThird.font || "inherit",
-                }}
-              >
-                {lowerThird.text}
-              </p>
-            </Marquee>
-          </div>
-        )}
-
         {/* MEDIA CONTAINER (Fixed Aspect Ratio) */}
         <div className="p-4 relative aspect-video overflow-hidden">
           <div className="w-full h-full flex flex-col overflow-hidden bg-black rounded-lg">
