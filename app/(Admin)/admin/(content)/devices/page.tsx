@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { DeviceLocation } from "@/app/(user)/(user_content)/devices/page"
 
 // Reusable Dropdown Component
 type DropdownProps = {
@@ -283,7 +284,7 @@ export default function GlobalDevices() {
     return apiDevices.map((device: any, index: number) => {
       const daysAgo = device.lastSeen ? Math.max(0, Math.round((Date.now() - new Date(device.lastSeen).getTime()) / (1000 * 60 * 60 * 24))) : 365;
       const uptime = data?.data?.stats?.avgUptime ?? 'N/A';
-      
+
       // Improved Location Parsing
       let lat = 0;
       let lng = 0;
@@ -624,8 +625,8 @@ export default function GlobalDevices() {
                       const isLastRows = index >= paginatedDevices.length - 2;
                       const isFirstRows = index < 2;
                       return (
-                        <tr 
-                          key={device.id} 
+                        <tr
+                          key={device.id}
                           onClick={() => router.push(`/admin/devices/${device.id}`)}
                           className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
                         >
@@ -643,7 +644,7 @@ export default function GlobalDevices() {
                               }}
                               className="text-bgBlue hover:underline cursor-pointer transition-all"
                             >
-                              <ReverseGeocode lat={device.lat} lng={device.lng} fallback={device.location} />
+                              <DeviceLocation lat={device.lat} lng={device.lng}/>
                             </button>
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">{device.type}</td>
@@ -684,8 +685,8 @@ export default function GlobalDevices() {
                   const isLastRows = index >= paginatedDevices.length - 2;
                   const isFirstRows = index < 2;
                   return (
-                    <div 
-                      key={device.id} 
+                    <div
+                      key={device.id}
                       onClick={() => router.push(`/admin/devices/${device.id}`)}
                       className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3 cursor-pointer hover:shadow-md transition-shadow"
                     >

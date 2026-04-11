@@ -39,7 +39,7 @@ type DeviceView = {
 // Simple cache for geocoding results to avoid redundant API calls
 const geocodeCache: { [key: string]: string } = {};
 
-const DeviceLocation = ({ lat, lng }: { lat: number; lng: number }) => {
+export const DeviceLocation = ({ lat, lng }: { lat: number; lng: number }) => {
   const [address, setAddress] = useState<string>(`Lat: ${lat.toFixed(2)}, Lng: ${lng.toFixed(2)}`);
 
   useEffect(() => {
@@ -53,17 +53,17 @@ const DeviceLocation = ({ lat, lng }: { lat: number; lng: number }) => {
       try {
         // Using Nominatim (OpenStreetMap) for free reverse geocoding
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`, 
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`,
           { headers: { 'User-Agent': 'Lawalx-Frontend/1.0' } }
         );
         const data = await response.json();
-        
+
         if (data.display_name) {
           const a = data.address;
           const city = a.city || a.town || a.village || a.suburb || a.county || '';
           const country = a.country || '';
           const formatted = city && country ? `${city}, ${country}` : data.display_name.split(',').slice(0, 2).join(',');
-          
+
           geocodeCache[cacheKey] = formatted;
           setAddress(formatted);
         }

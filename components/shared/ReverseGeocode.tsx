@@ -77,15 +77,6 @@ const ReverseGeocode: React.FC<ReverseGeocodeProps> = ({
     fetchAddress();
   }, [lat, lng, fallback, onAddressResolved]);
 
-  if (loading) {
-    return (
-      <span className="flex items-center gap-1.5 text-gray-400">
-        <div className="w-1.5 h-1.5 rounded-full bg-bgBlue animate-ping shrink-0" />
-        <span className="text-[10px] font-bold uppercase tracking-widest animate-pulse">Resolving...</span>
-      </span>
-    );
-  }
-
   return <span className="whitespace-nowrap">{address || fallback}</span>;
 };
 
