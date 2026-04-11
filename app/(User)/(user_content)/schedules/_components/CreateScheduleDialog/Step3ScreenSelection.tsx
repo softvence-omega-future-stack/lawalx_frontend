@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { Search, Monitor, Loader2, CheckCircle2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, Monitor, Loader2, CheckCircle2, WifiOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useGetAllProgramsDataQuery } from "@/redux/api/users/programs/programs.api";
-import { ProgramsResponse, Program } from "@/redux/api/users/programs/programs.type";
+import { useGetMyDevicesDataQuery } from "@/redux/api/users/devices/devices.api";
+import { DeviceListResponse, Device } from "@/redux/api/users/devices/devices.type";
 
 interface Step3Props {
     data: {
@@ -13,29 +13,34 @@ interface Step3Props {
     };
     onChange: (data: { selectedScreens: string[] }) => void;
 }
+import DeviceLocation from "@/components/common/DeviceLocation";
 
 const Step3ScreenSelection: React.FC<Step3Props> = ({ data, onChange }) => {
-    const { data: allPrograms, isLoading } = useGetAllProgramsDataQuery(undefined);
+    const { data: devicesData, isLoading } = useGetMyDevicesDataQuery();
     const [searchQuery, setSearchQuery] = useState("");
+    console.log("devicesData", devicesData);
 
-    const programs = (allPrograms as ProgramsResponse)?.data || [];
+    const devices = (devicesData as DeviceListResponse)?.data || [];
 
-    const filteredPrograms = programs.filter((program: Program) =>
-        program.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (program.description && program.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    const filteredDevices = devices.filter((device: Device) =>
+        device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        device.deviceSerial.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (device.location &&
+            (device.location.lat.toString().includes(searchQuery) ||
+                device.location.lng.toString().includes(searchQuery)))
     );
 
-    const toggleProgram = (programId: string) => {
-        const updatedPrograms = data.selectedScreens.includes(programId)
-            ? data.selectedScreens.filter(id => id !== programId)
-            : [...data.selectedScreens, programId];
+    const toggleDevice = (deviceId: string) => {
+        const updatedDevices = data.selectedScreens.includes(deviceId)
+            ? data.selectedScreens.filter(id => id !== deviceId)
+            : [...data.selectedScreens, deviceId];
 
-        onChange({ selectedScreens: updatedPrograms });
+        onChange({ selectedScreens: updatedDevices });
     };
 
     return (
         <div className="space-y-6">
-            {/* Select Program Field Label */}
+            {/* Select Device Field Label */}
             <div className="space-y-3">
                 <label className="block text-sm font-semibold text-headings">
                     Select Device
@@ -52,44 +57,78 @@ const Step3ScreenSelection: React.FC<Step3Props> = ({ data, onChange }) => {
                 </div>
             </div>
 
-            {/* Program List */}
+            {/* Device List */}
             <div className="max-h-[350px] overflow-y-auto space-y-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center py-12 text-muted">
                         <Loader2 className="w-8 h-8 animate-spin mb-2" />
                         <span>Loading devices...</span>
                     </div>
-                ) : filteredPrograms.length === 0 ? (
+                ) : filteredDevices.length === 0 ? (
                     <div className="text-center py-8 text-muted border border-dashed border-border rounded-lg">
                         No devices found
                     </div>
                 ) : (
-                    filteredPrograms.map((program: Program) => (
+                    filteredDevices.map((device: Device) => (
                         <div
-                            key={program.id}
-                            onClick={() => toggleProgram(program.id)}
-                            className={`flex items-center gap-3 p-4 rounded-lg border transition-all cursor-pointer group ${data.selectedScreens.includes(program.id)
+                            key={device.id}
+                            onClick={() => toggleDevice(device.id)}
+                            className={`flex items-center gap-3 p-4 rounded-lg border transition-all cursor-pointer group ${data.selectedScreens.includes(device.id)
                                 ? "border-bgBlue bg-blue-50 dark:bg-blue-950/20"
                                 : "border-borderGray bg-input hover:border-bgBlue"
                                 }`}
                         >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${data.selectedScreens.includes(program.id) ? "bg-bgBlue text-white" : "bg-gray-100 dark:bg-gray-800 text-muted"
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${data.selectedScreens.includes(device.id) ? "bg-bgBlue text-white" : "bg-gray-100 dark:bg-gray-800 text-muted"
                                 }`}>
                                 <Monitor className="w-5 h-5" />
                             </div>
 
                             <div className="flex-1 min-w-0">
-                                <Label htmlFor={program.id} className="font-medium text-headings cursor-pointer truncate block">
-                                    {program.name}
-                                </Label>
+                                <div className="flex items-center gap-2 mb-0.5">
+                                    <Label htmlFor={device.id} className="font-medium text-headings cursor-pointer truncate block">
+                                        {device.name}
+                                    </Label>
+                                    {device.status === "ONLINE" ? (
+                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#059669] text-xs font-semibold">
+                                            <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+                                            Online
+                                        </div>
+                                    ) : device.status === "OFFLINE" ? (
+                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626] text-xs font-semibold">
+                                            <WifiOff className="w-3.5 h-3.5" />
+                                            Offline
+                                        </div>
+                                    ) : device.status === "PAIRED" ? (
+                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
+                                            <span className="w-2 h-2 rounded-full bg-blue-500" />
+                                            Paired
+                                        </div>
+                                    ) : device.status === "WAITING" ? (
+                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-semibold">
+                                            <span className="w-2 h-2 rounded-full bg-orange-500" />
+                                            Waiting
+                                        </div>
+                                    ) : (
+                                        <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#F5F5F5] border border-[#E5E5E5] text-[#737373] text-xs font-semibold">
+                                            {device.status}
+                                        </div>
+                                    )}
+                                </div>
                                 <p className="text-sm text-muted truncate">
-                                    {program.devices && program.devices.length > 0 
-                                        ? `${program.devices[0].name}${program.devices[0].location ? ` - ${program.devices[0].location}` : ""}`
-                                        : program.serene_size || "Standard Resolution"}
+                                    {device.location && (
+                                        typeof device.location === "object"
+                                            ? <DeviceLocation lat={device.location.lat} lng={device.location.lng} />
+                                            : device.location
+                                    )}
                                 </p>
+                                {device.deviceType && (
+                                    <span className="text-[10px] bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 uppercase tracking-widest mt-1 inline-block">
+                                        {device.deviceType}
+                                    </span>
+                                )}
                             </div>
 
-                            {data.selectedScreens.includes(program.id) ? (
+                            {data.selectedScreens.includes(device.id) ? (
                                 <CheckCircle2 className="w-5 h-5 text-bgBlue" />
                             ) : (
                                 <div className="w-5 h-5 rounded-full border border-borderGray group-hover:border-bgBlue" />
@@ -111,3 +150,4 @@ const Step3ScreenSelection: React.FC<Step3Props> = ({ data, onChange }) => {
 };
 
 export default Step3ScreenSelection;
+

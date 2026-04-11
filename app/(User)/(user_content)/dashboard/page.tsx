@@ -16,11 +16,9 @@ import {
   Plus,
   CloudUpload,
   Activity,
-  MoreVertical,
   TvMinimal,
   UserRoundCog,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import ActionCardButton from "@/common/ActionCardButton";
 import CreateScreenModal from "@/components/dashboard/CreateScreenModal";
@@ -32,6 +30,7 @@ import { useGetAllActivitiesQuery, useGetAllStatsQuery, useGetAllDevicesQuery } 
 import CommonLoader from "@/common/CommonLoader";
 import CreateScheduleDialog from "../schedules/_components/CreateScheduleDialog";
 import UploadFileModal from "@/components/content/UploadFileModal";
+import DeviceLocation from "@/components/common/DeviceLocation";
 
 export default function Dashboard() {
   const { data: statsData } = useGetAllStatsQuery(undefined);
@@ -232,7 +231,11 @@ export default function Dashboard() {
                       3840 × 2160
                     </div>
                     <div className="text-[14px] text-body font-medium uppercase" style={{ fontFamily: "Inter, sans-serif" }}>
-                      {typeof device.location === 'object' ? 'Location Info' : (device.location || "LA, USA")}
+                      {device.location && typeof device.location === 'object' && (device.location as any).lat !== undefined ? (
+                        <DeviceLocation lat={(device.location as any).lat} lng={(device.location as any).lng} />
+                      ) : (
+                        (device.location as string) || "LA, USA"
+                      )}
                     </div>
                   </div>
                 </div>

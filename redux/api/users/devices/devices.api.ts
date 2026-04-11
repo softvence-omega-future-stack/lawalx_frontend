@@ -19,7 +19,7 @@ const devicesAPI = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Devices"],
+      invalidatesTags: ["Devices", "Activity"],
     }),
     getMyDevicesData: build.query<DeviceListResponse, void>({
       query: () => ({

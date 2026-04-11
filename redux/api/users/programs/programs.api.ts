@@ -10,7 +10,7 @@ const programsAPI = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Programs"],
+      invalidatesTags: ["Programs", "Devices"],
     }),
     getAllProgramsData: build.query<ProgramsResponse, void>({
       query: () => ({
@@ -24,7 +24,7 @@ const programsAPI = baseApi.injectEndpoints({
         url: `/program/get-single/${id}`,
         method: "GET",
       }),
-      providesTags: ["Programs"],
+      providesTags: ["Programs", "Devices"],
     }),
 
     updateSingleProgram: build.mutation<SuccessResponse, { id: string, data: Partial<CreateProgramPayload> }>({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { WifiOff, Search, ChevronDown, MoreVertical, Trash2, Eye, PenLine, Plus, MapPin, Loader2 } from "lucide-react";
+import { WifiOff, Search, ChevronDown, MoreVertical, Trash2, Eye, PenLine, PencilLine, Plus, MapPin, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
@@ -28,7 +28,7 @@ type DeviceView = {
   location: string;
   type: string;
   programName: string;
-  status: "Online" | "Offline" | "Disconnected" | string;
+  status: "ONLINE" | "OFFLINE" | "PAIRED" | "WAITING" | string;
   storage: string;
   lastSync: string;
   lat: number;
@@ -36,48 +36,7 @@ type DeviceView = {
   original: ApiDevice;
 };
 
-// Simple cache for geocoding results to avoid redundant API calls
-const geocodeCache: { [key: string]: string } = {};
-
-export const DeviceLocation = ({ lat, lng }: { lat: number; lng: number }) => {
-  const [address, setAddress] = useState<string>(`Lat: ${lat.toFixed(2)}, Lng: ${lng.toFixed(2)}`);
-
-  useEffect(() => {
-    const cacheKey = `${lat.toFixed(4)},${lng.toFixed(4)}`;
-    if (geocodeCache[cacheKey]) {
-      setAddress(geocodeCache[cacheKey]);
-      return;
-    }
-
-    const fetchAddress = async () => {
-      try {
-        // Using Nominatim (OpenStreetMap) for free reverse geocoding
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`,
-          { headers: { 'User-Agent': 'Lawalx-Frontend/1.0' } }
-        );
-        const data = await response.json();
-
-        if (data.display_name) {
-          const a = data.address;
-          const city = a.city || a.town || a.village || a.suburb || a.county || '';
-          const country = a.country || '';
-          const formatted = city && country ? `${city}, ${country}` : data.display_name.split(',').slice(0, 2).join(',');
-
-          geocodeCache[cacheKey] = formatted;
-          setAddress(formatted);
-        }
-      } catch (error) {
-        console.error("Geocoding error:", error);
-      }
-    };
-
-    const timer = setTimeout(fetchAddress, 500); // Debounce to respect rate limits
-    return () => clearTimeout(timer);
-  }, [lat, lng]);
-
-  return <span>{address}</span>;
-}
+import DeviceLocation from "@/components/common/DeviceLocation";
 
 const calculateTimeAgo = (dateString: string | null) => {
   if (!dateString) return "---";
@@ -192,9 +151,7 @@ export default function DevicesPage() {
     if (!devicesData?.data) return [];
 
     return devicesData.data.map((device) => {
-      let status: "Online" | "Offline" | "Disconnected" = "Disconnected";
-      if (device.status === "PAIRED" || device.status === "ONLINE") status = "Online";
-      else if (device.status === "OFFLINE") status = "Offline";
+      let status = device.status || "OFFLINE";
 
       // Format storage from bytes to GB
       const totalBytes = parseInt(device.storage) || 0;
@@ -208,7 +165,7 @@ export default function DevicesPage() {
         resolution: device.program?.serene_size || "1920x1080",
         location: device.location ? `Location (${device.location.lat.toFixed(2)}, ${device.location.lng.toFixed(2)})` : "Unknown Location",
         type: device.deviceType || "Unknown Type",
-        programName: device.program?.name || "No device assigned",
+        programName: device.program?.name || "No program assigned",
         status: status,
         storage: storageDisplay,
         lastSync: calculateTimeAgo(device.lastSeen),
@@ -222,6 +179,12 @@ export default function DevicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [typeFilter, setTypeFilter] = useState('All Types');
+
+  const statusOptions = ['All Status', 'ONLINE', 'OFFLINE', 'WAITING', 'PAIRED'];
+  const typeOptions = useMemo(() => {
+    const types = Array.from(new Set(allDevices.map(d => d.type).filter(Boolean)));
+    return ['All Types', ...types];
+  }, [allDevices]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -253,8 +216,8 @@ export default function DevicesPage() {
 
   useEffect(() => { setCurrentPage(1); }, [searchQuery, statusFilter, typeFilter]);
 
-  const onlineCount = allDevices.filter(d => d.status === "Online").length;
-  const offlineCount = allDevices.filter(d => d.status === "Offline").length;
+  const onlineCount = allDevices.filter(d => d.status === "ONLINE").length;
+  const offlineCount = allDevices.filter(d => d.status === "OFFLINE").length;
 
   const handleAction = (action: string, device: DeviceView) => {
     if (action === 'Preview') setPreviewDevice(device);
@@ -320,8 +283,8 @@ export default function DevicesPage() {
             />
           </div>
           <div className="flex gap-2 w-full lg:w-auto">
-            <Dropdown value={statusFilter} options={['All Status', 'Online', 'Offline', 'Disconnected']} onChange={setStatusFilter} />
-            <Dropdown value={typeFilter} options={['All Types', 'Android TV', 'Fire TV', 'Samsung Tizen', 'LG webOS']} onChange={setTypeFilter} />
+            <Dropdown value={statusFilter} options={statusOptions} onChange={setStatusFilter} />
+            <Dropdown value={typeFilter} options={typeOptions} onChange={setTypeFilter} />
           </div>
         </div>
 
@@ -369,24 +332,34 @@ export default function DevicesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className={`text-sm font-bold ${device.programName === "No device assigned" ? "text-[#A3A3A3] font-normal" : "text-[#171717] dark:text-white"}`}>
+                      <div className={`text-sm font-bold ${device.programName === "No program assigned" ? "text-[#A3A3A3] font-normal" : "text-[#171717] dark:text-white"}`}>
                         {device.programName}
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      {device.status === "Online" ? (
+                      {device.status === "ONLINE" ? (
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#059669] text-xs font-semibold">
                           <span className="w-2 h-2 rounded-full bg-[#10B981]" />
                           Online
                         </div>
-                      ) : device.status === "Offline" ? (
+                      ) : device.status === "OFFLINE" ? (
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626] text-xs font-semibold">
                           <WifiOff className="w-3.5 h-3.5" />
                           Offline
                         </div>
+                      ) : device.status === "PAIRED" ? (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
+                          <span className="w-2 h-2 rounded-full bg-blue-500" />
+                          Paired
+                        </div>
+                      ) : device.status === "WAITING" ? (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-semibold">
+                          <span className="w-2 h-2 rounded-full bg-orange-500" />
+                          Waiting
+                        </div>
                       ) : (
                         <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#F5F5F5] border border-[#E5E5E5] text-[#737373] text-xs font-semibold">
-                          Disconnected
+                          {device.status}
                         </div>
                       )}
                     </td>
@@ -403,8 +376,39 @@ export default function DevicesPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-right">
-                      <ActionMenu device={device} onAction={handleAction} />
+                    <td className="px-6 py-5">
+                      <div className="flex items-center justify-end gap-3 px-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAction('Preview', device);
+                          }}
+                          className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-500 hover:text-bgBlue rounded-md transition-all cursor-pointer"
+                          title="Preview"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAction('Rename', device);
+                          }}
+                          className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-500 hover:text-bgBlue rounded-md transition-all cursor-pointer"
+                          title="Rename"
+                        >
+                          <PencilLine className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAction('Remove Device', device);
+                          }}
+                          className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 rounded-md transition-all cursor-pointer"
+                          title="Remove Device"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
