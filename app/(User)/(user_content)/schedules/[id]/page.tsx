@@ -6,7 +6,7 @@ import { useGetSingleScheduleDataQuery, useUpdateScheduleMutation, useDeleteSche
 import { ScheduleTarget } from "@/redux/api/users/schedules/schedules.type";
 import { useGetAllProgramsDataQuery } from "@/redux/api/users/programs/programs.api";
 import { ContentItem } from "@/types/content";
-import { getUrl } from "@/lib/content-utils";
+import { getUrl, formatBytes } from "@/lib/content-utils";
 import { toast } from "sonner";
 
 // Components
@@ -80,6 +80,12 @@ function buildScheduleTimeDisplay(
   return time;
 }
 
+// Helper: Validate UUID format
+const isUUID = (id: any): id is string => {
+  if (typeof id !== "string") return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+};
+
 export default function ScheduleDetailPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -102,6 +108,9 @@ export default function ScheduleDetailPage() {
   const [isAddContentOpen, setIsAddContentOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isExistingContentRemoved, setIsExistingContentRemoved] = useState(false);
+
+  // Shared state for the currently playing content item
+  const [playingIndex, setPlayingIndex] = useState(0);
 
   // Local editable state initialized from API data
   const [localName, setLocalName] = useState<string | null>(null);
@@ -131,31 +140,31 @@ export default function ScheduleDetailPage() {
   const startDate = localStartDate ?? (schedule?.startDate ? schedule.startDate.split("T")[0] : new Date().toISOString().split("T")[0]);
   const endDate = localEndDate ?? (schedule?.endDate ? schedule.endDate.split("T")[0] : "");
 
-  // Map API file data to ContentItem[] for ContentSection
+  // Map API file data to ContentItem[] for ContentSection (handle all items)
   const content: ContentItem[] = localFile
     ? [localFile as ContentItem]
     : (!isExistingContentRemoved && schedule?.files && schedule.files.length > 0
-      ? [
-        {
-          id: schedule.files[0].id,
-          title: schedule.files[0].originalName,
-          type: schedule.files[0].type === "VIDEO" ? "video" : schedule.files[0].type === "AUDIO" ? "audio" : "image",
-          thumbnail: schedule.files[0].type === "IMAGE" ? getUrl(schedule.files[0].url) : (schedule.files[0].url ? getUrl(schedule.files[0].url) : ""),
-          video: schedule.files[0].type === "VIDEO" ? getUrl(schedule.files[0].url) : undefined,
-          audio: schedule.files[0].type === "AUDIO" ? getUrl(schedule.files[0].url) : undefined,
-          size: `${(schedule.files[0].size / (1024 * 1024)).toFixed(0)} MB`,
-        },
-      ]
-      : schedule?.programs && schedule.programs.length > 0 ? [
-        {
-          id: schedule.programs[0].id,
-          title: schedule.programs[0].name,
+      ? schedule.files.map((file) => ({
+        id: file.id,
+        title: file.originalName,
+        type: file.type === "VIDEO" ? "video" : file.type === "AUDIO" ? "audio" : "image",
+        thumbnail: file.type === "IMAGE" ? getUrl(file.url) : (file.url ? getUrl(file.url) : ""),
+        video: file.type === "VIDEO" ? getUrl(file.url) : undefined,
+        audio: file.type === "AUDIO" ? getUrl(file.url) : undefined,
+        size: formatBytes(file.size),
+        duration: String(file.duration),
+      }))
+      : (!isExistingContentRemoved && schedule?.programs && schedule.programs.length > 0
+        ? schedule.programs.map((program) => ({
+          id: program.id,
+          title: program.name,
           type: "video",
-          thumbnail: getUrl(schedule.programs[0].videoUrl || ""),
-          video: getUrl(schedule.programs[0].videoUrl || ""),
+          thumbnail: getUrl(program.videoUrl || ""),
+          video: getUrl(program.videoUrl || ""),
           size: "Program",
-        }
-      ] : []);
+          duration: "10", // Default for programs
+        }))
+        : []));
 
   // Build schedule time display
   const scheduleTimeDisplay = schedule
@@ -189,20 +198,71 @@ export default function ScheduleDetailPage() {
     })
     : [];
 
-  const handleToggleDevice = (deviceId: string, isEnabled: boolean, programId: string) => {
+  const getPayload = (
+    currentParams: {
+      name?: string;
+      description?: string;
+      contentType?: string;
+      repeat?: string;
+      startTime?: string;
+      endTime?: string;
+      startDate?: string;
+      endDate?: string;
+      programs?: any[];
+      targets?: ScheduleTarget[];
+    } = {}
+  ) => {
+    const pName = currentParams.name ?? name;
+    const pDescription = currentParams.description ?? description;
+    const pContentType = currentParams.contentType ?? contentType;
+    const pRepeat = currentParams.repeat ?? repeat;
+    const pStartTime = currentParams.startTime ?? startTime;
+    const pEndTime = currentParams.endTime ?? endTime;
+    const pStartDate = currentParams.startDate ?? startDate;
+    const pEndDate = currentParams.endDate ?? endDate;
+    const pPrograms = currentParams.programs ?? programs;
+    const pTargets = currentParams.targets ?? targets;
+
+    const apiContentType = pContentType === "image-video" ? "IMAGE_VIDEO" : pContentType === "audio" ? "AUDIO" : pContentType === "lower-third" ? "LOWERTHIRD" : "ALL_CONTENT";
+
+    // Ensure we only send file IDs for actual files
+    const fileIds = localFile ? [localFile.id] : (!isExistingContentRemoved && schedule?.files && schedule.files.length > 0 ? schedule.files.map(f => f.id) : []);
+
+    // Filter for valid UUIDs to prevent backend 400 errors
+    const validProgramIds = pPrograms.map((p: any) => p.id).filter(isUUID);
+    const validDeviceIds = pTargets.filter((t: any) => t.isEnabled).map((t: any) => t.deviceId).filter(isUUID);
+    const validFileIds = fileIds.filter(isUUID);
+
+    return {
+      name: pName,
+      description: pDescription,
+      contentType: apiContentType,
+      recurrenceType: pRepeat.toLowerCase(),
+      startDate: pStartDate.includes("T") ? pStartDate : `${pStartDate}T00:00:00Z`,
+      endDate: pRepeat.toLowerCase() === "once" ? (pStartDate.includes("T") ? pStartDate : `${pStartDate}T23:59:59Z`) : (pEndDate.includes("T") ? pEndDate : `${pEndDate || pStartDate}T23:59:59Z`),
+      startTime: pStartTime.includes("T") ? pStartTime : `1970-01-01T${pStartTime}:00Z`,
+      endTime: pEndTime.includes("T") ? pEndTime : `1970-01-01T${pEndTime}:00Z`,
+      daysOfWeek: schedule?.daysOfWeek || [],
+      dayOfMonth: schedule?.dayOfMonth || [],
+      programIds: validProgramIds,
+      deviceIds: validDeviceIds,
+      fileIds: validFileIds,
+      status: schedule?.status || "playing",
+    };
+  };
+
+  const handleToggleDevice = async (deviceId: string, isEnabled: boolean, programId: string) => {
     const currentTargets = [...targets];
     const targetIndex = currentTargets.findIndex(
       (t) => t.deviceId === deviceId && t.programId === programId
     );
 
+    let nextTargets = [];
     if (targetIndex > -1) {
-      // Update existing target
-      const newTargets = [...currentTargets];
-      newTargets[targetIndex] = { ...newTargets[targetIndex], isEnabled };
-      setLocalTargets(newTargets);
+      nextTargets = [...currentTargets];
+      nextTargets[targetIndex] = { ...nextTargets[targetIndex], isEnabled };
     } else if (isEnabled) {
-      // Add new target
-      setLocalTargets([
+      nextTargets = [
         ...currentTargets,
         {
           id: `temp-${Date.now()}`,
@@ -211,13 +271,43 @@ export default function ScheduleDetailPage() {
           deviceId,
           isEnabled: true,
         } as ScheduleTarget,
-      ]);
+      ];
+    } else {
+      nextTargets = currentTargets;
+    }
+
+    setLocalTargets(nextTargets);
+
+    if (!isNew) {
+      try {
+        await updateSchedule({
+          id: id as string,
+          data: getPayload({ targets: nextTargets })
+        }).unwrap();
+      } catch (err: any) {
+        toast.error("Failed to update schedule status");
+      }
     }
   };
 
-  const handleRemoveProgram = (programId: string) => {
-    setLocalPrograms(programs.filter(p => p.id !== programId));
-    setLocalTargets(targets.filter(t => t.programId !== programId));
+  const handleRemoveProgram = async (programId: string) => {
+    const nextPrograms = programs.filter(p => p.id !== programId);
+    const nextTargets = targets.filter(t => t.programId !== programId);
+
+    setLocalPrograms(nextPrograms);
+    setLocalTargets(nextTargets);
+
+    if (!isNew) {
+      try {
+        await updateSchedule({
+          id: id as string,
+          data: getPayload({ programs: nextPrograms, targets: nextTargets })
+        }).unwrap();
+        toast.success("Program removed successfully");
+      } catch (err: any) {
+        toast.error("Failed to remove program from schedule");
+      }
+    }
   };
 
   const handleDeleteSchedule = () => {
@@ -240,32 +330,12 @@ export default function ScheduleDetailPage() {
 
   const handleSave = async () => {
     if (isNew) {
-      // Future implemented Create logic
       toast.info("Create logic not yet hooked to this page");
       return;
     }
 
     try {
-      const apiContentType = contentType === "image-video" ? "IMAGE_VIDEO" : contentType === "audio" ? "AUDIO" : contentType === "lower-third" ? "LOWERTHIRD" : "ALL_CONTENT";
-      
-      const payload = {
-        name,
-        description,
-        contentType: apiContentType,
-        recurrenceType: repeat.toLowerCase(),
-        startDate: startDate.includes("T") ? startDate : `${startDate}T00:00:00Z`,
-        endDate: repeat.toLowerCase() === "once" ? (startDate.includes("T") ? startDate : `${startDate}T23:59:59Z`) : (endDate.includes("T") ? endDate : `${endDate || startDate}T23:59:59Z`),
-        startTime: startTime.includes("T") ? startTime : `1970-01-01T${startTime}:00Z`,
-        endTime: endTime.includes("T") ? endTime : `1970-01-01T${endTime}:00Z`,
-        daysOfWeek: schedule?.daysOfWeek || [],
-        dayOfMonth: schedule?.dayOfMonth || [],
-        programIds: programs.map((p) => p.id),
-        deviceIds: targets.filter((t: any) => t.isEnabled).map((t: any) => t.deviceId),
-        fileIds: content.map((c) => c.id),
-        status: schedule?.status || "playing",
-      };
-
-      await updateSchedule({ id: id as string, data: payload }).unwrap();
+      await updateSchedule({ id: id as string, data: getPayload() }).unwrap();
       toast.success("Schedule updated successfully");
       router.push("/schedules");
     } catch (err: any) {
@@ -290,14 +360,15 @@ export default function ScheduleDetailPage() {
   }
 
 
-  const handleAddPrograms = (newPrograms: any[]) => {
+  const handleAddPrograms = async (newPrograms: any[]) => {
     const currentPrograms = programs;
     const filteredNewPrograms = newPrograms.filter(
       (np) => !currentPrograms.some((cp) => cp.id === np.id)
     );
-    setLocalPrograms([...currentPrograms, ...filteredNewPrograms]);
 
-    // Automatically select all devices for newly added programs
+    if (filteredNewPrograms.length === 0) return;
+
+    const nextPrograms = [...currentPrograms, ...filteredNewPrograms];
     const newTargets: ScheduleTarget[] = [];
     filteredNewPrograms.forEach((p) => {
       (p.devices || []).forEach((d: any) => {
@@ -310,7 +381,22 @@ export default function ScheduleDetailPage() {
         } as ScheduleTarget);
       });
     });
-    setLocalTargets([...targets, ...newTargets]);
+    const nextTargets = [...targets, ...newTargets];
+
+    setLocalPrograms(nextPrograms);
+    setLocalTargets(nextTargets);
+
+    if (!isNew) {
+      try {
+        await updateSchedule({
+          id: id as string,
+          data: getPayload({ programs: nextPrograms, targets: nextTargets })
+        }).unwrap();
+        toast.success("Programs added successfully");
+      } catch (err: any) {
+        toast.error("Failed to add programs to schedule");
+      }
+    }
   };
 
   return (
@@ -335,13 +421,17 @@ export default function ScheduleDetailPage() {
             contentType={contentType}
             setContentType={(val) => setLocalContentType(val)}
             content={content}
+            playingIndex={playingIndex}
+            onItemClick={setPlayingIndex}
             onAddContent={() => setIsAddContentOpen(true)}
             onRemoveContent={(id) => {
               if (localFile?.id === id) {
-                  setLocalFile(null);
+                setLocalFile(null);
               } else if (schedule?.files?.some(f => f.id === id)) {
-                  setIsExistingContentRemoved(true);
+                setIsExistingContentRemoved(true);
               }
+              // Reset playing index if the removed item was active or out of bounds
+              setPlayingIndex(0);
               refetch();
             }}
           />
@@ -375,10 +465,11 @@ export default function ScheduleDetailPage() {
 
         {/* Right Column: Preview */}
         <ContentPreview
-          content={content[0]}
+          items={content}
           scheduleTime={scheduleTimeDisplay}
-          video={videoUrl}
-          thumbnail={thumbnailUrl}
+          playingIndex={playingIndex}
+          setPlayingIndex={setPlayingIndex}
+          lowerThird={schedule?.lowerThird}
         />
       </div>
 
@@ -392,8 +483,8 @@ export default function ScheduleDetailPage() {
         isOpen={isAddContentOpen}
         onClose={() => setIsAddContentOpen(false)}
         onSelect={(file) => {
-            setLocalFile(file);
-            setIsExistingContentRemoved(false);
+          setLocalFile(file);
+          setIsExistingContentRemoved(false);
         }}
         initialContentType={contentType === "all" ? "all" : contentType}
       />

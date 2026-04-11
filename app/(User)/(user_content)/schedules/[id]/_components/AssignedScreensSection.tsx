@@ -88,7 +88,7 @@ const AssignedScreensSection: React.FC<AssignedScreensSectionProps> = ({
                 ))}
                 {assignedScreens.length === 0 && (
                     <div className="py-8 text-center border-t border-border">
-                        <p className="text-muted italic">No programs assigned yet. Click "Add Screen" to get started.</p>
+                        <p className="text-muted italic">No programs assigned yet. Click "Add Program" to get started.</p>
                     </div>
                 )}
             </div>

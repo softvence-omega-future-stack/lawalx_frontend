@@ -69,14 +69,6 @@ const MyContentCard = ({
     }
   };
 
-  // const getFileExtension = () => {
-  //   switch (item.type) {
-  //     case "video": return ".MP4";
-  //     case "image": return ".PNG";
-  //     default: return "";
-  //   }
-  // };
-
   const getThumbnailIcon = () => {
     if (item.thumbnail) {
       return (
